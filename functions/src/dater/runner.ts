@@ -1,12 +1,11 @@
 import { Profile } from './types';
-import { bestPl, generateOpenerFromYaml, generateImageOpenerFromYaml, judgeOpener, getImageScore, saveImage } from './openai';
+import { bestPl, generateOpenersFromYamlBatch, generateImageOpenerFromYaml, getImageScore, saveImage } from './openai';
 import { hinge } from './token';
 import { runningLocally } from '../globals';
 import pLimit from 'p-limit';
-import { distance } from 'fastest-levenshtein';
 import { timeout } from './utils';
 import fs from 'fs';
-import { readProfilesCache, writeProfilesCache, locationKeyOf, getUnvisited, markVisited, CachedEntry, Settings } from './profile_cache';
+import { readProfilesCache, locationKeyOf, getUnvisited, markVisited, CachedEntry, Settings, upsertLocationBatch } from './profile_cache';
 import { buildPromptsList, appendDecision } from './decisions_log';
 import { getQuestionById } from './questions';
 import { cleanPickupLineResponse, isBadResponse } from './helpers';
@@ -14,6 +13,7 @@ import { createLikeLimiter, createCancelToken, createHingeRequestLimiter } from 
 import { all } from 'axios';
 
 const concurrency = 10;
+const model = 'anthropic/claude-sonnet-4';
 
 function chunkArray<T>(array: T[], chunkSize: number): T[][] {
   const chunks: T[][] = [];
@@ -46,20 +46,20 @@ async function fetchProfilesForSetting(setting: Settings, locKey: string, hingeR
       }
     })();
     const allSubjects = recs.feeds.flatMap(feed => feed.subjects);
-    const previewSubjects = recs.feeds.flatMap(feed => feed.subjects.map(it => ({ ...it, preview: feed.preview.subjects })));
+    const previewSubjects = recs.feeds.flatMap(feed => feed.preview?.subjects ?? []);
     allSubjects.push(...previewSubjects);
     const profiles = await (async () => {
       try {
         const subjectIds = allSubjects.map(it => it.subjectId);
         const batches = chunkArray(subjectIds, 20);
         const allProfiles: Profile[] = [];
-        
+
         for (const batch of batches) {
           hingeRequestLimiter.tryConsume();
           const batchProfiles = await hinge.getProfiles(batch);
           allProfiles.push(...batchProfiles);
         }
-        
+
         return allProfiles;
       } catch (e) {
         cancelToken.abort(e);
@@ -71,85 +71,95 @@ async function fetchProfilesForSetting(setting: Settings, locKey: string, hingeR
       const profile = profiles.find(p => p.profile.userId === subject.subjectId);
       if (profile) batch.push({ ratingToken: subject.ratingToken, subjectId: subject.subjectId, visited: false, profile });
     }
-    cache[locKey] = { createdAt: new Date().toISOString(), batch };
-    await writeProfilesCache(cache);
-    unvisited = getUnvisited(cache, locKey);
+    await upsertLocationBatch(locKey, batch);
+    // New batch is all unvisited entries
+    unvisited = batch;
   }
   const profileMap = new Map<string, Profile>();
   for (const entry of unvisited) profileMap.set(entry.ratingToken, entry.profile);
   return profileMap;
 }
 
-async function buildImageOpener(
+// Generate an opener only for the highest-scoring image; return single candidate
+async function buildImageOpeners(
   subject: Profile,
   filteredAnswers: { questionId: string; response: string }[],
   pre: { scored: { url: string; score: number }[]; medianScore: number }
 ) {
   const prompts = filteredAnswers.map(a => `${getQuestionById(a.questionId)}: ${a.response}`).join('\n');
   let medianScore: number | undefined = pre?.medianScore;
-  const plMap = await (async () => {
-    let scores: { photo: any; score: number }[] = [];
-    const scoreMap = new Map(pre.scored.map(s => [s.url, s.score] as const));
-    scores = subject.profile.photos.map(photo => ({ photo, score: scoreMap.get(photo.url) ?? 0 }));
-    if (medianScore === undefined) {
-      const sortedScores = scores.map(({ score }) => score).sort((a, b) => a - b);
-      const mid = Math.floor(sortedScores.length / 2);
-      medianScore = sortedScores.length % 2 !== 0 ? sortedScores[mid] : (sortedScores[mid - 1] + sortedScores[mid]) / 2;
-    }
-    const processLimit = pLimit(concurrency);
-    const processPromises = scores
-      .sort((a, b) => b.score - a.score)
-      .map(({ photo, score }) =>
-        processLimit(async () => {
-          if (score > 0.5) {
-            try {
-              if ((medianScore ?? 0) < 0.2 && score < 0.7) return null;
-              const comment = await generateImageOpenerFromYaml(photo.url, photo.caption, prompts, subject.profile.firstName, 'gemini-2.5-pro');
-              const cleanedComment = cleanPickupLineResponse(comment);
-              if (isBadResponse(cleanedComment)) return null;
-              return { photo, comment: cleanedComment };
-            } catch { return null; }
-          }
-          return null;
-        })
-      );
-    const results = await Promise.all(processPromises);
-    return results.filter((r): r is { photo: any; comment: string } => r !== null);
-  })();
-  const plList = plMap.map(it => it.comment).filter(Boolean);
-  if (plList.length === 0) return { bestAnswer: undefined as any, medianScore, contextPrompts: prompts } as const;
-  if (plList.length > 1) {
-    const pl = await bestPl(plList);
-    plMap.sort((a, b) => distance(pl!, a.comment) - distance(pl!, b.comment));
+  const scoreMap = new Map(pre.scored.map(s => [s.url, s.score] as const));
+  const scoredPhotos: { photo: any; score: number }[] = subject.profile.photos.map(photo => ({ photo, score: scoreMap.get(photo.url) ?? 0 }));
+
+  // Compute median if not provided
+  if (medianScore === undefined) {
+    const sortedScores = scoredPhotos.map(({ score }) => score).sort((a, b) => a - b);
+    const mid = Math.floor(sortedScores.length / 2);
+    medianScore = sortedScores.length % 2 !== 0 ? sortedScores[mid] : (sortedScores[mid - 1] + sortedScores[mid]) / 2;
   }
-  const bestAnswer = plMap[0];
-  return { bestAnswer, medianScore, contextPrompts: prompts } as const;
+
+  // Pick the single highest scoring photo
+  let top: { photo: any; score: number } | null = null;
+  for (const s of scoredPhotos) {
+    if (!top || s.score > top.score) top = s;
+  }
+
+  if (!top) return { candidates: [], medianScore, contextPrompts: prompts } as const;
+
+  // Generate opener only for the top photo
+  try {
+    const comment = await generateImageOpenerFromYaml(
+      top.photo.url,
+      top.photo.caption,
+      prompts,
+      subject.profile.firstName,
+      model
+    );
+    const cleanedComment = cleanPickupLineResponse(comment);
+    if (isBadResponse(cleanedComment)) return { candidates: [], medianScore, contextPrompts: prompts } as const;
+    return { candidates: [{ photo: top.photo, comment: cleanedComment }], medianScore, contextPrompts: prompts } as const;
+  } catch {
+    return { candidates: [], medianScore, contextPrompts: prompts } as const;
+  }
 }
 
-async function generateBestTextAnswer(subject: Profile, filteredAnswers: { questionId: string; response: string }[]) {
-  let bestAnswer: { answer: { questionId: string; response: string }; prompt: string; line: string } | undefined;
+// Generate a text opener for each text answer using a single model call; return all candidates
+async function generateTextOpeners(subject: Profile, filteredAnswers: { questionId: string; response: string }[]) {
   let tries = 0;
-  while (!bestAnswer && ++tries < 2) {
+  while (++tries <= 2) {
     try {
       if (tries > 1) await timeout(3000);
-      const plMap = await Promise.all(
-        filteredAnswers.map(async answer => {
-          try {
-            const question = getQuestionById(answer.questionId);
-            const prompt = `${question}: ${answer.response}`;
-            let line = await generateOpenerFromYaml(prompt, subject.profile.firstName);
-            line = cleanPickupLineResponse(line);
-            return { answer, prompt, line };
-          } catch { return null; }
+
+      // Build batched inputs with stable IDs
+      const items = filteredAnswers.map((answer, idx) => {
+        const question = getQuestionById(answer.questionId);
+        const prompt = `${question}: ${answer.response}`;
+        // Use simple sequential IDs: "1", "2", "3", ...
+        const id = String(idx + 1);
+        return { id, prompt, answer } as const;
+      });
+
+      const idToText = await generateOpenersFromYamlBatch(
+        items.map(it => ({ id: it.id, profilePrompt: it.prompt })),
+        subject.profile.firstName,
+        model
+      );
+
+      const results = items
+        .map(it => {
+          const raw = idToText.get(it.id);
+          if (!raw) return null;
+          const line = cleanPickupLineResponse(raw);
+          if (isBadResponse(line)) return null;
+          return { answer: it.answer, prompt: it.prompt, line };
         })
-      ).then(results => results.filter(r => r !== null) as NonNullable<typeof results[number]>[]);
-      try { console.log('  Generated lines: ', plMap.map(it => `${it.prompt} -- ${it.line}`)); } catch { }
-      const pl = (await bestPl(plMap.map(it => it.line))).replaceAll('"', '');
-      plMap.sort((a, b) => distance(pl!, a.line) - distance(pl!, b.line));
-      bestAnswer = plMap[0];
-    } catch { }
+        .filter((r): r is { answer: { questionId: string; response: string }; prompt: string; line: string } => r !== null);
+
+      try { console.log('  Generated text lines: ', results.map(it => `${it.prompt} -- ${it.line}`)); } catch { }
+      return results;
+    } catch (e) { console.error('generateTextOpeners batch error', e); }
   }
-  return bestAnswer;
+  return [] as { answer: { questionId: string; response: string }; prompt: string; line: string }[];
 }
 
 async function recordSkipAndVisit(
@@ -175,8 +185,7 @@ async function recordSkipAndVisit(
     });
   } catch { }
   try {
-    const c = await readProfilesCache();
-    await markVisited(c, locKey, ratingToken);
+    await markVisited(undefined, locKey, ratingToken);
   } catch { }
 }
 
@@ -213,12 +222,12 @@ async function likeWithImage(
         imageScores: validation?.scored,
       });
     } catch { }
-    const c = await readProfilesCache();
-    await markVisited(c, locKey, ratingToken);
+    await markVisited(undefined, locKey, ratingToken);
     console.log('Likes', likeLimiter.getUsed(), 'Like Rate:', getLikeRate().toFixed(2) + '%');
   } catch (e) {
     likeLimiter.release();
     cancelToken.abort(e);
+    console.error(e);
     throw e;
   }
 }
@@ -256,12 +265,12 @@ async function likeWithText(
         medianImageScore: validation?.medianScore,
       });
     } catch { }
-    const c = await readProfilesCache();
-    await markVisited(c, locKey, ratingToken);
+    await markVisited(undefined, locKey, ratingToken);
     console.log('Likes', likeLimiter.getUsed(), 'Like Rate:', getLikeRate().toFixed(2) + '%');
   } catch (e) {
     likeLimiter.release();
     cancelToken.abort(e);
+    console.error(e);
     throw e;
   }
 }
@@ -285,34 +294,57 @@ async function processProfileEntry(entry: [string, Profile], ctx: LikeContext, c
     await recordSkipAndVisit(ctx.setting, subject, ratingToken, filteredAnswers, ctx.locKey, validation as any);
     return;
   }
-  const imageCandidatePromise = buildImageOpener(subject, filteredAnswers, { scored: validation.scored, medianScore: validation.medianScore });
-  if (filteredAnswers.length > 0) {
-    const bestAnswer = await generateBestTextAnswer(subject, filteredAnswers);
-    if (runningLocally && bestAnswer) {
-      fs.writeFileSync('bestAnswer.txt', `Prompt: "${bestAnswer.prompt}"\n  - [PICKUP LINE] "${bestAnswer.line}"` + '\n\n', { flag: 'a' });
-    }
-    const imageCandidate = await imageCandidatePromise;
-    let useImage = false;
-    if (imageCandidate?.bestAnswer && bestAnswer) {
-      const choice = await judgeOpener(imageCandidate.bestAnswer.comment, bestAnswer.line);
-      useImage = choice === '1';
-    } else if (imageCandidate?.bestAnswer && !bestAnswer) {
-      useImage = true;
-    } else if (!imageCandidate?.bestAnswer && bestAnswer) {
-      useImage = false;
-    } else {
-      await recordSkipAndVisit(ctx.setting, subject, ratingToken, filteredAnswers, ctx.locKey, validation as any);
-      return;
-    }
-    if (useImage && imageCandidate?.bestAnswer) await likeWithImage(ctx, subject, ratingToken, imageCandidate, filteredAnswers, validation as any);
-    else if (bestAnswer) await likeWithText(ctx, subject, ratingToken, bestAnswer as any, filteredAnswers, validation as any);
+  const imageCandidatesPromise = buildImageOpeners(subject, filteredAnswers, { scored: validation.scored, medianScore: validation.medianScore });
+  const textCandidates = filteredAnswers.length > 0 ? await generateTextOpeners(subject, filteredAnswers) : [];
+  
+  const imageCandidates = await imageCandidatesPromise;
+  const allCandidates: { type: 'image' | 'text'; text: string; photo?: any; prompt?: string; answer?: { questionId: string; response: string } }[] = [];
+  for (const ic of imageCandidates.candidates) allCandidates.push({ type: 'image', text: ic.comment, photo: ic.photo });
+  for (const tc of textCandidates) allCandidates.push({ type: 'text', text: tc.line, prompt: tc.prompt, answer: tc.answer });
+
+  if (allCandidates.length === 0) {
+    await recordSkipAndVisit(ctx.setting, subject, ratingToken, filteredAnswers, ctx.locKey, validation as any);
+    return;
+  }
+
+  // Final ranker across ALL generations via single JSON index selection
+  const bestIndex = await bestPl(allCandidates.map(c => c.text), model);
+  const best = allCandidates[Math.max(0, Math.min(bestIndex, allCandidates.length - 1))];
+
+  // Log the final winner locally for inspection as a single readable line with context
+  if (runningLocally) {
+    try {
+      if (best.type === 'image' && best.photo) {
+        const ctx = (imageCandidates.contextPrompts || '').replace(/\n+/g, ' || ').trim();
+        const header = `FINAL [IMAGE] | user=${subject.profile.firstName} (${subject.profile.age}) | context=[${ctx}]`;
+        const bodyLine2 = `Image: ${best.photo.url}`;
+        const bodyLine3 = `  - [PICKUP LINE] \"${best.text}\"`;
+        const log = header + '\n' + bodyLine2 + '\n' + bodyLine3 + '\n';
+        fs.writeFileSync('bestAnswer.txt', log, { flag: 'a' });
+      } else if (best.type === 'text' && best.answer && best.prompt) {
+        const answered = best.answer; // narrowed and captured
+        const respondedPrompt = best.prompt;
+        const others = filteredAnswers
+          .filter(a => a.questionId !== answered.questionId)
+          .map(a => `${getQuestionById(a.questionId)}: ${a.response}`)
+          .join(' || ');
+        const header = `FINAL [TEXT] | user=${subject.profile.firstName} (${subject.profile.age}) | context=[${others}]`;
+        const bodyLine2 = `Prompt: \"${respondedPrompt}\"`;
+        const bodyLine3 = `  - [PICKUP LINE] \"${best.text}\"`;
+        const log = header + '\n' + bodyLine2 + '\n' + bodyLine3 + '\n';
+        fs.writeFileSync('bestAnswer.txt', log, { flag: 'a' });
+      }
+    } catch {}
+  }
+
+  if (best.type === 'image' && best.photo) {
+    const imageCandidate = { bestAnswer: { photo: best.photo, comment: best.text }, medianScore: imageCandidates.medianScore, contextPrompts: imageCandidates.contextPrompts } as const;
+    await likeWithImage(ctx, subject, ratingToken, imageCandidate, filteredAnswers, validation as any);
+  } else if (best.type === 'text' && best.answer && best.prompt) {
+    const bestAnswer = { answer: best.answer, prompt: best.prompt, line: best.text } as const;
+    await likeWithText(ctx, subject, ratingToken, bestAnswer as any, filteredAnswers, validation as any);
   } else {
-    const imageCandidate = await imageCandidatePromise;
-    if (!imageCandidate?.bestAnswer) {
-      await recordSkipAndVisit(ctx.setting, subject, ratingToken, [], ctx.locKey, validation as any);
-      return;
-    }
-    await likeWithImage(ctx, subject, ratingToken, imageCandidate, [], validation as any);
+    await recordSkipAndVisit(ctx.setting, subject, ratingToken, filteredAnswers, ctx.locKey, validation as any);
   }
 }
 
@@ -364,11 +396,19 @@ export async function run(settings: Settings[], maxLikes = 100000) {
         const limit = pLimit(concurrency);
         const counters = { profileCount };
         const tasks = [...profileMap.entries()].map(e => limit(() => processProfileEntry(e, ctx, counters)));
-        try { await Promise.all(tasks); } catch { break; }
+        try {
+          await Promise.all(tasks);
+        }
+        catch (e) {
+          console.error(e);
+          break;
+        }
         profileCount = counters.profileCount;
         if (likeLimiter.isExhausted() || cancelToken.isAborted()) break;
       }
-    } catch (e) { console.error(e); }
+    } catch (e) {
+      console.error(e);
+    }
     if (likeLimiter.isExhausted() || cancelToken.isAborted()) break;
   }
   console.log(`Total Likes: ${likeLimiter.getUsed()}, Total Profiles Scanned: ${profileCount}, Like Rate: ${getLikeRate().toFixed(2)}%`);

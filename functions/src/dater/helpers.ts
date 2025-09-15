@@ -2,7 +2,7 @@ export function cleanPickupLineResponse(line: string) {
   const delimiter = '[FINAL THOUGHT]';
   const idx = line.indexOf(delimiter);
   const core = idx >= 0 ? line.substring(idx + delimiter.length) : line;
-  return core.trim().replaceAll('"', '').replaceAll('[QUESTION]', '').replaceAll('—', ' - ');
+  return core.trim().replaceAll('[QUESTION]', '').replaceAll('—', ' - ');
 }
 
 export function isBadResponse(comment: string): boolean {

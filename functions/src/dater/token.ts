@@ -47,5 +47,5 @@ const testHinge = new FakeHingeAPI(authToken, {
   'accept-encoding': 'gzip, deflate, br',
 });
 
-const useFakes = true;
+const useFakes = false;
 export const hinge = useFakes ? testHinge : realHinge;

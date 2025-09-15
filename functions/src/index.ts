@@ -39,12 +39,12 @@ function main() {
   run(
     // [loc_san_jose, loc_mtv, loc_bayPalo, loc_sf, loc_santaCruz, loc_lilburn],
     [loc_sf],
-    // [loc_mtv],
+    // [loc_bayPalo, loc_mtv],
     // [loc_santaCruz],
     // [loc_marrietta],
     // [loc_santaCruz],
     // [loc_lilburn],
-    10
+    100
   ).then(() => {
     console.log('done');
   });

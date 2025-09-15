@@ -13,15 +13,15 @@ import dotenv from 'dotenv';
 // Load environment variables
 dotenv.config();
 
-// const OPENROUTER_API_KEY = process.env.OPENROUTER_API_KEY;
+const OPENROUTER_API_KEY = process.env.OPENROUTER_API_KEY;
 // const OPENROUTER_API_KEY_ALT = process.env.OPENROUTER_API_KEY_ALT;
-const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
+// const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
 
 const openai = new OpenAI({
-  // baseURL: 'https://openrouter.ai/api/v1',
-  baseURL: 'https://generativelanguage.googleapis.com/v1beta/openai/',
-  // apiKey: OPENROUTER_API_KEY,
-  apiKey: GEMINI_API_KEY,
+  baseURL: 'https://openrouter.ai/api/v1',
+  // baseURL: 'https://generativelanguage.googleapis.com/v1beta/openai/',
+  apiKey: OPENROUTER_API_KEY,
+  // apiKey: GEMINI_API_KEY,
   // defaultHeaders: {
   //   'HTTP-Referer': 'https://test.com',
   //   'X-Title': 'test',
@@ -261,6 +261,33 @@ async function getOpenerPromptText(): Promise<string> {
   }
 }
 
+function buildOutputContractYaml(mode: 'single' | 'batch'): string {
+  if (mode === 'batch') {
+    return [
+      'format: "JSON only"',
+      'schema: "Exactly one object with a single key \"items\" which is an array of objects with keys \"id\" and \"text\"."',
+      'constraints:',
+      '  - "Return only the object with an items array; no extra keys or commentary."',
+      '  - "One and only one item per input id, in the same order as inputs."',
+    ].join('\n');
+  }
+  return [
+    'format: "JSON only"',
+    'schema: "Exactly one object with a single key \"text\" whose value is the opener string."',
+    'constraints:',
+    '  - "Return one and only one opener."',
+    '  - "No labels, extra keys, placeholders, ellipses, or commentary."',
+  ].join('\n');
+}
+
+function withOutputContract(spec: string, mode: 'single' | 'batch'): string {
+  const injection = buildOutputContractYaml(mode);
+  if (spec.includes('[[OUTPUT_CONTRACT]]')) {
+    return spec.replace('[[OUTPUT_CONTRACT]]', injection);
+  }
+  throw new Error('[[OUTPUT_CONTRACT]] not found in spec');
+}
+
 function indentBlock(text: string, spaces = 2): string {
   const pad = ' '.repeat(spaces);
   return text
@@ -284,12 +311,87 @@ function extractOpenerText(output: string): string {
 // Generate an opener using the YAML spec as the direct prompt text
 export async function generateOpenerFromYaml(
   profilePrompt: string,
-  herName: string
+  herName: string,
+  model = 'gemini-2.5-flash'
 ): Promise<string> {
-  const spec = await getOpenerPromptText();
-  const composed = `${spec}\n\n---\ninput_type: text_prompt_from_profile\nher_name: ${herName}\nmy_name: ${myName}\nprofile_prompt: |\n${indentBlock(profilePrompt, 2)}\n`;
-  const out = await chat(composed, [], undefined as any, 'json_object');
+  const spec = withOutputContract(await getOpenerPromptText(), 'single');
+  // Send the YAML spec as a system message, and the input block as the user message
+  const inputBlock = `---\ninput_type: text_prompt_from_profile\nher_profile:\n  name: ${herName}\n  prompt: |\n${indentBlock(profilePrompt, 4)}\nmy_name: ${myName}\n`;
+  const out = await chat(
+    inputBlock,
+    [
+      {
+        role: 'system',
+        content: spec,
+      },
+    ],
+    model,
+    'json_object'
+  );
   return extractOpenerText(out);
+}
+
+// Batch variant: generate openers for many prompts in a single call.
+// Returns a Map of id -> opener text.
+export async function generateOpenersFromYamlBatch(
+  items: { id: string; profilePrompt: string }[],
+  herName: string,
+  model = 'gemini-2.5-flash'
+): Promise<Map<string, string>> {
+  const spec = withOutputContract(await getOpenerPromptText(), 'batch');
+  // Build a single user message that contains an instruction and a list of inputs with ids.
+  // We intentionally treat the YAML spec as a style guide, while overriding the one-output contract
+  // by explicitly asking for a JSON array mapping each input id to a single opener.
+  const inputBlocks = items
+    .map(
+      (it) =>
+        `- id: ${it.id}\n  input_type: text_prompt_from_profile\n  her_profile:\n    name: ${herName}\n    prompt: |\n${indentBlock(it.profilePrompt, 6)}\n  my_name: ${myName}`
+    )
+    .join('\n');
+
+  const instruction = `You act strictly under the following style guide (YAML below).\nFor EACH input item, generate exactly one opener that fully adheres to the style_tone, cta_rules, ai_scent_filters, generation_algorithm, and formatting_checks.\nFollow the output_contract defined in the style guide.\nInputs: \n${inputBlocks}`;
+
+  const out = await chat(
+    instruction,
+    [
+      {
+        role: 'system',
+        content: spec,
+      },
+    ],
+    model,
+    'json_object'
+  );
+
+  // Try strict JSON first (array), fall back to lenient parsing.
+  const map = new Map<string, string>();
+  const text = (out || '').trim();
+  try {
+    const parsed = JSON.parse(text);
+    const arr = Array.isArray(parsed) ? parsed : parsed?.results || parsed?.items || [];
+    if (Array.isArray(arr)) {
+      for (const item of arr) {
+        const id = String(item?.id ?? '');
+        const value = typeof item?.text === 'string' ? item.text : '';
+        if (id) map.set(id, value);
+      }
+      return map;
+    }
+  } catch {}
+
+  // Last resort: regex to find objects with id/text pairs
+  try {
+    const matches = text.match(/\{[^}]*\}/g) || [];
+    for (const m of matches) {
+      try {
+        const obj = JSON.parse(m);
+        if (obj && obj.id && typeof obj.text === 'string') {
+          map.set(String(obj.id), obj.text);
+        }
+      } catch {}
+    }
+  } catch {}
+  return map;
 }
 
 // Generate an opener for an image using the YAML spec; includes bio and caption
@@ -300,9 +402,26 @@ export async function generateImageOpenerFromYaml(
   herName: string,
   model = 'x-ai/grok-4'
 ): Promise<string> {
-  const spec = await getOpenerPromptText();
-  const composed = `${spec}\n\n---\ninput_type: image_from_profile\nher_name: ${herName}\nmy_name: ${myName}\nprofile_prompt: |\n${indentBlock(background || '', 2)}\ncaption: |\n${indentBlock(caption || '', 2)}\n`;
-  const out = await chatImage(composed, image, [], model, 'json_object');
+  const spec = withOutputContract(await getOpenerPromptText(), 'single');
+  // Send the YAML spec as a system message, and the input block as the user message
+  const inputBlock = `---\ninput_type: image_from_profile\nher_profile:\n  name: ${herName}\n  prompt: |\n${indentBlock(background || '', 4)}\nmy_name: ${myName}\ncaption: |\n${indentBlock(caption || '', 2)}\n`;
+  const out = await chatImage(
+    inputBlock,
+    image,
+    [
+      {
+        role: 'system',
+        content: [
+          {
+            type: 'text',
+            text: spec,
+          } as unknown as ChatCompletionContentPart,
+        ],
+      },
+    ],
+    model,
+    'json_object'
+  );
   return extractOpenerText(out);
 }
 
@@ -331,7 +450,7 @@ export async function chatImage(
 
   for (let attempt = 1; attempt <= maxRetries; attempt++) {
     try {
-      const base64Image = await downloadImageToBase64(image);
+      // const base64Image = await downloadImageToBase64(image);
       const response = await openai.chat.completions.create({
         temperature: 1,
         top_p: 0.95,
@@ -349,8 +468,8 @@ export async function chatImage(
               {
                 type: 'image_url',
                 image_url: {
-                  // url: image,
-                  url: `data:image/jpeg;base64,${base64Image}`,
+                  url: image,
+                  // url: `data:image/jpeg;base64,${base64Image}`,
                 },
               },
             ],
@@ -377,6 +496,11 @@ export async function chatImage(
         stop: ['===='],
         ...(responseFormat ? { response_format: { type: responseFormat } as any } : {}),
       });
+      if ((response as any).error) {
+        console.error('chatImage error', (response as any).error);
+        throw (response as any).error;
+      }
+      console.log('usage', response.usage);
       return response.choices[0].message!.content!;
     } catch (e) {
       console.error(`Attempt ${attempt} failed:`, e);
@@ -394,25 +518,43 @@ export async function chatImage(
   return ''; // This should never be reached due to the return in the catch block
 }
 
-export async function bestPl(pl: string[]): Promise<string> {
+// Ask the model to choose the best pickup line by index and return JSON only.
+// Returns the zero-based index of the best line, or 0 on failure.
+export async function bestPl(pl: string[], model = 'gemini-2.5-pro'): Promise<number> {
   const response = await openai.chat.completions.create({
     // model: 'gpt-4-0314',
     // model: 'gpt-3.5-turbo',
     // model: 'openai/gpt-3.5-turbo',
     // model: 'anthropic/claude-3-opus:beta',
     // model: 'meta-llama/llama-3-70b-instruct',
-    model: 'gemini-2.5-pro',
+    model: model,
     messages: [
       {
         role: 'user',
         content:
-          'Pick the most wittiest, funniest, and most charismatic response from the following list. Pick the response with the most likely to get another response from the girl. Only return the response in quotes. Return the entire response. Do not return the corresponding number. Ex. "This is a response."\n' +
-          pl.map((it, _) => `"${it}"`).join('\n'),
+          'From the numbered choices below, select the single line that is most likely to get a reply (witty, funny, charismatic, authentic).\n' +
+          'Respond with strict JSON only: {"index": <number>} where index is zero-based. No prose.\n' +
+          'Choices:\n' +
+          pl.map((it, i) => `${i}. "${it}"`).join('\n'),
       },
     ],
     stop: ['===='],
+    response_format: { type: 'json_object' } as any,
   });
-  return response.choices[0].message!.content!.trim();
+  const content = response.choices[0].message!.content!.trim();
+  try {
+    const obj = JSON.parse(content);
+    const idx = Number(obj?.index);
+    return Number.isFinite(idx) && idx >= 0 && idx < pl.length ? idx : 0;
+  } catch {
+    // Fallback: try to pull the last integer in the content
+    const m = content.match(/(\d+)/g);
+    if (m && m.length) {
+      const idx = Number(m[m.length - 1]);
+      if (Number.isFinite(idx) && idx >= 0 && idx < pl.length) return idx;
+    }
+    return 0;
+  }
 }
 
 export async function compare(pl: string[]): Promise<string> {

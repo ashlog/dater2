@@ -1,5 +1,6 @@
 import fs from 'fs';
 import path from 'path';
+import pLimit from 'p-limit';
 import { Profile } from './types';
 
 export type CachedEntry = {
@@ -36,17 +37,24 @@ function resolveProfilesCachePath(): string {
 
 const profilesCachePath = resolveProfilesCachePath();
 
+// Serialize file access within this process to avoid lost updates
+const ioLock = pLimit(1);
+
 export async function readProfilesCache(): Promise<ProfilesCache> {
-  try {
-    const txt = await fs.promises.readFile(profilesCachePath, 'utf8');
-    return JSON.parse(txt);
-  } catch {
-    return {} as ProfilesCache;
-  }
+  return ioLock(async () => {
+    try {
+      const txt = await fs.promises.readFile(profilesCachePath, 'utf8');
+      return JSON.parse(txt);
+    } catch {
+      return {} as ProfilesCache;
+    }
+  });
 }
 
 export async function writeProfilesCache(cache: ProfilesCache): Promise<void> {
-  await fs.promises.writeFile(profilesCachePath, JSON.stringify(cache, null, 2));
+  return ioLock(async () => {
+    await fs.promises.writeFile(profilesCachePath, JSON.stringify(cache, null, 2));
+  });
 }
 
 export type Settings = {
@@ -64,14 +72,41 @@ export function getUnvisited(cache: ProfilesCache, key: string): CachedEntry[] {
   return loc.batch.filter(e => !e.visited);
 }
 
-export async function markVisited(cache: ProfilesCache, key: string, ratingToken: string): Promise<void> {
-  const loc = cache[key];
-  if (!loc) return;
-  const entry = loc.batch.find(e => e.ratingToken === ratingToken);
-  if (entry && !entry.visited) {
-    entry.visited = true;
-    entry.visitedAt = new Date().toISOString();
-    await writeProfilesCache(cache);
-  }
+// Atomically mark an entry as visited by doing a read-modify-write
+// under a single-process lock to prevent lost updates.
+export async function markVisited(_cache: ProfilesCache | undefined, key: string, ratingToken: string): Promise<void> {
+  await ioLock(async () => {
+    // Always read the latest state to merge concurrent updates
+    let cache: ProfilesCache;
+    try {
+      const txt = await fs.promises.readFile(profilesCachePath, 'utf8');
+      cache = JSON.parse(txt || '{}');
+    } catch {
+      cache = {} as ProfilesCache;
+    }
+    const loc = cache[key];
+    if (!loc || !Array.isArray(loc.batch)) return;
+    const entry = loc.batch.find(e => e.ratingToken === ratingToken);
+    if (entry && !entry.visited) {
+      entry.visited = true;
+      entry.visitedAt = new Date().toISOString();
+      await fs.promises.writeFile(profilesCachePath, JSON.stringify(cache, null, 2));
+    }
+  });
 }
 
+// Atomically replace the location batch for a key under the lock.
+// This avoids full-object writes by other callers and prevents lost updates.
+export async function upsertLocationBatch(key: string, batch: CachedEntry[]): Promise<void> {
+  await ioLock(async () => {
+    let cache: ProfilesCache;
+    try {
+      const txt = await fs.promises.readFile(profilesCachePath, 'utf8');
+      cache = JSON.parse(txt || '{}');
+    } catch {
+      cache = {} as ProfilesCache;
+    }
+    cache[key] = { createdAt: new Date().toISOString(), batch };
+    await fs.promises.writeFile(profilesCachePath, JSON.stringify(cache, null, 2));
+  });
+}
