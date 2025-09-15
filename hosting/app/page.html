@@ -1,0 +1,32 @@
+<head>
+  <script>
+    function onChange(value) {
+      console.log("Captcha value:", value);
+      alert("Captcha value: " + value);
+    }
+  </script>
+  <script type="text/javascript">
+    var onloadCallback = function() {
+      grecaptcha.render('html_element', {
+        'sitekey' : 'your_site_key'
+      });
+    };
+  </script>
+  <script src="https://www.google.com/recaptcha/api.js?onload=onloadCallback&render=explicit"
+          async defer>
+  </script>
+</head>
+<html>
+<head>
+  <title>reCAPTCHA demo: Simple page</title>
+  <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+</head>
+<body>
+<form action="?" method="POST">
+  <div className="g-recaptcha" data-sitekey="AIzaSyDoP20_JORYyLjBN1qOdzoDOQlI2Q2iRT4&cb=1714114156748"></div>
+  <br />
+  <div id="html_element"></div>
+  <input type="submit" value="Submit" />
+</form>
+</body>
+</html>

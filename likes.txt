@@ -1,0 +1,533 @@
+Liking 2771717012307575950 text. Prompt: "Two truths and a lie: My family bakes hundreds of cookies each Christmas for friends and family
+I was a D1 collegiate rower
+I’ve traveled to 51 different countries" Generated line: "I'm impressed! Need a tour guide for the next 50?"
+Like Sent { limit: { likes: -1, superlikes: 0 } }
+Liking 2985387865678022448 text. Prompt: "I recently discovered that: Pineapples go with everything" Generated line: "I think we should too!"
+Like Sent { limit: { likes: -1, superlikes: 0 } }
+Liking 1881721924619339715 text. Prompt: "Give me travel tips for: vietnam or the philippines!" Generated line: "Care to join me on an adventure to Vietnam or the Philippines?"
+Like Sent { limit: { likes: -1, superlikes: 0 } }
+Liking 2590981885563766198 text. Prompt: "Two truths and a lie: 1) Bran flakes are my favorite cereal
+2) I don’t know how to whistle
+3) I love anything chocolate!" Generated line: "I can teach you how to whistle if you teach me how to make chocolate!"
+Like Sent { limit: { likes: -1, superlikes: 0 } }
+Liking 2795016352648136442 text. Prompt: "I won't shut up about: My kitties 🥰" Generated line: "I think I'm in love... with your kitties!"
+Like Sent { limit: { likes: -1, superlikes: 0 } }
+Liking 2550610298348242505 text. Prompt: "What if I told you that: my favorite movie is wayne's world" Generated line: "If you're in Wayne's World, then I must be Garth, 'cause I'm totally into you!"
+Like Sent { limit: { likes: -1, superlikes: 0 } }
+Liking 2836819402031105452 text. Prompt: "All I ask is that you: Carry a conversation" Generated line: "I can do more than just carry a conversation, I can carry you away!"
+Like Sent { limit: { likes: -1, superlikes: 0 } }
+Liking 2359284368163210550 text. Prompt: "Don’t hate me if I: order red wine at the bars" Generated line: "I don't hate you, I just love you more with red wine!"
+Like Sent { limit: { likes: -1, superlikes: 0 } }
+Liking 2644890912689227767 text. Prompt: "All I ask is that you: Stay true to yourself!!" Generated line: "I'm all about being me, so let's be us!"
+Like Sent { limit: { likes: -1, superlikes: 0 } }
+Liking 3030602167258973383 text. Prompt: "Typical Sunday: Brunch in bed…coffee, pastries, a good book" Generated line: "If I were the book, would you read me all day?"
+Like Sent { limit: { likes: -1, superlikes: 0 } }
+Liking 2662976720960751568 text. Prompt: "Don’t hate me if I: am a Patriots fan" Generated line: "Hey there, even though I'm a (insert favorite team here) fan, I still think you're pretty special!"
+Like Sent { limit: { likes: -1, superlikes: 0 } }
+Liking 2840534071304521034 text. Prompt: "I recently discovered that: I get paid to do nothing" Generated line: "That's a pretty sweet gig - care to share the secret?"
+Like Sent { limit: { likes: -1, superlikes: 0 } }
+Liking 2887700378369918842 text. Prompt: "The one thing I’d love to know about you is: Rank these sources of joy:
+A) Love
+B) Food
+C) TV / music
+D) Self growth
+E) Adventure" Generated line: "A, B, C, D, E...all of the above? Let's explore them together!"
+Like Sent { limit: { likes: -1, superlikes: 0 } }
+Liking 3025211395974104605 text. Prompt: "The one thing I’d love to know about you is: your spotify wrapped" Generated line: "Hey, you must be special because my Spotify wrapped said you should be here."
+Like Sent { limit: { likes: -1, superlikes: 0 } }
+Liking 2562731679135302747 text. Prompt: "I geek out on: when I see dogs/puppies on the street" Generated line: "Let's make like a pup and go for a walk!"
+Like Sent { limit: { likes: -1, superlikes: 0 } }
+Liking 2917409895424722344 text. Prompt: "My best celebrity impression: miss piggy (when I’m drunk)" Generated line: "Hey girl, I think it's time for you to meet Miss Piggy's drunk alter ego."
+Like Sent { limit: { likes: -1, superlikes: 0 } }
+Liking 3015953468750824518 text. Prompt: "I'm weirdly attracted to: The Top Gun mustache." Generated line: "You must be feeling the need for speed!"
+Like Sent { limit: { likes: -1, superlikes: 0 } }
+Liking 2099751441244620163 text. Prompt: "The way to win me over is: Tacos and margaritas 🌮" Generated line: "Let's taco 'bout it!"
+Like Sent { limit: { likes: -1, superlikes: 0 } }
+Liking 2543149531462108956 text. Prompt: "Let's debate this topic: Your favorite kitchen appliance" Generated line: "If your kitchen were a restaurant, I'd be your number one fan!"
+Like Sent { limit: { likes: -1, superlikes: 0 } }
+Liking 2644300948188431515 text. Prompt: "Teach me something about: Books. I want to read more this year and need good book recommendations 🥺" Generated line: "Let me check my library catalog - do you prefer classic literature or something more modern?"
+Like Sent { limit: { likes: -1, superlikes: 0 } }
+Liking 2904317433839879169 text. Prompt: "The best way to ask me out is by: Having a plan for good food & a good view" Generated line: "Want to grab dinner and soak in the view together?"
+Like Sent { limit: { likes: -1, superlikes: 0 } }
+Liking 3031266534090605816 text. Prompt: "Two truths and a lie: 2 truths and a lie
+1. I love any animal with furrrrr
+2. I’m not allergic to rats
+My favorite movie is the Silence of the Lambs" Generated line: "I bet the rats are relieved to hear that! So, do you prefer horror or comedy movies?"
+Like Sent { limit: { likes: -1, superlikes: 0 } }
+Liking 2655140026752435434 text. Prompt: "What if I told you that: I used to be a sugar baby" Generated line: "Wow, you must have been sweet! Want to go out for a date and see if we have any chemistry?"
+Like Sent { limit: { likes: -1, superlikes: 0 } }
+Liking 2245262421692253495 text. Prompt: "Let's debate this topic: everything tastes better with mayo change my mind" Generated line: "You can't change my mind - mayo is always the right choice!"
+Like Sent { limit: { likes: -1, superlikes: 0 } }
+Liking 2402509758763370438 text. Prompt: "A social cause I care about: BLM. No one is illegal on stolen land." Generated line: "You must be an activist, 'cause you're definitely making a statement!"
+Like Sent { limit: { likes: -1, superlikes: 0 } }
+Liking 2997266948015785374 text. Prompt: "We'll get along if: You’re an athlete!💪🏼" Generated line: "Are you a professional athlete? Because you just made my heart race!"
+Like Sent { limit: { likes: -1, superlikes: 0 } }
+Liking 2977714326749578900 text. Prompt: "My simple pleasures: Tea, cats, and a warm bed on a cold day. ☺️" Generated line: "If I were a cat I'd never leave your warm bed on a cold day!"
+Like Sent { limit: { likes: -1, superlikes: 0 } }
+Liking 2858753674308486256 text. Prompt: "My happy place is: Me when I feel happy" Generated line: "Me and you, we'd make a happy place!"
+Like Sent { limit: { likes: -1, superlikes: 0 } }
+Liking 2535416470553233020 text. Prompt: "The key to my heart is: sending me all the funny dog vids" Generated line: "Let's make our bond even stronger - I'll send you all the funny dog vids, if you send me all the funny cat vids."
+Like Sent { limit: { likes: -1, superlikes: 0 } }
+Liking 2886917987179169463 text. Prompt: "I go crazy for: Science, Pokémon and the MCU!" Generated line: "Let's be lab partners and catch 'em all together!"
+Like Sent { limit: { likes: -1, superlikes: 0 } }
+Liking 2892912509994403478 text. Prompt: "What I order for the table: French fries with a side of mayo" Generated line: "If you're the fries, I'm the mayo - we were made to go together!"
+Like Sent { limit: { likes: -1, superlikes: 0 } }
+Liking 2842035810637710935 text. Prompt: "I bet you can't: Beat me in an arm wrestle" Generated line: "I accept your challenge, let's see who's the stronger one!"
+Like Sent { limit: { likes: -1, superlikes: 0 } }
+Liking 2472421666605499991 text. Prompt: "Best travel story: In the making 💥" Generated line: "I think I'm the one you've been looking for on your journey!"
+Like Sent { limit: { likes: -1, superlikes: 0 } }
+Liking 3025994859388339553 text. Prompt: "To me, relaxation is: Dancing " Generated line: "If you can dance, I'll do the courting!"
+Like Sent { limit: { likes: -1, superlikes: 0 } }
+Liking 2968109816091771944 text. Prompt: "I go crazy for: beautiful sunsets, yummy pastries & a great view" Generated line: "If I'm the great view, can I get a glimpse of you?"
+Like Sent { limit: { likes: -1, superlikes: 0 } }
+Liking 2875870621164636023 text. Prompt: "I geek out on: Movies and bioethics" Generated line: "Bioethics may not be the sexiest topic, but your enthusiasm is irresistible!"
+Like Sent { limit: { likes: -1, superlikes: 0 } }
+Liking 2385920191830689565 text. Prompt: "Unusual skills: Being sooooo silly with it" Generated line: "I'm silly enough to take you out on a date!"
+Like Sent { limit: { likes: -1, superlikes: 0 } }
+Liking 2396070075321812091 text. Prompt: "What if I told you that: I can write you poetry but also kick your butt in any sport" Generated line: "Let's start with the poetry, then we'll see about that sport!"
+Like Sent { limit: { likes: -1, superlikes: 0 } }
+Liking 2894168439667033611 text. Prompt: "Typical Sunday: church and lunch followed by a nice dinner and a good movie
+
+maybe a football game and some pumpkin lattes in pjs too 👀🫶🏻" Generated line: "Sounds like the perfect Sunday to me. Wanna make it a double date?"
+Like Sent { limit: { likes: -1, superlikes: 0 } }
+Liking 2832659890252548045 text. Prompt: "My simple pleasures: spontaneous adventures and coffee runs" Generated line: "Let's go on an adventure together and grab a coffee—sounds like the perfect date!"
+Like Sent { limit: { likes: -1, superlikes: 0 } }
+Liking 2043353130002810217 text. Prompt: "Fact about me that surprises people: I have been to weddings in the Philippines, Ireland and Mexico" Generated line: "It looks like you know how to turn a destination wedding into an international love affair!"
+Like Sent { limit: { likes: -1, superlikes: 0 } }
+Liking 2425790523043218670 text. Prompt: "The award I should be nominated for: beating the time estimate on the gps" Generated line: "I guess you must be the fastest driver around, 'cause you definitely caught my eye!"
+Like Sent { limit: { likes: -1, superlikes: 0 } }
+Liking 2692761142840788670 text. Prompt: "A social cause I care about: Disability Justice and Sustainability" Generated line: "Are you sustainability, 'cause you make my heart skip a beat!"
+Like Sent { limit: { likes: -1, superlikes: 0 } }
+Liking 2602883021828785623 text. Prompt: "My mantra is: no panic only vibes" Generated line: "Let's make some positive vibes happen!"
+Like Sent { limit: { likes: -1, superlikes: 0 } }
+Liking 2720284780263376196 text. Prompt: "A life goal of mine: is to travel around the world." Generated line: "Let's make a journey together!"
+Like Sent { limit: { likes: -1, superlikes: 0 } }
+Liking 2093940406604531670 text. Prompt: "I get myself out of a funk by: Baking the best chocolate chip cookies in the world 👀" Generated line: "If your cookies are as sweet as you, I want a dozen!"
+Like Sent { limit: { likes: -1, superlikes: 0 } }
+Liking 1957034417016800587 text. Prompt: "My Love Language is: Quality time" Generated line: "Let's make some quality time together!"
+Like Sent { limit: { likes: -1, superlikes: 0 } }
+Liking 3015969810413520208 text. Prompt: "A life goal of mine: To be a medical engineer and be an inspiration to others✨" Generated line: "Are you a medical engineer? Because you just cured my loneliness!"
+Like Sent { limit: { likes: -1, superlikes: 0 } }
+Liking 2676841517959611492 text. Prompt: "The key to my heart is: giving me your baby teeth" Generated line: "I must have been a tooth fairy in my past life, because I'm here to take your heart!"
+Like Sent { limit: { likes: -1, superlikes: 0 } }
+Liking 3031588211118835018 text. Prompt: "To me, relaxation is: 420 & cuddles...and Bob's Burgers" Generated line: "Wanna come over and watch Bob's Burgers while we get our 420 and cuddle on?"
+Like Sent { limit: { likes: -1, superlikes: 0 } }
+Liking 2717370544516236745 text. Prompt: "I’ll know it’s time to delete Hinge when: I start finding ppl from school on here" Generated line: "Is this Hinge or Hogwarts?"
+Like Sent { limit: { likes: -1, superlikes: 0 } }
+Liking 2894271981992019245 text. Prompt: "My most irrational fear: Sea turtles ://" Generated line: "Hey, don't worry, I'm here to protect you from the sea turtles!"
+Like Sent { limit: { likes: -1, superlikes: 0 } }
+Liking 2148384687536473582 text. Prompt: "Best travel story: Hiked through a rainforest at night to get to the base of Machu Picchu, with only cellphones as light and old railroad tracks as a guide." Generated line: "That sounds amazing! I guess that makes me the train and you the tracks – let's go for a ride!"
+Like Sent { limit: { likes: -1, superlikes: 0 } }
+Liking 2776832225293894963 text. Prompt: "My BFF’s take on why you should date me: “danielle is simultaneously the most feral and most caring person i’ve ever met and you will reap the benefits of both of these traits”" Generated line: "Feral and caring? I'm sold! Let's go on a date!"
+Like Sent { limit: { likes: -1, superlikes: 0 } }
+Liking 2940655581012165745 text. Prompt: "Unusual skills: whiteboard art… my Mermaid Man should have been award-winning
+
+i also do my own acrylics" Generated line: "Your artwork must be out of this world - let's explore it together!"
+Like Sent { limit: { likes: -1, superlikes: 0 } }
+Liking 2788483549743809688 text. Prompt: "We’re the same type of weird if: you enjoy eating pickles right out of the jar & then drink the juice" Generated line: "Pickles and juice? I think we have a match!"
+Like Sent { limit: { likes: -1, superlikes: 0 } }
+Liking 2012017988529555282 text. Prompt: "The key to my heart is: coffee, sci-fi, chess, dogs, most music, tofu recipes, biking, book recs" Generated line: "Let's play chess and get to know each other over a cup of coffee!"
+Like Sent { limit: { likes: -1, superlikes: 0 } }
+Liking 2950800072029243200 text. Prompt: "Green flags I look for: -words followed by actions
+-thoughtfulness" Generated line: "You must be my actions, because you make my words come true!"
+Like Sent { limit: { likes: -1, superlikes: 0 } }
+Liking 2438389861548295252 text. Prompt: "I want someone who: Will join me when I go crazy on the dance floor" Generated line: "Let's get wild and let the music take us away!"
+Like Sent { limit: { likes: -1, superlikes: 0 } }
+Liking 2481893266128111408 text. Prompt: "My Love Language is: Acts of service, Quality time, expressing through words and actions, physical touch" Generated line: "Let's make a deal: I'll do the acts of service, and you give me quality time and lots of hugs!"
+Like Sent { limit: { likes: -1, superlikes: 0 } }
+Liking 2861587634491229996 text. Prompt: "Dating me is like: going to Buca di Beppo. I have enough crosses and garlic in my home to keep vampires away. (If you are a vampire, consider this a challenge.)" Generated line: "Hey there, I'm no vampire, but I'm more than happy to accept the challenge!"
+Like Sent { limit: { likes: -1, superlikes: 0 } }
+Liking 3006498183510492504 text. Prompt: "I want someone who: is kind, honest, sensitive and can accept the fact that I will always be the funny one 😋" Generated line: "Looks like I'm the lucky one then! 🤩"
+Like Sent { limit: { likes: -1, superlikes: 0 } }
+Liking 3002793272209835829 text. Prompt: "I’m looking for: Someone funny, nice person who likes to go out but also likes to chill at home." Generated line: "Let's make a night of it - a little going out, a little staying in - sounds like the perfect combo!"
+Like Sent { limit: { likes: -1, superlikes: 0 } }
+Liking 3031918575985100135 text. Prompt: "Together, we could: pretend to be a married couple fighting at a grocery store" Generated line: "Let's skip the fighting and just get hitched!"
+Like Sent { limit: { likes: -1, superlikes: 0 } }
+Liking 2144889079488054493 text. Prompt: "I geek out on: Historical fiction novels" Generated line: "Let's make history together!"
+Like Sent { limit: { likes: -1, superlikes: 0 } }
+Liking 2945327034479413060 text. Prompt: "To me, relaxation is: Acupuncture or a massage. Or sleeping lol" Generated line: "I'm not sure, but I'm pretty sure it's not sleeping - so how about an acupuncture or massage date?"
+Like Sent { limit: { likes: -1, superlikes: 0 } }
+Liking 3010928239615935755 text. Prompt: "All I ask is that you: google what a viscacha is…you’re welcome" Generated line: "Viscacha-ooh-la-la, let's get to know each other better!"
+Like Sent { limit: { likes: -1, superlikes: 0 } }
+Liking 2824022020679796618 text. Prompt: "Green flags I look for: dogs." Generated line: "I'm not a dog, but I promise I'm just as cute!"
+Like Sent { limit: { likes: -1, superlikes: 0 } }
+Liking 2397771380419463139 text. Prompt: "My most irrational fear: Men wearing flip flops" Generated line: "Don't worry, I promise I won't wear flip flops around you!"
+Like Sent { limit: { likes: -1, superlikes: 0 } }
+Liking 3023333589438694528 text. Prompt: "I’m looking for: Someone to round out my trivia team" Generated line: "You must be the missing piece to my jigsaw puzzle!"
+Like Sent { limit: { likes: -1, superlikes: 0 } }
+Liking 2453681614530545390 text. Prompt: "Two truths and a lie: I have a ball pit in my living room; I booked a cruise to Alaska 3 days before departure; I’ve never started an oven fire" Generated line: "I'm glad you haven't started any fires - that's hot!"
+Like Sent { limit: { likes: -1, superlikes: 0 } }
+Liking 2649820539996079754 text. Prompt: "The way to win me over is: Genuine surprises" Generated line: "Looks like you just surprised me!"
+Like Sent { limit: { likes: -1, superlikes: 0 } }
+Liking 2436195340693538213 text. Prompt: "I won't shut up about: The importance of mental health!" Generated line: "If I didn't know any better, I'd say you're trying to pick me up!"
+Like Sent { limit: { likes: -1, superlikes: 0 } }
+Liking 2921097107240650317 text. Prompt: "My most irrational fear: ceiling fans + revolving doors" Generated line: "Don't worry, I'm here to keep the fans and doors from spinning out of control!"
+Like Sent { limit: { likes: -1, superlikes: 0 } }
+Liking 2684933620283475923 text. Prompt: "Best travel story: Being stranded in an airport after accidentally exiting a country immediately after entering" Generated line: "You must be a passport, 'cause you make me want to travel!"
+Like Sent { limit: { likes: -1, superlikes: 0 } }
+Liking 2916664108461852376 text. Prompt: "If loving this is wrong, I don’t want to be right: soy sauce and mashed potatos" Generated line: "Let's make a flavorful combo - you and me!"
+Like Sent { limit: { likes: -1, superlikes: 0 } }
+Liking 2954323787887150737 text. Prompt: "Typical Sunday: Sleep in, brunch, hike, with a finale of Netflix before bedtime" Generated line: "Hey, I don't know about you, but I'm all about that Netflix and chill!"
+Like Sent { limit: { likes: -1, superlikes: 0 } }
+Liking 2724794660257006737 text. Prompt: "Don’t hate me if I: just absolutely don’t want to get out of bed sometimes" Generated line: "Don't worry, I won't hate you if you don't want to get out of bed - I'll just join you there!"
+Like Sent { limit: { likes: -1, superlikes: 0 } }
+Liking 2593531512938824720 text. Prompt: "This year, I really want to: learn to double dutch to fulfill my 13 y/o jump in keke palmer dreams" Generated line: "Wanna jump in and help me make your dreams come true?"
+Like Sent { limit: { likes: -1, superlikes: 0 } }
+Liking 2974800511984731408 text. Prompt: "My simple pleasures: liviNg liKe y/n 🤪 exploring pretty places, drinking iced chai and romanticizing life :)" Generated line: "Hey there, looks like we have a lot in common, wanna explore some pretty places together?"
+Like Sent { limit: { likes: -1, superlikes: 0 } }
+Liking 2293944571949746118 text. Prompt: "I won't shut up about: My dog of course" Generated line: "You must be a great pet parent — I'm paw-sitive we'd get along!"
+Like Sent { limit: { likes: -1, superlikes: 0 } }
+Liking 2633917443038250697 text. Prompt: "I go crazy for: Mozzarella sticks & sunsets (even better if they’re together)" Generated line: "Let's make our own sunset… with mozzarella sticks!"
+Like Sent { limit: { likes: -1, superlikes: 0 } }
+Liking 2915223760342615220 text. Prompt: "My simple pleasures: 2. You're open to experience a new culture, try new dishes and learn a little bit of Portuguese cause I'm Brazilian! 🇧🇷" Generated line: "I'm ready to teach you a few Portuguese phrases if you teach me a few Brazilian dishes!"
+Like Sent { limit: { likes: -1, superlikes: 0 } }
+Liking 3021634539333092834 text. Prompt: "My Love Language is: Physical touch and quality time" Generated line: "Let's cuddle and make memories together!"
+Like Sent { limit: { likes: -1, superlikes: 0 } }
+Liking 2861857320185366078 text. Prompt: "Best travel story: I studied abroad in Germany" Generated line: "Wheels up! Let's go on our own adventure together!"
+Like Sent { limit: { likes: -1, superlikes: 0 } }
+Liking 2249132623475508551 text. Prompt: "I’ll fall for you if: You don’t sleep with my friends😊" Generated line: "I'll make sure to keep your friends close and you closer!"
+Like Sent { limit: { likes: -1, superlikes: 0 } }
+Liking 2421734725463836637 text. Prompt: "I’m looking for: Life-long partner. We can always start from being friends" Generated line: "Let's be friends for now, but I'm setting my sights on forever!"
+Like Sent { limit: { likes: -1, superlikes: 0 } }
+Liking 2757172914078876846 text. Prompt: "I take pride in: coming in first in my fantasy football league last season 🥶" Generated line: "Hey, you must be a real winner, 'cause you got me feeling like I'm first place!"
+Like Sent { limit: { likes: -1, superlikes: 0 } }
+Liking 3027607509851440771 text. Prompt: "My Love Language is: Quality time and physical touch" Generated line: "How about we start with some quality time and a little physical touch?"
+Like Sent { limit: { likes: -1, superlikes: 0 } }
+Liking 2683375989886551367 text. Prompt: "The key to my heart is: Food and drinks 🤩" Generated line: "Let's grab a bite and I'll show you the way!"
+Like Sent { limit: { likes: -1, superlikes: 0 } }
+Liking 2955486191006254268 text. Prompt: "My simple pleasures: making new playlists and impulse target runs" Generated line: "Want to match my beats with yours on a target run?"
+Like Sent { limit: { likes: -1, superlikes: 0 } }
+Liking 2926897684524565570 text. Prompt: "The best way to ask me out is by: Boba " Generated line: "Hey, can I buy you a boba? I'm not trying to be cheesy, I just think you're tea-rrific!"
+Like Sent { limit: { likes: -1, superlikes: 0 } }
+Liking 2672354409488319950 text. Prompt: "A random fact I love is: that penguins mate for life" Generated line: "If love is like a penguin, I think we should stick together!"
+Like Sent { limit: { likes: -1, superlikes: 0 } }
+Liking 3030596302053312176 text. Prompt: "My simple pleasures: sunsets, plants, coffee, music, Love Island, tip money" Generated line: "Let's watch the sunset and listen to some music - it'll be just like a date at Love Island, minus the tip money!"
+Like Sent { limit: { likes: -1, superlikes: 0 } }
+Liking 2833410621846849111 text. Prompt: "I want someone who: is knowledgeable, ambitious, and considerate at the same time" Generated line: "I'm a triple threat - knowledgeable, ambitious and considerate - and I'm all yours!"
+Like Sent { limit: { likes: -1, superlikes: 0 } }
+Liking 2547164678753092862 text. Prompt: "A random fact I love is: Rats giggle when they're tickled." Generated line: "Care to let me tickle you and see if you giggle too?"
+Like Sent { limit: { likes: -1, superlikes: 0 } }
+Liking 2343136390935479390 text. Prompt: "First round is on me if: You also have an utter hatred for ketchup 😂" Generated line: "No ketchup? That's a dealbreaker! Let's just get a shake instead."
+Like Sent { limit: { likes: -1, superlikes: 0 } }
+Liking 2752240865928808246 text. Prompt: "What if I told you that: bottled/carton orange juice is nasty" Generated line: "Well, I guess you don't like to get squeezed!"
+Like Sent { limit: { likes: -1, superlikes: 0 } }
+Liking 2375395537588324036 text. Prompt: "The one thing I’d love to know about you is: what's the last song you played on repeat?" Generated line: "Hey, I'm not sure if you're the one for me, but I know that you've got a catchy tune stuck in your head!"
+Like Sent { limit: { likes: -1, superlikes: 0 } }
+Liking 3022548262704907476 text. Prompt: "I go crazy for: Harry Styles and white wine." Generated line: "I think I'm in love - let's go grab a bottle and I'll show you why!"
+Like Sent { limit: { likes: -1, superlikes: 0 } }
+Liking 3017539716154131983 text. Prompt: "My simple pleasures: Long walks and a good book" Generated line: "Walk with me and we can talk about our favorite books!"
+Like Sent { limit: { likes: -1, superlikes: 0 } }
+Liking 2689069744035726851 text. Prompt: "My Love Language is: Physical touch and spending quality time together" Generated line: "Let's cuddle and catch up!"
+Like Sent { limit: { likes: -1, superlikes: 0 } }
+Liking 2675410829716751683 text. Prompt: "A life goal of mine: To travel and explore!" Generated line: "Care to explore the world with me?"
+Like Sent { limit: { likes: -1, superlikes: 0 } }
+Liking 3015960990253581417 text. Prompt: "My simple pleasures: birds chirping on summer mornings, dancing, bad bunny, laying on hills, scary movies, snowy nights" Generated line: "Let's make our own summer morning by dancing to Bad Bunny and then cuddling up for a scary movie on a snowy night!"
+Like Sent { limit: { likes: -1, superlikes: 0 } }
+Liking 2881121072906765528 text. Prompt: "My simple pleasures: Skiing and music" Generated line: "Let's go ski to the beat!"
+Like Sent { limit: { likes: -1, superlikes: 0 } }
+Liking 1896636840518092512 text. Prompt: "If loving this is wrong, I don’t want to be right: I’m a pineapple on pizza kinda gal ok?? SUE ME 🍕🍍 Oh and have you ever tried chicken nuggets with honey?? 🍯" Generated line: "I'd rather be wrong with you than right without you - wanna go get some chicken nuggets with honey?"
+Like Sent { limit: { likes: -1, superlikes: 0 } }
+Liking 2694175310450001525 text. Prompt: "My greatest strength: not giving a fuck about what people think of me! bc it literally doesn’t matter as long as u are a good person & carry urself w compassion 🫶🏻" Generated line: "You must be a diamond in the rough, because you shine like no one else!"
+Like Sent { limit: { likes: -1, superlikes: 0 } }
+Liking 2391994559774066337 text. Prompt: "I’m a regular at: chick-fil-a, lol" Generated line: "Hey there, you must be an extra crispy kind of person!"
+Like Sent { limit: { likes: -1, superlikes: 0 } }
+Liking 2704458375566984659 text. Prompt: "I'm convinced that: men shouldn’t wear sandals" Generated line: "Then I guess I'll have to keep my toes to myself!"
+Like Sent { limit: { likes: -1, superlikes: 0 } }
+Liking 2954418741753939510 text. Prompt: "I go crazy for: Travel. I’ve been a solo traveler in the past couple years. Always down for crazy adventures." Generated line: "Let's make our own crazy adventure together!"
+Like Sent { limit: { likes: -1, superlikes: 0 } }
+Liking 2449840968296301690 text. Prompt: "My most controversial opinion is: tea is kinda better than coffee 🫢" Generated line: "If you like tea, how about you and me brewing up something special?"
+Like Sent { limit: { likes: -1, superlikes: 0 } }
+Liking 2923068263682278536 text. Prompt: "A dream home must include: Forest, horses, fluffy cows." Generated line: "If this forest was a dating site, I'd swipe right on you!"
+Like Sent { limit: { likes: -1, superlikes: 0 } }
+Liking 3021810488808834888 text. Prompt: "A life goal of mine: To pet all the dogs" Generated line: "Hey, wanna go on a walk? I hear there are lots of furry friends out there!"
+Like Sent { limit: { likes: -1, superlikes: 0 } }
+Liking 2926877976530257076 text. Prompt: "Unusual skills: dad jokes, parallel parking, wii tennis" Generated line: "Let's put our skills to the test- wanna go for a round of dad jokes and Wii tennis?"
+Like Sent { limit: { likes: -1, superlikes: 0 } }
+Liking 2849709090702099605 text. Prompt: "Unusual skills: rock paper scissors" Generated line: "I'm the champion of rock paper scissors, wanna play?"
+Like Sent { limit: { likes: -1, superlikes: 0 } }
+Liking 2754344701149578438 text. Prompt: "We'll get along if: you have more than 10 spotify playlists 🙃" Generated line: "You must be my type, because I'm definitely into your playlists!"
+Like Sent { limit: { likes: -1, superlikes: 0 } }
+Liking 2271321991971603816 text. Prompt: "A life goal of mine: Make documentaries.
+
+Tell me one you'd want me to make! " Generated line: "Let's make a documentary about us, starting with our first date!"
+Like Sent { limit: { likes: -1, superlikes: 0 } }
+Liking 2798367912493057324 text. Prompt: "Two truths and a lie: 1. I’m in the top 0.5% of all listeners of a Swedish heavy metal band
+2. I once went on an accidental date to a nude beach in SF
+3. I’m ambidextrous but prefer using my left hand" Generated line: "If I guess the lie, will you go on a date with me?"
+Like Sent { limit: { likes: -1, superlikes: 0 } }
+Liking 3031824217407489920 text. Prompt: "I go crazy for: Any food (mostly Asian), Coffee, Boba & cute animals I want to take home but can’t have. 💔" Generated line: "I can't give you a cute animal to take home, but I can give you a cup of boba and lots of love!"
+Like Sent { limit: { likes: -1, superlikes: 0 } }
+Liking 2967140031845631537 text. Prompt: "I recently discovered that: I need to own a doodle mix of sort dog and start a tik tok like chilaquil (if you know you know)" Generated line: "Do you like chilaquiles? Because I think we could make a doodle-mazing couple!"
+Like Sent { limit: { likes: -1, superlikes: 0 } }
+Liking 2973843358843143624 text. Prompt: "This year, I really want to: try all the Salt and Straw flavors" Generated line: "Let's make it a date - I'll bring the salt and you bring the straw!"
+Like Sent { limit: { likes: -1, superlikes: 0 } }
+
+
+
+Debugger listening on ws://127.0.0.1:50081/1253f63b-5945-409b-8c20-d4bf7c5b33af
+For help, see: https://nodejs.org/en/docs/inspector
+Debugger attached.
+Liking 3022370013534225589 text. Prompt: "My most irrational fear: Being stuck in the middle of the ocean like Tom Hanks in Cast Away 🏐" Generated line: "Don't worry, I'm here to be your Wilson!"
+Like Sent { limit: { likes: -1, superlikes: 0 } }
+Liking 3031838156086314805 text. Prompt: "My greatest strength: Is being a mother to my kids" Generated line: "Is being a super mom one of them?"
+Like Sent { limit: { likes: -1, superlikes: 0 } }
+Liking 1989093948504671331 text. Prompt: "The key to my heart is: potatoes & compliments" Generated line: "Can I have both?"
+Like Sent { limit: { likes: -1, superlikes: 0 } }
+Liking 2926724737658783630 text. Prompt: "Unusual skills: Can dance for hours and then some more" Generated line: "Oh, you must be a great dancer! Shall we two-step our way to a date?"
+Like Sent { limit: { likes: -1, superlikes: 0 } }
+Liking 2580461423813461487 text. Prompt: "I want someone who: isn’t afraid of a little adventure! ✨" Generated line: "Let's take the road less traveled and see where it leads us!"
+Like Sent { limit: { likes: -1, superlikes: 0 } }
+Liking 2809503236862510161 text. Prompt: "The dorkiest thing about me is: My buck teef" Generated line: "Oh my, your buck teef have me smitten!"
+Like Sent { limit: { likes: -1, superlikes: 0 } }
+Liking 2995605136442655930 text. Prompt: "Green flags I look for: Khruangbin" Generated line: "I'm so glad I found you, 'cause you're my Khruangbin to happiness!"
+Like Sent { limit: { likes: -1, superlikes: 0 } }
+Liking 2897807581403678028 text. Prompt: "You should *not* go out with me if: you get uncomfortable with silence" Generated line: "Don't worry, I'm an expert at filling the silence!"
+Like Sent { limit: { likes: -1, superlikes: 0 } }
+Liking 2785467776993592858 text. Prompt: "Believe it or not, I: Saw Cody Simpson perform in my middle schools’ cafeteria" Generated line: "Wow, you must have been one cool middle schooler!"
+Like Sent { limit: { likes: -1, superlikes: 0 } }
+Liking 2890712541317563841 text. Prompt: "What if I told you that: i can parallel park in three moves 💁‍♀️" Generated line: "Wow, you must be a real pro — can I take you for a spin?"
+Like Sent { limit: { likes: -1, superlikes: 0 } }
+Liking 2553513674413180349 text. Prompt: "The way to win me over is: Puppies!!!" Generated line: "You must be a puppy because you've won me over!"
+Like Sent { limit: { likes: -1, superlikes: 0 } }
+Liking 2981958054892799279 text. Prompt: "My simple pleasures: iced lattes and watchin’ tv shows" Generated line: "Let's watch a show together and grab a latte! What do you say?"
+Like Sent { limit: { likes: -1, superlikes: 0 } }
+Liking 2343371810600388159 text. Prompt: "The hallmark of a good relationship is: comfortable silence" Generated line: "We have a lot in common then, because I'm great at keeping quiet!"
+Like Sent { limit: { likes: -1, superlikes: 0 } }
+Liking 2949762409675360146 text. Prompt: "I go crazy for: Taylor Swift 🫶🏻, country 🤠 & sushi 🍣" Generated line: "Let's make sweet music together, like Taylor Swift, country, and sushi!"
+Like Sent { limit: { likes: -1, superlikes: 0 } }
+Liking 2813141483618567904 text. Prompt: "I’m the type of texter who: either responds immediately or 10 hours later there is no in between :/" Generated line: "Don't worry, I'm a patient person - I can wait 10 hours for your response!"
+Like Sent { limit: { likes: -1, superlikes: 0 } }
+Liking 3030261139624691560 text. Prompt: "I hype myself up by: dressing nice and going to a cute cafe" Generated line: "If you dress nice and go to a cute cafe, then I guess I know where I'm taking you on our first date!"
+Like Sent { limit: { likes: -1, superlikes: 0 } }
+Liking 2991196167670335444 text. Prompt: "I go crazy for: Snowboarding" Generated line: "Let's make like a snowboard and get together!"
+Like Sent { limit: { likes: -1, superlikes: 0 } }
+Liking 2178974602380707631 text. Prompt: "Give me travel tips for: Vegas!" Generated line: "Vegas, baby! Let's roll the dice together!"
+Like Sent { limit: { likes: -1, superlikes: 0 } }
+Liking 2743534451312035534 text. Prompt: "I get along best with people who: Know lots of cool facts" Generated line: "Hey, do you know any cool facts? Cause I think we'd get along great!"
+Like Sent { limit: { likes: -1, superlikes: 0 } }
+Liking 2164370274802205880 text. Prompt: "I recently discovered that: It's ok to be bad at hobbies that you enjoy!!" Generated line: "Let's be bad together!"
+Like Sent { limit: { likes: -1, superlikes: 0 } }
+Liking 2571018830000162325 text. Prompt: "Try to guess this about me: my Duolingo streak" Generated line: "Let's make a streak of our own!"
+Like Sent { limit: { likes: -1, superlikes: 0 } }
+Liking 3008731197296608328 text. Prompt: "I geek out on: Gaming, I play on just about every platform except Xbox.
+Music, it’s a therapy for me.
+Marvel.
+Food, always.
+Driving with no destination." Generated line: "It sounds like we have plenty to geek out about - wanna come along for the ride?"
+Like Sent { limit: { likes: -1, superlikes: 0 } }
+Liking 2073125223808370593 text. Prompt: "My Love Language is: Trying out new restaurants" Generated line: "Let's make a reservation and find out!"
+Like Sent { limit: { likes: -1, superlikes: 0 } }
+Liking 2997223535820146247 text. Prompt: "Don’t hate me if I: like pickles and love pineapple on my pizza 🫶" Generated line: "Pickles and pineapple? That's a combination I can get behind!"
+Like Sent { limit: { likes: -1, superlikes: 0 } }
+Liking 2728931270355584144 text. Prompt: "I’m looking for: Caring and gentle" Generated line: "Gentle care? That's my specialty!"
+Like Sent { limit: { likes: -1, superlikes: 0 } }
+Liking 2796468105331607143 text. Prompt: "Typical Sunday: Work. I like money and Sundays are the busiest 🤑" Generated line: "Work hard, play harder. Wanna join me?"
+Like Sent { limit: { likes: -1, superlikes: 0 } }
+Liking 2843411989470906059 text. Prompt: "I'm weirdly attracted to: facial hair" Generated line: "Let's grow together!"
+Like Sent { limit: { likes: -1, superlikes: 0 } }
+Liking 2668040254878909471 text. Prompt: "Don’t hate me if I: am very nice and have a big heart" Generated line: "Your heart's too big for me to hate you!"
+Like Sent { limit: { likes: -1, superlikes: 0 } }
+Liking 2830100080902538270 text. Prompt: "What if I told you that: I’m a professional golfer*
+
+
+
+
+*mini-golfer" Generated line: "Fore!"
+Like Sent { limit: { likes: -1, superlikes: 0 } }
+Liking 2235461211019806454 text. Prompt: "Typical Sunday: Beach volleyball in SF, good food, and a walk or hanging out with friends!" Generated line: "That sounds like the perfect day! Care to make it a double date?"
+Like Sent { limit: { likes: -1, superlikes: 0 } }
+Liking 2160158469884216418 text. Prompt: "I recently discovered that: legos is an addicting, yet expensive hobby 😭" Generated line: "Looks like we have something in common - let's build a connection!"
+Like Sent { limit: { likes: -1, superlikes: 0 } }
+Liking 2889526358457714225 text. Prompt: "My Love Language is: Physical touch, words of affirmation, quality time, and communication" Generated line: "Let's cuddle, compliment each other, spend time together, and talk it out!"
+Like Sent { limit: { likes: -1, superlikes: 0 } }
+Liking 1910671244299077208 text. Prompt: "This year, I really want to: Learn how to ski ⛷️" Generated line: "Do you need someone to show you the slopes? 🎿"
+Like Sent { limit: { likes: -1, superlikes: 0 } }
+Liking 2372422239220925846 text. Prompt: "The way to win me over is: karaoke and dancing" Generated line: "If you can sing and dance, then I'm already won over!"
+Like Sent { limit: { likes: -1, superlikes: 0 } }
+Liking 2933047388744451886 text. Prompt: "A life goal of mine: Own a home, buy my Tesla Model Y, travel more and enjoy life." Generated line: "Let's take a ride in my Model Y and drive towards our dreams!"
+Like Sent { limit: { likes: -1, superlikes: 0 } }
+Liking 3002317855912887885 text. Prompt: "Together, we could: Go for a nice sunny hike and grab an iced latte" Generated line: "Let's make like a tree and hike outta here!"
+Like Sent { limit: { likes: -1, superlikes: 0 } }
+Liking 2967138971273921973 text. Prompt: "The key to my heart is: Fooooood 😋" Generated line: "Can I take you out for dinner so I can get the key to your heart?"
+Like Sent { limit: { likes: -1, superlikes: 0 } }
+Liking 2988442326763832410 text. Prompt: "My greatest strength: Being able to name any One Direction song in the first 5 seconds." Generated line: "Hey, wanna test my One Direction knowledge? Let's see how long it takes me to get to your heart!"
+Like Sent { limit: { likes: -1, superlikes: 0 } }
+Liking 3032047930694436470 text. Prompt: "My simple pleasures: Long solo hikes in the woods where no one but the trees can judge me for talking out loud to myself
+
+Lounging on the couch reading the latest issue of Saga (or any good comic) while my cat looks on judgmentally from my lap" Generated line: "You must be a tree whisperer, because you have my heart in the forest!"
+Like Sent { limit: { likes: -1, superlikes: 0 } }
+Liking 2446420541586802068 text. Prompt: "You should leave a comment if: you wanna start a dog family" Generated line: "Let's start a pack and howl at the moon together!"
+Like Sent { limit: { likes: -1, superlikes: 0 } }
+Liking 2675068191796888846 text. Prompt: "My greatest strength: small talk😎I love meeting new people" Generated line: "Let's make big talk instead!"
+Like Sent { limit: { likes: -1, superlikes: 0 } }
+Liking 2848765025256998465 text. Prompt: "We'll get along if: you have a creative, spontaneous, & fun spirit :>" Generated line: "Let's make sparks fly and get creative together!"
+Like Sent { limit: { likes: -1, superlikes: 0 } }
+Liking 2696542996190463203 text. Prompt: "I go crazy for: Football games 🏈" Generated line: "Hey, can I be your biggest fan?"
+Like Sent { limit: { likes: -1, superlikes: 0 } }
+Liking 2923892074673603836 text. Prompt: "Dating me is like: Being a food critic. Our dates will consist of eating at new restaurants and cuddling with full bellies <3" Generated line: "Hey there, looks like you've already given me a five-star review!"
+Like Sent { limit: { likes: -1, superlikes: 0 } }
+Liking 2501406801572922986 text. Prompt: "I’m looking for: A bp partner" Generated line: "I'm no BP, but I'm up for a good time!"
+Like Sent { limit: { likes: -1, superlikes: 0 } }
+Liking 3031979691163518408 text. Prompt: "My simple pleasures: Piping hot tea, baking at odd hours, and gremlin cats" Generated line: "Let's make a deal - you bring the gremlin cats, and I'll bring the tea and baking supplies!"
+Like Sent { limit: { likes: -1, superlikes: 0 } }
+Liking 2856517927069287887 text. Prompt: "To me, relaxation is: smoking my brains out" Generated line: "Mind if I join you for a puff?"
+Like Sent { limit: { likes: -1, superlikes: 0 } }
+Liking 2560674755929704085 text. Prompt: "A daily essential: Staring at nothing in particular until it’s blurry and I can dissociate" Generated line: "Can I be the blur in your vision?"
+Like Sent { limit: { likes: -1, superlikes: 0 } }
+Liking 2551216564128973878 text. Prompt: "Don’t hate me if I: ISFJ" Generated line: "Don't worry, I could never hate an ISFJ - let's chat and get to know each other better!"
+Like Sent { limit: { likes: -1, superlikes: 0 } }
+Liking 2793784061988963688 text. Prompt: "We'll get along if: Our food taste is similar" Generated line: "Do you want to take a bite and find out?"
+Like Sent { limit: { likes: -1, superlikes: 0 } }
+Liking 2710141933077923747 text. Prompt: "The one thing you should know about me is: I’m directionally challenged" Generated line: "Well then, let's get lost together!"
+Like Sent { limit: { likes: -1, superlikes: 0 } }
+Liking 3005898935639213909 text. Prompt: "My Love Language is: physical touch and words of affirmation" Generated line: "Let me show you how much I appreciate you with lots of hugs and compliments!"
+Like Sent { limit: { likes: -1, superlikes: 0 } }
+Liking 2741368401896146096 text. Prompt: "I won't shut up about: Work 😂 I almost fight customers on the daily" Generated line: "Let's go out so you can fight with me instead!"
+Like Sent { limit: { likes: -1, superlikes: 0 } }
+Liking 3026860706835204024 text. Prompt: "First round is on me if: you can make me laugh" Generated line: "Let's make it a double — I'm two times as funny!"
+Like Sent { limit: { likes: -1, superlikes: 0 } }
+Liking 2972595184589604175 text. Prompt: "One thing I'll never do again: go on a run in the rain" Generated line: "I'll make sure you don't have to - let me take you out for coffee instead!"
+Like Sent { limit: { likes: -1, superlikes: 0 } }
+Liking 3009844911374599446 text. Prompt: "The way to win me over is: having a good playlist
+loving Mac Miller as much as I do
+Hitting me up with a funny or creative pick up line,
+being fucked up
+Or having a dad bod" Generated line: "Want to swap playlists and dad bods?"
+Like Sent { limit: { likes: -1, superlikes: 0 } }
+Liking 2708869359794652327 text. Prompt: "Dating me is like: Naomi from The Wolf of Wall Street 🤠" Generated line: "I'm more of a Jordan Belfort than a Naomi, but I'm always up for a wild ride!"
+Like Sent { limit: { likes: -1, superlikes: 0 } }
+Liking 2092455778932753782 text. Prompt: "My simple pleasures: Chilling in the sun preferably on a beach, late night drives, my cat purring, and cooking with friends" Generated line: "I'm not sure if it's the sun, the drive, the cat, or the cooking, but I'm definitely feeling a spark!"
+Like Sent { limit: { likes: -1, superlikes: 0 } }
+Liking 2114060549221254627 text. Prompt: "Let's debate this topic: everyone should wear sunscreen every day" Generated line: "Are you sunscreen? Cuz you keep me from getting burned!"
+Like Sent { limit: { likes: -1, superlikes: 0 } }
+Liking 2828198254410204935 text. Prompt: "A random fact I love is: If you know how to make cioppino, we’re already in love 🥰" Generated line: "If the cioppino is as hot as you, I'm in!"
+Like Sent { limit: { likes: -1, superlikes: 0 } }
+Liking 2939192877596542349 text. Prompt: "We’re the same type of weird if: You take hypotheticals/“Would you rather “‘s too seriously and think about all the extra details" Generated line: "Let's explore our weirdness together!"
+Like Sent { limit: { likes: -1, superlikes: 0 } }
+Liking 2112992504914642019 text. Prompt: "The way to win me over is: Thin Mints! It’s somewhat problematic" Generated line: "Girl, you must be a Thin Mint, because you're looking sweet!"
+Like Sent { limit: { likes: -1, superlikes: 0 } }
+Liking 2697477837186663642 text. Prompt: "If loving this is wrong, I don’t want to be right: sweet & savory combos (chicken & waffles, cheese & fruit, fries & ice cream, etc)" Generated line: "If loving sweet and savory combos is wrong, then let's be wrong together!"
+Like Sent { limit: { likes: -1, superlikes: 0 } }
+Liking 2475305829746607250 text. Prompt: "Don’t hate me if I: My dog is my bestfriend" Generated line: "I don't hate you, I love dogs too!"
+Like Sent { limit: { likes: -1, superlikes: 0 } }
+Liking 3008181901052610485 text. Prompt: "Green flags I look for: a genuine heart
+a good communicator
+a foodie" Generated line: "If I'm a foodie, then you must be the main course!"
+Like Sent { limit: { likes: -1, superlikes: 0 } }
+Liking 3023945343180997683 text. Prompt: "The dorkiest thing about me is: How much I love reading and stan superheroes 😅" Generated line: "Looks like we have a real-life superhero on our hands!"
+Like Sent { limit: { likes: -1, superlikes: 0 } }
+Liking 3007432258064745728 text. Prompt: "I wind down by: Watchin tiktoks with my cats" Generated line: "Meow-ch better than swiping right?"
+Like Sent { limit: { likes: -1, superlikes: 0 } }
+Liking 3001386945130530020 text. Prompt: "Saying “Hi!” in as many languages I know: Kem cho (technically “how are you” because “hi” doesn’t really exist in Gujarati)
+Namaste
+Hola
+Ni hao
+Annyeong
+Sawadee krub
+Konnichiwa" Generated line: "Kem cho, Namaste, Hola, Ni hao, Annyeong, Sawadee krub, Konnichiwa—I think I just felt the earth move!"
+Like Sent { limit: { likes: -1, superlikes: 0 } }
+Liking 2266234540655642488 text. Prompt: "A life goal of mine: Is to visit every continent 2/7 completed" Generated line: "Looks like you have some globetrotting left to do! Wanna join me?"
+Like Sent { limit: { likes: -1, superlikes: 0 } }
+Liking 2963468333862619117 text. Prompt: "My cry-in-the-car song is: twenty eight - the weeknd" Generated line: "Guess I'm gonna have to join you in the car then!"
+Like Sent { limit: { likes: -1, superlikes: 0 } }
+Liking 2935704396912133331 text. Prompt: "What I order for the table: A good bottle of dry red" Generated line: "I think I'm falling for you - can I pour you a glass?"
+Like Sent { limit: { likes: -1, superlikes: 0 } }
+Liking 3032327714032846671 text. Prompt: "The key to my heart is: Why this type of question exists?" Generated line: "I'm here to unlock it - What's the combination?"
+Like Sent { limit: { likes: -1, superlikes: 0 } }
+Liking 3029790492981200170 text. Prompt: "I won't shut up about: tik toks" Generated line: "Hey, let's make a duet and never stop talking!"
+Like Sent { limit: { likes: -1, superlikes: 0 } }
+Liking 2575488812280972456 text. Prompt: "My Love Language is: Acts of service 🌟" Generated line: "Let me service your heart!"
+Like Sent { limit: { likes: -1, superlikes: 0 } }
+Liking 2777586498541716665 text. Prompt: "A shower thought I recently had: was if I had to be a cross between two animals, it would be a polar bear and some sort of raptor" Generated line: "If you were a cross between two animals, you'd be a polar bear with great talons."
+Like Sent { limit: { likes: -1, superlikes: 0 } }
+Liking 3002813622159148679 text. Prompt: "I won't shut up about: Nature🕊 + The movies I’ve watched recently 🤞🏼" Generated line: "Nature and movies are my kind of thing - let's go explore them together!"
+Like Sent { limit: { likes: -1, superlikes: 0 } }
+Liking dc2122aa10365c36aa5f9bfaa5d2dfa1 text. Prompt: "The way to win me over is: Being honest, communicative, and open/able to be vulnerable" Generated line: "I'm ready to be vulnerable, let's go!"
+Like Sent { limit: { likes: -1, superlikes: 0 } }
+Liking 2635184753048815036 text. Prompt: "Two truths and a lie: I play 6 instruments, I drive stick, I skateboard" Generated line: "Wow, that's quite the skill set! Is it too forward of me to ask you to pick me up?"
+Like Sent { limit: { likes: -1, superlikes: 0 } }
+Liking 2438257804172068454 text. Prompt: "Unusual skills: I sang opera for four years" Generated line: "Opera-tunity of a lifetime!"
+Like Sent { limit: { likes: -1, superlikes: 0 } }
+Liking 2988129341977659341 text. Prompt: "I’ll fall for you if: You know the movie stardust." Generated line: "Are you the lost star from Stardust that I've been searching for?"
+Like Sent { limit: { likes: -1, superlikes: 0 } }
+Liking 2701408741940528217 text. Prompt: "My Love Language is: Affection, thoughtfulness, trust" Generated line: "Well then, let's show each other some affection and thoughtfulness and build trust together!"
+Like Sent { limit: { likes: -1, superlikes: 0 } }
+Liking 26c43233ff835efe88721d2e0f2511e3 text. Prompt: "Two truths and a lie: 1) I’m a former professional zombie
+2) My dog is named after a vegetable
+3) I have a tattoo inspired by a renaissance painting" Generated line: "I'm not sure which part of your answer is the lie, but I'm pretty sure I want to find out!"
+Like Sent { limit: { likes: -1, superlikes: 0 } }
+Liking 2880449956148151373 text. Prompt: "The award I should be nominated for: passenger princess :)
+
+ig: _chrissstyyyy" Generated line: "Hey there passenger princess, can I offer you a ride to my heart?"
+Like Sent { limit: { likes: -1, superlikes: 0 } }
+Liking 2977689325208078306 text. Prompt: "I'm convinced that: At least part of the formula for world peace includes matching outlets in all countries and universal free WiFi" Generated line: "Let's make like world peace and connect!"
+Like Sent { limit: { likes: -1, superlikes: 0 } }
+Liking 2134180590444872791 text. Prompt: "My cry-in-the-car song is: Matilda by Harry Styles. I can not hear that song without crying or getting teary eyed" Generated line: "Is it okay if I join you in the car? I promise I won't cry!"
+Like Sent { limit: { likes: -1, superlikes: 0 } }
+Liking 1845495675001767873 text. Prompt: "The way to win me over is: If you are able to hold a conversation" Generated line: "Let's chat and see how well we connect!"
+Like Sent { limit: { likes: -1, superlikes: 0 } }
+Liking 2232330905760826682 text. Prompt: "A random fact I love is: dogs love their humans more than they love themselves 🥺🥺" Generated line: "If you're as loyal as a dog, then I'm sold!"
+Like Sent { limit: { likes: -1, superlikes: 0 } }
+Liking 2165914414354532113 text. Prompt: "Worst idea I’ve ever had: My ex" Generated line: "Good thing I'm not your ex!"
+Like Sent { limit: { likes: -1, superlikes: 0 } }
+Liking 2708647817043248581 text. Prompt: "The dorkiest thing about me is: *gestures to whole self*" Generated line: "Well, I think you're pretty awesome!"
+Like Sent { limit: { likes: -1, superlikes: 0 } }
+Liking 2829654238810867674 text. Prompt: "Together, we could: Run the world but you’re playing hard to get 😂" Generated line: "That's okay, I like a challenge!"
+Like Sent { limit: { likes: -1, superlikes: 0 } }
+Liking 2221745264174040561 text. Prompt: "My simple pleasures: a cup of tea, biking to work, walking in nature, deep breathing, open water swimming, belly laughs :)" Generated line: "Let's do all of the above and more together!"
+Like Sent { limit: { likes: -1, superlikes: 0 } }
+Liking 2865027616581093113 text. Prompt: "A life goal of mine: To conquer all of my fears head on." Generated line: "I'm here to help you face your fears—you can start with me!"
+Like Sent { limit: { likes: -1, superlikes: 0 } }
+Liking 2803739068955886772 text. Prompt: "My Love Language is: physical touch: 100% 🤭" Generated line: "Let's get physical!"
+Like Sent { limit: { likes: -1, superlikes: 0 } }
+Liking 2954736904030914049 text. Prompt: "Green flags I look for: Someone I can laugh and have a good conversations with. We can just vibe out to music, and go on many adventures together. Or even just being on chill mode all while enjoying eachothers company" Generated line: "Let's go on an adventure, I'm sure it'll be a blast!"
+Like Sent { limit: { likes: -1, superlikes: 0 } }
+Liking 2775192014864516101 text. Prompt: "Let’s #Justchat about: Your favorite movie, show, whatever your watching now, but basically whatever entertainment you like" Generated line: "I'm Netflix and chillin', wanna join me?"
+Like Sent { limit: { likes: -1, superlikes: 0 } }
+Liking 1903503941170104200 text. Prompt: "The dorkiest thing about me is: My obsession with puns and mini/gigantic things (and, this isn't dorky, but my extreme foodie status) " Generated line: "Wow, sounds like you're a real 'big' hit!"
+Like Sent { limit: { likes: -1, superlikes: 0 } }
+Liking 2971896087259907161 text. Prompt: "I'm convinced that: I’m the most beautiful person ever" Generated line: "No contest, I'm the second most beautiful person ever!"
+Like Sent { limit: { likes: -1, superlikes: 0 } }
+Liking 2724013115292256073 text. Prompt: "My simple pleasures: coffee, sitting the top of a cliff n watching the ocean" Generated line: "I could think of nothing better than joining you for a cup of coffee by the ocean!"
+Like Sent { limit: { likes: -1, superlikes: 0 } }
+Liking 2474551715412575733 text. Prompt: "First round is on me if: You can guess my ethnicity 🤠" Generated line: "What's the answer? I'm all ears!"
+Like Sent { limit: { likes: -1, superlikes: 0 } }
+Liking 2563767718511641751 text. Prompt: "You should *not* go out with me if: You can’t handle my random goofy faces or sound effects" Generated line: "Don't worry, I'm a pro at making goofy faces and sound effects!"
+Like Sent { limit: { likes: -1, superlikes: 0 } }
+Liking 2331709254265734196 text. Prompt: "Believe it or not, I: Got stuck on a safari and had to pee 200 ft from a pack of wild lions" Generated line: "Lions, tigers, and bears, oh my! Did you make it out alive?"
+Like Sent { limit: { likes: -1, superlikes: 0 } }
+Liking 2901510123241342434 text. Prompt: "Typical Sunday: Farmers market" Generated line: "I think I just found my favorite fruit of the day!"
+Like Sent { limit: { likes: -1, superlikes: 0 } }
+Liking 2028225865258632625 text. Prompt: "The one thing I’d love to know about you is: What’s your favorite Carpool Karaoke video and why?" Generated line: "My favorite Carpool Karaoke video is the one with Adele, because her singing always puts a smile on my face! How about you?"
+Like Sent { limit: { likes: -1, superlikes: 0 } }
+Liking 2782004065830175818 text. Prompt: "My mantra is: Life’s to short to worry about that" Generated line: "Then let's make the most of it!"
+Like Sent { limit: { likes: -1, superlikes: 0 } }
+Liking 1986746892440045216 text. Prompt: "A life goal of mine: Become a whale watch tour guide 🐳" Generated line: "If you come whale watching with me, I guarantee you won't be disappointed!"
+Like Sent { limit: { likes: -1, superlikes: 0 } }
+Liking 2073852602465912098 text. Prompt: "The one thing I’d love to know about you is: what you’ve been reading" Generated line: "I'm reading between the lines to see if you're the one for me!"
+Like Sent { limit: { likes: -1, superlikes: 0 } }
+Liking 2946385980845720679 text. Prompt: "Teach me something about: Your culture." Generated line: "My culture teaches me that you're the most beautiful person I've ever seen!"
+Like Sent { limit: { likes: -1, superlikes: 0 } }
+Liking 2791994866316346608 text. Prompt: "This year, I really want to: Boarden my horizon lol" Generated line: "Let's make it happen together - you, me, and the open road!"
+Liking 2494261214620682114 text. Prompt: "My simple pleasures: Curling up with a good book and a nice bottle of wine. I enjoy being outdoors, pilates, live music, good food, board games and good company." Generated line: "I'd love to be good company for you - how about a date?"
+Like Sent { limit: { likes: -1, superlikes: 0 } }
+Liking 2680362102601811039 text. Prompt: "Green flags I look for: You understand that each person has their own ways of feeling secure and happy in a relationship & that proper communication is req to achieve that for both" Generated line: "If communication is key, then can I have the key to your heart?"
+Like Sent { limit: { likes: -1, superlikes: 0 } }
+Liking 2952966798934279587 text. Prompt: "The one thing I’d love to know about you is: Your favorite horror movie" Generated line: "That's scary, but let's make a date so I can get to know you better!"
+Like Sent { limit: { likes: -1, superlikes: 0 } }
+Liking 2804656663032759874 text. Prompt: "My most irrational fear: Kids and infant" Generated line: "Don't worry, I'm not a kid or an infant so you don't need to be afraid!"
+Like Sent { limit: { likes: -1, superlikes: 0 } }
+Liking f933d207e05d5b62833f63524a5ab1cc text. Prompt: "The key to my heart is: Humor" Generated line: "I must be the luckiest person alive because I just hit the jackpot!"
+Like Sent { limit: { likes: -1, superlikes: 0 } }
+Liking 2297101316557637109 text. Prompt: "If loving this is wrong, I don’t want to be right: radishes" Generated line: "If loving radishes is wrong, then I don't want to be right either!"
+Like Sent { limit: { likes: -1, superlikes: 0 } }
+Liking 2953530843240334358 text. Prompt: "I’m looking for: 善良诚实，认真对待感情" Generated line: "你一定是太阳，因为你拥有太多的善良和诚实！"
+Like Sent { limit: { likes: -1, superlikes: 0 } }
+Liking 2452245959518717608 text. Prompt: "Weirdest gift I have given or received: A jar of frosted animal cookies with a note that said, "Time to Party!" My twin sister received the same thing and we still laugh about it. " Generated line: "If you don't want to party, I'll take the cookies!"
+Like Sent { limit: { likes: -1, superlikes: 0 } }
+Liking 2128019677937403748 text. Prompt: "Let’s make sure we’re on the same page about: What our goals are in life" Generated line: "If our goals are the same, let's start this journey together!"
+Like Sent { limit: { likes: -1, superlikes: 0 } }
+Liking 2407901850490635435 text. Prompt: "Dating me is like: Dating your bully, I will make fun of you 24/7, the one off is when I feel like being soft." Generated line: "I'll take my chances, what's the worst you can do? Pinch my cheeks?"
+Like Sent { limit: { likes: -1, superlikes: 0 } }
+Liking 2848710982245549764 text. Prompt: "To me, relaxation is: Taking a nap" Generated line: "Let's both take a nap together, I'm sure it will be more fun!"
+Like Sent { limit: { likes: -1, superlikes: 0 } }

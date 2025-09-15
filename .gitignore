@@ -1,0 +1,8 @@
+node_modules
+build
+dist
+.idea
+.vscode
+functions/src/profiles_decisions.json
+functions/src/profiles_cache.json
+.env

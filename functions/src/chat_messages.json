@@ -1,0 +1,741 @@
+{
+  "userId": "2922149065963603846",
+  "count": 25,
+  "channels": [
+    {
+      "channel_url": "sendbird_group_channel_212669953_f799db8dab1af2a87290af97cf041cd3071234b7",
+      "last_message_ts": 1756173592813,
+      "member_them": {
+        "user_id": "3237645658626197104",
+        "nickname": "Jinmeng"
+      },
+      "messages": [
+        {
+          "message_id": 42392479618,
+          "text": "Hey Jinmeng! How’s it going?",
+          "created_at": 1756173592813,
+          "sender": {
+            "user_id": "2922149065963603846",
+            "nickname": "Ash"
+          }
+        }
+      ]
+    },
+    {
+      "channel_url": "sendbird_group_channel_314504831_c5bb165ff018e8b306f701c136ddd1cdcdfd81af",
+      "last_message_ts": 1756098819077,
+      "member_them": {
+        "user_id": "3705249124950476518",
+        "nickname": "Sarah"
+      },
+      "messages": [
+        {
+          "message_id": 42362005239,
+          "text": "lol makes sense. So you like hiking?",
+          "created_at": 1756098819077,
+          "sender": {
+            "user_id": "2922149065963603846",
+            "nickname": "Ash"
+          }
+        },
+        {
+          "message_id": 42361994365,
+          "text": "Pretty hard ",
+          "created_at": 1756098773900,
+          "sender": {
+            "user_id": "3705249124950476518",
+            "nickname": "Sarah"
+          }
+        },
+        {
+          "message_id": 42361954421,
+          "text": "That’s awesome haha. How hard is it to make a quilt?",
+          "created_at": 1756098609285,
+          "sender": {
+            "user_id": "2922149065963603846",
+            "nickname": "Ash"
+          }
+        },
+        {
+          "message_id": 42358117704,
+          "text": "I already got the 2 person hammock, let’s make a quilt!",
+          "created_at": 1756086520745,
+          "sender": {
+            "user_id": "3705249124950476518",
+            "nickname": "Sarah"
+          }
+        }
+      ]
+    },
+    {
+      "channel_url": "sendbird_group_channel_224630610_2476dc4469fdcec0f19ea671d2c5e364ca2cbc50",
+      "last_message_ts": 1756068151920,
+      "member_them": {
+        "user_id": "3023294822719948032",
+        "nickname": "Ipsita"
+      },
+      "messages": [
+        {
+          "message_id": 42349974703,
+          "text": "Do you have an ig we can chat on? I have notifications off for this app and don’t get on",
+          "created_at": 1756068151920,
+          "sender": {
+            "user_id": "2922149065963603846",
+            "nickname": "Ash"
+          }
+        },
+        {
+          "message_id": 42349945949,
+          "text": "Easily haha. I don’t have a spot, I just dance wherever I can. I like to go to discos on weekends and dance free form! I also swim because my place has a heated pool and hot tub.",
+          "created_at": 1756068105506,
+          "sender": {
+            "user_id": "2922149065963603846",
+            "nickname": "Ash"
+          }
+        },
+        {
+          "message_id": 42325875438,
+          "text": "You swim and dance? Haha we will get along, I looove salsa bachata, what’s your regular spot?",
+          "created_at": 1756006437209,
+          "sender": {
+            "user_id": "3023294822719948032",
+            "nickname": "Ipsita"
+          }
+        }
+      ]
+    },
+    {
+      "channel_url": "sendbird_group_channel_145956680_09df646fa4b72075cbd23107477749e944924494",
+      "last_message_ts": 1755908654567,
+      "member_them": {
+        "user_id": "2445017202571609409",
+        "nickname": "Micah"
+      },
+      "messages": [
+        {
+          "message_id": 42291855540,
+          "text": "Really? So you’re a Black man…with a philly 90’s Black swag lol🧐🤔?",
+          "created_at": 1755908654567,
+          "sender": {
+            "user_id": "2445017202571609409",
+            "nickname": "Micah"
+          }
+        }
+      ]
+    },
+    {
+      "channel_url": "sendbird_group_channel_282012623_b6eb59b5e97897a5cb0547675c7e34f5b6b95f34",
+      "last_message_ts": 1756612810420,
+      "member_them": {
+        "user_id": "3478572658528879915",
+        "nickname": "Niv"
+      },
+      "messages": [
+        {
+          "message_id": 42555043056,
+          "text": "_aft",
+          "created_at": 1756612810420,
+          "sender": {
+            "user_id": "2922149065963603846",
+            "nickname": "Ash"
+          }
+        },
+        {
+          "message_id": 42555041808,
+          "text": "Add me on ig; I’m deleting this app",
+          "created_at": 1756612805714,
+          "sender": {
+            "user_id": "2922149065963603846",
+            "nickname": "Ash"
+          }
+        },
+        {
+          "message_id": 42554496450,
+          "text": "Wanna get boba?",
+          "created_at": 1756610837691,
+          "sender": {
+            "user_id": "2922149065963603846",
+            "nickname": "Ash"
+          }
+        },
+        {
+          "message_id": 42521703315,
+          "text": "Hey! Doing well. Got any fun plans for the Labor Day weekend?",
+          "created_at": 1756515385382,
+          "sender": {
+            "user_id": "2922149065963603846",
+            "nickname": "Ash"
+          }
+        },
+        {
+          "message_id": 42494805471,
+          "text": "How are you? ",
+          "created_at": 1756441970323,
+          "sender": {
+            "user_id": "3478572658528879915",
+            "nickname": "Niv"
+          }
+        }
+      ]
+    },
+    {
+      "channel_url": "sendbird_group_channel_212669953_2dc2eec69416e4ff964a3c0c5119c347aaee8dd2",
+      "last_message_ts": 1755808656743,
+      "member_them": {
+        "user_id": "3700222737483039784",
+        "nickname": "3700222737483039784"
+      },
+      "messages": [
+        {
+          "message_id": 42253977810,
+          "text": "getting a sushi lunch with a friend after studying, do you like sushi?",
+          "created_at": 1755808656743,
+          "sender": {
+            "user_id": "3700222737483039784",
+            "nickname": "3700222737483039784"
+          }
+        },
+        {
+          "message_id": 42228159693,
+          "text": "I’m at a community concert in Mountain View just because it was along my way back home haha. How’s your day going?",
+          "created_at": 1755738152057,
+          "sender": {
+            "user_id": "2922149065963603846",
+            "nickname": "Ash"
+          }
+        },
+        {
+          "message_id": 42228145886,
+          "text": "",
+          "created_at": 1755738113653,
+          "sender": {
+            "user_id": "2922149065963603846",
+            "nickname": "Ash"
+          }
+        },
+        {
+          "message_id": 42228137661,
+          "text": "There’s always a happily ever after in my world!",
+          "created_at": 1755738091100,
+          "sender": {
+            "user_id": "2922149065963603846",
+            "nickname": "Ash"
+          }
+        },
+        {
+          "message_id": 42199174169,
+          "text": "if there's a happily ever after at the end, then I'm in 🧚‍♀️",
+          "created_at": 1755666701315,
+          "sender": {
+            "user_id": "3700222737483039784",
+            "nickname": "3700222737483039784"
+          }
+        }
+      ]
+    },
+    {
+      "channel_url": "sendbird_group_channel_304777638_141e46218f6b1c91ceef80a53a3e3918d987a532",
+      "last_message_ts": 1755564606462,
+      "member_them": {
+        "user_id": "3632661660939846863",
+        "nickname": "Clover"
+      },
+      "messages": [
+        {
+          "message_id": 42158595326,
+          "text": "Damn you’re good if you were able to save yourself from erasing yourself. What happened in the 50s in the alternate timeline? Apocalypse?",
+          "created_at": 1755564606462,
+          "sender": {
+            "user_id": "2922149065963603846",
+            "nickname": "Ash"
+          }
+        },
+        {
+          "message_id": 42157102999,
+          "text": "Yes exactly. I’m a time traveler",
+          "created_at": 1755560657103,
+          "sender": {
+            "user_id": "3632661660939846863",
+            "nickname": "Clover"
+          }
+        }
+      ]
+    },
+    {
+      "channel_url": "sendbird_group_channel_308880653_b28c210d6796f00564f63a133943668ef1f77af1",
+      "last_message_ts": 1755322291783,
+      "member_them": {
+        "user_id": "3667592342438676110",
+        "nickname": "Riya"
+      },
+      "messages": [
+        {
+          "message_id": 42062900840,
+          "text": "I like salsa dancing",
+          "created_at": 1755322291783,
+          "sender": {
+            "user_id": "3667592342438676110",
+            "nickname": "Riya"
+          }
+        },
+        {
+          "message_id": 42062895615,
+          "text": "What’s the difference?",
+          "created_at": 1755322269960,
+          "sender": {
+            "user_id": "3667592342438676110",
+            "nickname": "Riya"
+          }
+        },
+        {
+          "message_id": 42062792738,
+          "text": "But yeah totally understandable. What do you like to do?",
+          "created_at": 1755321848534,
+          "sender": {
+            "user_id": "2922149065963603846",
+            "nickname": "Ash"
+          }
+        },
+        {
+          "message_id": 42062760714,
+          "text": "It’s not clubbing, it’s a disco and you don’t have to do hard liquor",
+          "created_at": 1755321717559,
+          "sender": {
+            "user_id": "2922149065963603846",
+            "nickname": "Ash"
+          }
+        },
+        {
+          "message_id": 42061969025,
+          "text": " Or hard liquor ",
+          "created_at": 1755318596560,
+          "sender": {
+            "user_id": "3667592342438676110",
+            "nickname": "Riya"
+          }
+        }
+      ]
+    },
+    {
+      "channel_url": "sendbird_group_channel_312586355_12596169f375316a7220011a421614cb9959d732",
+      "last_message_ts": 1755140699826,
+      "member_them": {
+        "user_id": "3692890793141339661",
+        "nickname": "Sadie"
+      },
+      "messages": [
+        {
+          "message_id": 41996765645,
+          "text": "󠐤s󠐤󠐤n󠐤󠐤q󠐤󠐤c󠐤h󠐤󠐤a󠐤t󠐤󠐤󠐤;y󠐤󠐤󠐤v󠐤󠐤o󠐤󠐤󠐤n󠐤󠐤n󠐤󠐤󠐤z󠐤x󠐤󠐤󠐤i󠐤 😋",
+          "created_at": 1755140699826,
+          "sender": {
+            "user_id": "3692890793141339661",
+            "nickname": "Sadie"
+          }
+        }
+      ]
+    },
+    {
+      "channel_url": "sendbird_group_channel_212669953_9d2115cdba0dd332bc600857c644df77c46a5b66",
+      "last_message_ts": 1755296236991,
+      "member_them": {
+        "user_id": "3242951631158903914",
+        "nickname": "Purva"
+      },
+      "messages": [
+        {
+          "message_id": 42054494813,
+          "text": "Hey! How’s it going?",
+          "created_at": 1755296236991,
+          "sender": {
+            "user_id": "2922149065963603846",
+            "nickname": "Ash"
+          }
+        },
+        {
+          "message_id": 41976312789,
+          "text": "Hey hey!",
+          "created_at": 1755097988350,
+          "sender": {
+            "user_id": "3242951631158903914",
+            "nickname": "Purva"
+          }
+        }
+      ]
+    },
+    {
+      "channel_url": "sendbird_group_channel_212669953_3e90aa113eefd02f506b05befb1b935691ca88a8",
+      "last_message_ts": 1755050300611,
+      "member_them": {
+        "user_id": "3682868550055233042",
+        "nickname": "Avira"
+      },
+      "messages": [
+        {
+          "message_id": 41961281377,
+          "text": "not on here much, bet you'd like my snaps snap elenreed",
+          "created_at": 1755050300611,
+          "sender": {
+            "user_id": "3682868550055233042",
+            "nickname": "Avira"
+          }
+        },
+        {
+          "message_id": 41961075787,
+          "text": "Yeah! How do you like rating coffee houses?",
+          "created_at": 1755049782372,
+          "sender": {
+            "user_id": "2922149065963603846",
+            "nickname": "Ash"
+          }
+        },
+        {
+          "message_id": 41960833032,
+          "text": "do u like coffee ?",
+          "created_at": 1755049167496,
+          "sender": {
+            "user_id": "3682868550055233042",
+            "nickname": "Avira"
+          }
+        }
+      ]
+    },
+    {
+      "channel_url": "sendbird_group_channel_212669953_9537cefc140d8770b49746f71482fd4b1e0088ed",
+      "last_message_ts": 1755014097913,
+      "member_them": {
+        "user_id": "3686757781513176713",
+        "nickname": "merry"
+      },
+      "messages": [
+        {
+          "message_id": 41943038428,
+          "text": "babe! sneepz   me! emmipuzok",
+          "created_at": 1755014097913,
+          "sender": {
+            "user_id": "3686757781513176713",
+            "nickname": "merry"
+          }
+        }
+      ]
+    },
+    {
+      "channel_url": "sendbird_group_channel_310019293_c547d9ce72a597b006711fe0dbcf917b07d6d270",
+      "last_message_ts": 1755048364774,
+      "member_them": {
+        "user_id": "3671973729795049293",
+        "nickname": "Annabelle"
+      },
+      "messages": [
+        {
+          "message_id": 41960519188,
+          "text": "Nah that’s not possible when you’re free dancing. As long as you’re moving you’re good! I have a few disco events I’m planning on going to in a few weeks, might need a partner 😉",
+          "created_at": 1755048364774,
+          "sender": {
+            "user_id": "2922149065963603846",
+            "nickname": "Ash"
+          }
+        },
+        {
+          "message_id": 41953077545,
+          "text": "Omg no unfortunately I’m terrible",
+          "created_at": 1755032256778,
+          "sender": {
+            "user_id": "3671973729795049293",
+            "nickname": "Annabelle"
+          }
+        },
+        {
+          "message_id": 41952765828,
+          "text": "Does that antihero like to dance?",
+          "created_at": 1755031760711,
+          "sender": {
+            "user_id": "2922149065963603846",
+            "nickname": "Ash"
+          }
+        },
+        {
+          "message_id": 41952565050,
+          "text": "Myself of course ",
+          "created_at": 1755031438841,
+          "sender": {
+            "user_id": "3671973729795049293",
+            "nickname": "Annabelle"
+          }
+        },
+        {
+          "message_id": 41951982055,
+          "text": "Like an antihero I see. Who’s your favorite antihero?",
+          "created_at": 1755030503833,
+          "sender": {
+            "user_id": "2922149065963603846",
+            "nickname": "Ash"
+          }
+        }
+      ]
+    },
+    {
+      "channel_url": "sendbird_group_channel_212669953_165f365268bf155fa875e0745707a4a2426d0dd4",
+      "last_message_ts": 1754943674458,
+      "member_them": {
+        "user_id": "1949121220062480319",
+        "nickname": "Ellie"
+      },
+      "messages": [
+        {
+          "message_id": 41917070380,
+          "text": "lol you can try ",
+          "created_at": 1754943674458,
+          "sender": {
+            "user_id": "1949121220062480319",
+            "nickname": "Ellie"
+          }
+        }
+      ]
+    },
+    {
+      "channel_url": "sendbird_group_channel_310765119_8c520ccd40c6ab8632dda17ba6fa733a87110b98",
+      "last_message_ts": 1754880998124,
+      "member_them": {
+        "user_id": "3680708780695226034",
+        "nickname": "Anna"
+      },
+      "messages": [
+        {
+          "message_id": 41893317332,
+          "text": "Haha appreciate it! I’m fine with either! Do you have a dog?",
+          "created_at": 1754880998124,
+          "sender": {
+            "user_id": "2922149065963603846",
+            "nickname": "Ash"
+          }
+        },
+        {
+          "message_id": 41875703183,
+          "text": "Ur so cute! Also I like cats but dogs are better!!",
+          "created_at": 1754845616301,
+          "sender": {
+            "user_id": "3680708780695226034",
+            "nickname": "Anna"
+          }
+        }
+      ]
+    },
+    {
+      "channel_url": "sendbird_group_channel_199935403_39e9fa214fc795bd2de67398d36d24bfd0db4183",
+      "last_message_ts": 1754632070099,
+      "member_them": {
+        "user_id": "2803009563878491557",
+        "nickname": "Jo"
+      },
+      "messages": [
+        {
+          "message_id": 41800631501,
+          "text": "That was clever!",
+          "created_at": 1754632070099,
+          "sender": {
+            "user_id": "2803009563878491557",
+            "nickname": "Jo"
+          }
+        }
+      ]
+    },
+    {
+      "channel_url": "sendbird_group_channel_212669953_8b6db888a6029296e74e2c996a8aedbde4486623",
+      "last_message_ts": 1755983605650,
+      "member_them": {
+        "user_id": "2819463742754915382",
+        "nickname": "Leandra"
+      },
+      "messages": [
+        {
+          "message_id": 42317757917,
+          "text": "Interesting like content creation as in tiktok? I met with a couple of startup founders yesterday at their launch party for a an app called Veil. It’s a way of testing public response to your content. I’m down to connect on ig, I’m _aft",
+          "created_at": 1755983605650,
+          "sender": {
+            "user_id": "2922149065963603846",
+            "nickname": "Ash"
+          }
+        },
+        {
+          "message_id": 42315978192,
+          "text": "Okay, LOL the fact that I haven't checked this in 2 weeks, definitely don't want to take up your time I think I've realized I'm not really prioritizing dating in my life right now, but if you want to connect via Instagram I'm down! I actually quit my job recently to do content creation full-time so quite a lot going on at the moment",
+          "created_at": 1755980071651,
+          "sender": {
+            "user_id": "2819463742754915382",
+            "nickname": "Leandra"
+          }
+        },
+        {
+          "message_id": 42315956645,
+          "text": "Lol, that sounds like a fun adventure and a happy memory to have!",
+          "created_at": 1755980029492,
+          "sender": {
+            "user_id": "2819463742754915382",
+            "nickname": "Leandra"
+          }
+        },
+        {
+          "message_id": 42315947234,
+          "text": "Yes it's definitely good kind of exciting stuff! Gardens are beautiful and also one of my favorite places to explore in cities! Aww that's really nice that you feel grateful for your family! ❤️",
+          "created_at": 1755980010863,
+          "sender": {
+            "user_id": "2819463742754915382",
+            "nickname": "Leandra"
+          }
+        },
+        {
+          "message_id": 41914225695,
+          "text": "There’s a looot of stuff that happened over the past week with my brother haha. I think the most interesting so far was probably the most spontaneous day too. We got tipsy over some cutwater and then ended up walking 2mi to the redwood grove in Mountain View at 2am and then took a waymo back home 🤣🤣.",
+          "created_at": 1754939158756,
+          "sender": {
+            "user_id": "2922149065963603846",
+            "nickname": "Ash"
+          }
+        }
+      ]
+    },
+    {
+      "channel_url": "sendbird_group_channel_312149581_6bb9fc6586e27e77c7236c657ee0a36f53714cd0",
+      "last_message_ts": 1754537564419,
+      "member_them": {
+        "user_id": "3690116087241770257",
+        "nickname": "Emma"
+      },
+      "messages": [
+        {
+          "message_id": 41766290682,
+          "text": "󠐣󠐣󠐣s󠐣󠐣n󠐣󠐣󠐣p󠐣󠐣c󠐣a󠐣󠐣t󠐣󠐣󠐣;c󠐣a󠐣n󠐣d󠐣󠐣󠐣i󠐣󠐣z󠐣x󠐣i󠐣󠐣󠐣 😋",
+          "created_at": 1754537564419,
+          "sender": {
+            "user_id": "3690116087241770257",
+            "nickname": "Emma"
+          }
+        }
+      ]
+    },
+    {
+      "channel_url": "sendbird_group_channel_212669953_c1b7822cc35cb77d60c9c2bb7dbf015352a224be",
+      "last_message_ts": 1754535743610,
+      "member_them": {
+        "user_id": "3690219137860109592",
+        "nickname": "Nora"
+      },
+      "messages": [
+        {
+          "message_id": 41765630375,
+          "text": "󠐣󠐣󠐣s󠐣󠐣n󠐣󠐣󠐣a󠐣󠐣󠐣c󠐣h󠐣󠐣a󠐣t󠐣󠐣;l󠐣󠐣󠐣i󠐣󠐣n󠐣d󠐣󠐣z󠐣󠐣󠐣x󠐣o󠐣󠐣i󠐣󠐣 🤩",
+          "created_at": 1754535743610,
+          "sender": {
+            "user_id": "3690219137860109592",
+            "nickname": "Nora"
+          }
+        }
+      ]
+    },
+    {
+      "channel_url": "sendbird_group_channel_312211503_965f6ac384877e89936f0cb16047ac977fceac05",
+      "last_message_ts": 1754533421022,
+      "member_them": {
+        "user_id": "3690541131700897721",
+        "nickname": "Hannah"
+      },
+      "messages": [
+        {
+          "message_id": 41764719723,
+          "text": "󠐣s󠐣n󠐣󠐣e󠐣󠐣@󠐣󠐣p󠐣c󠐣󠐣󠐣h󠐣󠐣󠐣a󠐣󠐣t󠐣󠐣;m󠐣󠐣󠐣i󠐣a󠐣󠐣󠐣x󠐣󠐣󠐣s󠐣󠐣o󠐣󠐣f󠐣󠐣󠐣t󠐣󠐣y󠐣󠐣󠐣 ☺️",
+          "created_at": 1754533421022,
+          "sender": {
+            "user_id": "3690541131700897721",
+            "nickname": "Hannah"
+          }
+        }
+      ]
+    },
+    {
+      "channel_url": "sendbird_group_channel_297121420_cf4a9f59843b0e8e9a37bfab38dcd55fcd826686",
+      "last_message_ts": 1754458130041,
+      "member_them": {
+        "user_id": "3582851981514900954",
+        "nickname": "Geri"
+      },
+      "messages": [
+        {
+          "message_id": 41734594657,
+          "text": "I love pasta!",
+          "created_at": 1754458130041,
+          "sender": {
+            "user_id": "3582851981514900954",
+            "nickname": "Geri"
+          }
+        }
+      ]
+    },
+    {
+      "channel_url": "sendbird_group_channel_212669953_f32aa88743a7585fdd4744ecdbd4b40f2de761a0",
+      "last_message_ts": 1754440413846,
+      "member_them": {
+        "user_id": "3689901607161431832",
+        "nickname": "Sophia"
+      },
+      "messages": [
+        {
+          "message_id": 41728404663,
+          "text": "dw󠝪n f󠝪o󠝭󠝦r󠝪 a󠝪 󠝪fk󠝦󠝯k󠝯?󠝦 ms󠝭g󠝭 󠝪󠝪 󠝯󠝦s󠝭󠝪n󠝭󠝪a󠝪p󠝭󠝪m󠝪e󠝭󠝦; sophievjcz",
+          "created_at": 1754440413846,
+          "sender": {
+            "user_id": "3689901607161431832",
+            "nickname": "Sophia"
+          }
+        }
+      ]
+    },
+    {
+      "channel_url": "sendbird_group_channel_212669953_dfd5e53a508d2828881b40e4a8a7047755b8c869",
+      "last_message_ts": 1754434415774,
+      "member_them": {
+        "user_id": "3689151607162799788",
+        "nickname": "Charlee"
+      },
+      "messages": [
+        {
+          "message_id": 41726058938,
+          "text": "👻 Sophiaruxden",
+          "created_at": 1754434415774,
+          "sender": {
+            "user_id": "3689151607162799788",
+            "nickname": "Charlee"
+          }
+        }
+      ]
+    },
+    {
+      "channel_url": "sendbird_group_channel_312179672_a1a7151ddae0d2cf8f3e607a086b024f3901777a",
+      "last_message_ts": null,
+      "member_them": {
+        "user_id": "3690364884807058746",
+        "nickname": "Lea"
+      },
+      "messages": []
+    },
+    {
+      "channel_url": "sendbird_group_channel_290561167_2786bc0efd43c363adb39c15e8c8e2e3024ea068",
+      "last_message_ts": 1754421786840,
+      "member_them": {
+        "user_id": "3537130556133213868",
+        "nickname": "Salwa"
+      },
+      "messages": [
+        {
+          "message_id": 41718588437,
+          "text": "Not sure. Your thoughts?",
+          "created_at": 1754421786840,
+          "sender": {
+            "user_id": "3537130556133213868",
+            "nickname": "Salwa"
+          }
+        }
+      ]
+    }
+  ]
+}

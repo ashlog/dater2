@@ -1,0 +1,127 @@
+Prompt: "My most irrational fear: is the Illuminati"
+  - [PICKUP LINE] "This is a serious concern. We should meet at a secure, undisclosed cafe to discuss countermeasures. Coffee or boba?"
+
+Prompt: "The way to win me over is: good food and cats"
+  - [PICKUP LINE] "A Kitty who likes cats is a little on the nose, don't you think? We should investigate this over some karaage."
+
+Prompt: "My simple pleasures: Ice cold water (does water have a taste? 🤔), stand up comedy specials/SNL, watching fish eat."
+  - [PICKUP LINE] "Watching fish eat is a seriously underrated pastime. Should we go critique their feeding technique at the science museum, or debate if water has a taste over boba?"
+
+Prompt: "This year, I really want to: Find a travel buddy ✈️🌆"
+  - [PICKUP LINE] "Okay, consider this my formal application for the travel buddy position ✈️. The interview process starts with a simple test: coffee or boba?"
+
+Prompt: "My simple pleasures: adventuring the world through traveling, skiing, golf, and a cozy day indoors with coffee and a movie"
+  - [PICKUP LINE] "The adventurous half of your profile is in a serious debate with the 'cozy day with coffee' half. Should we have them settle it over coffee or boba?"
+
+Prompt: "What if I told you that: everyone scared to be corny but i was born on the cob"
+  - [PICKUP LINE] "That's a very serious claim. We'll need a formal hearing to verify. Boba or coffee for the debriefing?"
+
+Prompt: "The hallmark of a good relationship is: good banter"
+  - [PICKUP LINE] "That's a high bar. I officially challenge you to a banter-off to test our compatibility. Coffee or boba?"
+
+Prompt: "I geek out on: planets and parrots 😭"
+  - [PICKUP LINE] "Love the parrot appreciation. If I ask you to get coffee, are you contractually obligated to just repeat the question back to me?"
+
+Prompt: "We'll get along if: We can talk about our life goals and aspirations while eating food we door dashed watching anime/Studio Ghibli/MCU"
+  - [PICKUP LINE] "That Ghibli/Doordash/life-goals night sounds like an excellent third date. How about we workshop the plan over boba first?"
+
+Prompt: "I'm convinced that: I don't need makeup "
+  - [PICKUP LINE] "You're not wrong. So, coffee or boba while you tell me about your other correct opinions?"
+
+Prompt: "The one thing you should know about me is: I got a playlist for every occasion 🎧"
+  - [PICKUP LINE] "A playlist for *every* occasion is a bold claim I'm here to test. What's the soundtrack for a great first coffee or boba date?"
+
+Prompt: "Together, we could: become the best doubles partner in pickleball (and every doubles sport ofc)"
+  - [PICKUP LINE] "That's a bold claim. I think a mandatory strategy session is in order to see if we're compatible. Coffee or boba?"
+
+Prompt: "What if I told you that: everyone scared to be corny but i was born on the cob"
+  - [PICKUP LINE] "That's a serious claim that requires immediate investigation. Are we discussing the agricultural implications over coffee or boba?"
+
+Prompt: "I'll fall for you if: you can make me laugh"
+  - [PICKUP LINE] "Challenge accepted, Julia. But the real question is, can you make *me* laugh? We should settle it over coffee or boba."
+
+Prompt: "I won't shut up about: Costco and my Owala water bottle."
+  - [PICKUP LINE] "A joint Costco membership is a serious commitment. We should probably start with a less intense boba run to plan our shopping strategy first."
+
+Prompt: "Together, we could: Grab a meal or some ice cream (matcha and vanilla are my fav 🤤)"
+  - [PICKUP LINE] "That's a top-tier ice cream combo. But I have to know, are we talking two separate scoops or a swirl? The fate of our first coffee or boba date hangs in the balance."
+
+Prompt: "My simple pleasures: playing games and binge watching sci fi movies"
+  - [PICKUP LINE] "A fellow sci-fi and games fan. Let's test a theory: the best sci-fi movies would make the best games. Science museum or boba shop for our research?"
+
+Prompt: "My most irrational fear: is the Illuminati"
+  - [PICKUP LINE] "This is a serious security breach, Sara. We'll have to discuss this in a public, neutral location to avoid surveillance. Coffee or boba?"
+
+Prompt: "Typical Sunday: Chilling day "
+  - [PICKUP LINE] "Okay, a crucial compatibility question. Is the ideal 'chilling day' fueled by top-tier coffee or boba?"
+
+Prompt: "Together, we could: • solve mystery boardgames 
+• go to concerts and visit museums :) 
+• play poooool"
+  - [PICKUP LINE] "A museum trip is a great call. My vote is for the science museum, but we have to settle a critical question: are we there to seriously learn something, or just to play with all the hands-on exhibits?"
+
+Prompt: "The one thing you should know about me is: I got a playlist for every occasion 🎧"
+  - [PICKUP LINE] "Challenge accepted. What's the first track on the 'we should grab coffee or boba' playlist?"
+
+Prompt: "I won't shut up about: Anime and music"
+  - [PICKUP LINE] "A serious claim. I think we need to put this 'won't shut up' theory to a rigorous scientific test. Coffee or boba to fuel the experiment?"
+
+Prompt: "The way to win me over is: good food and cats"
+  - [PICKUP LINE] "Okay, your name is Kitty and you like cats. This has to be the most adorable trap I've ever seen. Should we investigate over karaage or boba?"
+
+Prompt: "The hallmark of a good relationship is: laughter, trust, accepting my perpetual tardiness (ps I promise I won’t be the latest of my friends!)"
+  - [PICKUP LINE] "That's a bold strategy, aiming for silver in the tardiness olympics instead of gold. We should debate the current standings over coffee or boba."
+
+Prompt: "I geek out on: planets and parrots 😭"
+  - [PICKUP LINE] "A fellow parrot person! I used to have one who was convinced he was the center of the universe, so he basically covered both your interests. Coffee or boba to trade stories?"
+
+Prompt: "My greatest strength: Being a Lakers & Dodgers fan in Warriors & Giants territory"
+  - [PICKUP LINE] "A Dodgers fan in Giants territory... this is a serious conflict of interest. We should hold a peace summit to negotiate terms. Coffee or boba?"
+
+Prompt: "Together, we could: compete over who wins the pickleball match 😈"
+  - [PICKUP LINE] "I like your confidence, but are you prepared for defeat? We should probably discuss the terms of your surrender over coffee or boba."
+
+Prompt: "My most irrational fear: is the Illuminati"
+  - [PICKUP LINE] "This is a serious security risk, Sara. We need to meet in a public place to discuss strategy. Pick our covert meeting spot: coffee or boba?"
+
+Prompt: "Together, we could: • solve mystery boardgames 
+• go to concerts and visit museums :) 
+• play poooool"
+  - [PICKUP LINE] "Alright, a fellow detective. Before we tackle our first mystery boardgame, we have to solve a more pressing case: coffee or boba for the strategy session?"
+
+Prompt: "My simple pleasures: Finding out how my friends/family greet me when they pick up the phone"
+  - [PICKUP LINE] "I'm imagining a very official spreadsheet ranking these greetings. What's currently holding the top spot?"
+
+Prompt: "I want someone who: can hold a conversation with me for hours on end"
+  - [PICKUP LINE] "Hours on end is a bold claim. I propose a preliminary trial over coffee to test this hypothesis - we can start by debating the most underrated 80s dance classic."
+
+Prompt: "I'm convinced that: I’ll drop my phone if I use two thumbs to text instead of a thumb and an index finger"
+  - [PICKUP LINE] "This is a serious ergonomic claim that needs to be tested. We should compare the phone-dropping stats over boba."
+
+Prompt: "The one thing you should know about me is: I got a playlist for every occasion 🎧"
+  - [PICKUP LINE] "A playlist for every occasion is a serious claim. Settle a debate: what's the soundtrack for deciding whether we should get coffee or boba?"
+
+Prompt: "Let's debate this topic: Who is the greatest r&b group?"
+  - [PICKUP LINE] "A debate of this magnitude requires a formal presentation. I'll get my slides ready, you pick the coffee shop."
+
+Prompt: "The one thing you should know about me is: I got a playlist for every occasion 🎧"
+  - [PICKUP LINE] "A playlist for every occasion is a serious claim. We'll have to test this: what's the official soundtrack for a first-date boba run?"
+
+Prompt: "I know the best spot in town for: Pakistani food 🤪"
+  - [PICKUP LINE] "That's a bold claim. My family's curry is tough competition, so I think a formal taste-off is in order. You choose the spot, I'll bring the official scorecards?"
+
+Prompt: "I want someone who: can hold a conversation with me for hours on end"
+  - [PICKUP LINE] "That's a serious conversational marathon. We should probably warm up first. Coffee or boba to see if we can at least make it through the first mile?"
+
+Prompt: "My Love Language is: bullying each other <3"
+  - [PICKUP LINE] "So you're saying the meaner I am, the more you'll like me? This feels like a trap."
+
+Prompt: "I geek out on: planets and parrots 😭"
+  - [PICKUP LINE] "A fellow parrot enthusiast! My old parrot used to scream ABBA at the mailman. Think we should compare notes over boba?"
+
+Prompt: "My greatest strength: Being a Lakers & Dodgers fan in Warriors & Giants territory"
+  - [PICKUP LINE] "I'm not supposed to talk to the enemy, but your bravery is impressive. Should we risk starting an inter-city incident for a coffee?"
+
+Prompt: "I'm looking for: someone to show me around and wine 🍷 & dine me - just moved here!"
+  - [PICKUP LINE] "Alright, new resident orientation starts now. First lesson: navigating the local coffee scene before we can even think about the wine and dine finals. Ready for your first assignment?"
+
