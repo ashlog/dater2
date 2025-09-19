@@ -38,13 +38,13 @@ export const cron = onSchedule(
 function main() {
   run(
     // [loc_san_jose, loc_mtv, loc_bayPalo, loc_sf, loc_santaCruz, loc_lilburn],
-    [loc_sf],
-    // [loc_bayPalo, loc_mtv],
+    // [loc_sf],
+    [loc_bayPalo, loc_mtv],
     // [loc_santaCruz],
     // [loc_marrietta],
     // [loc_santaCruz],
     // [loc_lilburn],
-    100
+    1000
   ).then(() => {
     console.log('done');
   });

@@ -1,6 +1,6 @@
 import { Profile } from './types';
 import { bestPl, generateOpenersFromYamlBatch, generateImageOpenerFromYaml, getImageScore, saveImage } from './openai';
-import { hinge } from './token';
+import { hinge, sessionId } from './token';
 import { runningLocally } from '../globals';
 import pLimit from 'p-limit';
 import { timeout } from './utils';
@@ -204,7 +204,7 @@ async function likeWithImage(
     hingeRequestLimiter.tryConsume();
     const best = imageCandidate.bestAnswer;
     console.log('Liking ' + best.photo.url + ' image with "' + best.comment + '". Average score: (' + imageCandidate.medianScore + '). Context:', imageCandidate.contextPrompts);
-    await hinge.sendLike(subject.profile.userId, ratingToken, { photoData: { url: best.photo.url, cdnId: best.photo.cdnId }, comment: best.comment });
+    await hinge.sendLike(subject.profile.userId, ratingToken, sessionId, { photoData: { url: best.photo.url, cdnId: best.photo.cdnId }, comment: best.comment });
     try {
       await appendDecision({
         timestamp: new Date().toISOString(),
@@ -247,7 +247,7 @@ async function likeWithText(
     hingeRequestLimiter.tryConsume();
     const question = getQuestionById(bestAnswer.answer.questionId);
     console.log('Prompt: "' + bestAnswer.prompt + '"\n  - [PICKUP LINE] "' + bestAnswer.line + '"');
-    await hinge.sendLike(subject.profile.userId, ratingToken, { content: { prompt: { question: question, answer: bestAnswer.answer.response } }, comment: bestAnswer.line });
+    await hinge.sendLike(subject.profile.userId, ratingToken, sessionId, { content: { prompt: { question: question, answer: bestAnswer.answer.response } }, comment: bestAnswer.line });
     try {
       await appendDecision({
         timestamp: new Date().toISOString(),

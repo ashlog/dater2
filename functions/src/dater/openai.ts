@@ -1,6 +1,6 @@
 import OpenAI from 'openai';
-import {myName} from './token';
-import {languageStyle, dos2, guidelines, imageGuidelines} from './dodonts';
+import { myName } from './token';
+import { languageStyle, dos2, guidelines, imageGuidelines } from './dodonts';
 import axios from 'axios';
 import fs from 'fs';
 import path from 'path';
@@ -230,13 +230,16 @@ export async function chat(
   try {
     const response = await openai.chat.completions.create({
       model: model,
+      reasoning: {
+        effort: 'medium'
+      },
       messages: [
         ...preprompt,
         { role: 'user', content: prompt },
       ],
       stop: ['===='],
       ...(responseFormat ? { response_format: { type: responseFormat } as any } : {}),
-    });
+    } as any);
     return response.choices[0].message!.content!;
   } catch (e) {
     console.error('chat() error', e);
@@ -302,7 +305,7 @@ function extractOpenerText(output: string): string {
   try {
     const obj = JSON.parse(trimmed);
     if (obj && typeof obj.text === 'string') return obj.text;
-  } catch {}
+  } catch { }
   const match = trimmed.match(/"text"\s*:\s*"([\s\S]*?)"/);
   if (match) return match[1];
   return trimmed;
@@ -322,7 +325,15 @@ export async function generateOpenerFromYaml(
     [
       {
         role: 'system',
-        content: spec,
+        content: [
+          {
+            type: "text",
+            text: spec,
+            cache_control: {
+              type: "ephemeral"
+            }
+          } as unknown as ChatCompletionContentPart,
+        ],
       },
     ],
     model,
@@ -349,14 +360,22 @@ export async function generateOpenersFromYamlBatch(
     )
     .join('\n');
 
-  const instruction = `You act strictly under the following style guide (YAML below).\nFor EACH input item, generate exactly one opener that fully adheres to the style_tone, cta_rules, ai_scent_filters, generation_algorithm, and formatting_checks.\nFollow the output_contract defined in the style guide.\nInputs: \n${inputBlocks}`;
+  const instruction = `You act strictly under the following style guide (YAML below).\nFor EACH input item, generate exactly one opener that fully adheres to the style_tone, cta_rules, ai_scent_filters, generation_algorithm, and formatting_checks.\nFollow the output_contract defined in the style guide.\nInputs:\n${inputBlocks}`;
 
   const out = await chat(
     instruction,
     [
       {
         role: 'system',
-        content: spec,
+        content: [
+          {
+            type: "text",
+            text: spec,
+            cache_control: {
+              type: "ephemeral"
+            }
+          } as unknown as ChatCompletionContentPart,
+        ],
       },
     ],
     model,
@@ -377,7 +396,7 @@ export async function generateOpenersFromYamlBatch(
       }
       return map;
     }
-  } catch {}
+  } catch { }
 
   // Last resort: regex to find objects with id/text pairs
   try {
@@ -388,9 +407,9 @@ export async function generateOpenersFromYamlBatch(
         if (obj && obj.id && typeof obj.text === 'string') {
           map.set(String(obj.id), obj.text);
         }
-      } catch {}
+      } catch { }
     }
-  } catch {}
+  } catch { }
   return map;
 }
 
@@ -415,6 +434,9 @@ export async function generateImageOpenerFromYaml(
           {
             type: 'text',
             text: spec,
+            cache_control: {
+              type: "ephemeral"
+            },
           } as unknown as ChatCompletionContentPart,
         ],
       },
@@ -456,6 +478,9 @@ export async function chatImage(
         top_p: 0.95,
         model: model,
         // model: 'gpt-3.5-turbo',
+        reasoning: {
+          effort: 'medium'
+        },
         messages: [
           ...preprompt,
           {
@@ -495,7 +520,7 @@ export async function chatImage(
         ],
         stop: ['===='],
         ...(responseFormat ? { response_format: { type: responseFormat } as any } : {}),
-      });
+      } as any);
       if ((response as any).error) {
         console.error('chatImage error', (response as any).error);
         throw (response as any).error;
@@ -504,7 +529,7 @@ export async function chatImage(
       return response.choices[0].message!.content!;
     } catch (e) {
       console.error(`Attempt ${attempt} failed:`, e);
-      
+
       if (attempt === maxRetries) {
         console.error('All retry attempts failed');
         return '';
@@ -651,8 +676,8 @@ export async function saveImage(
 }
 
 export async function downloadImageToBase64(url: string): Promise<string> {
-  const response = await axios.get(url, {responseType: 'arraybuffer'});
+  const response = await axios.get(url, { responseType: 'arraybuffer' });
   return Buffer.from(response.data).toString('base64');
 }
 
-export {ChatCompletionMessageParam};
+export { ChatCompletionMessageParam };

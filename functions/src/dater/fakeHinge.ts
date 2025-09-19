@@ -16,6 +16,7 @@ export class FakeHingeAPI implements HingeAPI {
   async sendLike(
     subjectId: string,
     ratingToken: string,
+    sessionId: string,
     options: {
       photoData?: {url: string; cdnId: string};
       content?: {prompt: {question: string; answer: string}};

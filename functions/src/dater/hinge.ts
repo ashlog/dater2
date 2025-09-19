@@ -35,6 +35,7 @@ export class HingeAPIImpl implements HingeAPI {
   async sendLike(
     subjectId: string,
     ratingToken: string,
+    sessionId: string,
     options: {
       photoData?: {url: string; cdnId: string};
       content?: {prompt: {question: string; answer: string}};
@@ -64,6 +65,7 @@ export class HingeAPIImpl implements HingeAPI {
 
     const data = {
       subjectId,
+      sessionId: sessionId,
       content: {...contentValue, comment: options.comment},
       rating: 'like',
       ratingId: uuidv4().toUpperCase(),
