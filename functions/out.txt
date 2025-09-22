@@ -1,0 +1,147 @@
+
+> functions@1.0.0 dev
+> npm run build && node lib/index.js
+
+
+> functions@1.0.0 build
+> tsc
+
+[dotenv@17.2.2] injecting env (5) from .env -- tip: ⚙️  write to custom object with { processEnv: myObject }
+Score: { class: 'Not Like', score: 0.24298009276390076 } https://media.hingenexus.com/image/upload/v1680592070/pqtdngbtncelmk8ofksc.jpg
+Score: { class: 'Not Like', score: 0.15845289826393127 } https://media.hingenexus.com/image/upload/klbksei2uehsfxg3ea77.webp
+Score: { class: 'Not Like', score: 0.023819416761398315 } https://media.hingenexus.com/video/upload/so_0p/v1717518380/gu05xca1k3r4wwqtru08.jpeg
+Score: { class: 'Not Like', score: 0.12188054621219635 } https://media.hingenexus.com/image/upload/h1ebov5nxkih2k6xm3f7.jpg
+Score: { class: 'Like', score: 0.6198267340660095 } https://media.hingenexus.com/image/upload/v1659418440/qelt6zgzcldmgvqilkbr.jpg
+Score: { class: 'Like', score: 0.6264914870262146 } https://media.hingenexus.com/image/upload/v1708762488/n6nmi371sb7c3beh4k3n.webp
+Score: { class: 'Like', score: 0.9843875169754028 } https://media.hingenexus.com/image/upload/0t0klwwoqv62ijckpgf7.jpg
+Score: { class: 'Not Like', score: 0.4052670896053314 } https://media.hingenexus.com/image/upload/v1717518376/k1xrkozujqjyms0d8yih.jpg
+Score: { class: 'Like', score: 0.9010544419288635 } https://media.hingenexus.com/image/upload/v1708762488/mfkomza07zlagn4dxlef.webp
+Score: { class: 'Like', score: 0.53305584192276 } https://media.hingenexus.com/image/upload/v1708762488/a7p5xgxim555adg68b0x.webp
+Score: { class: 'Like', score: 0.5306714177131653 } https://media.hingenexus.com/image/upload/v1705307057/j7lop2w7t40y74grhws0.webp
+Score: { class: 'Like', score: 0.7655903100967407 } https://media.hingenexus.com/image/upload/a7fdbcqmzsra78m071lm.jpg
+Score: { class: 'Like', score: 0.726804792881012 } https://media.hingenexus.com/image/upload/fhe58quc22jve0p08lrj.webp
+Score: { class: 'Not Like', score: 0.338070273399353 } https://media.hingenexus.com/image/upload/buxqnktwy5qz50ygyys1.jpg
+Score: { class: 'Like', score: 0.9756175875663757 } https://media.hingenexus.com/image/upload/v1708762488/2czj2e7aqtxq4n5du17c.webp
+Score: { class: 'Like', score: 0.7235224843025208 } https://media.hingenexus.com/image/upload/v1718236199/cff7fel2exvxwnkln11e.jpg
+Score: { class: 'Like', score: 0.5032984614372253 } https://media.hingenexus.com/image/upload/v1708762488/y8uaowqepc5wmvctlifj.webp
+Score: { class: 'Not Like', score: 0.08021218329668045 } https://media.hingenexus.com/image/upload/v1717518378/cnnayue8ckfba01sgc1h.jpg
+Score: { class: 'Like', score: 0.889424204826355 } https://media.hingenexus.com/image/upload/jafswg4vqtlieu5nnl3n.jpg
+Score: { class: 'Not Like', score: 0.45478206872940063 } https://media.hingenexus.com/image/upload/7lpdqb786d6gmkj6uheb.jpg
+Score: { class: 'Not Like', score: 0.2595082223415375 } https://media.hingenexus.com/image/upload/nqopgucgbdt0tq3zbj27.jpg
+Score: { class: 'Like', score: 0.82371985912323 } https://media.hingenexus.com/image/upload/kih2rs0urvusp42p32o8.jpg
+Score: { class: 'Not Like', score: 0.0008585823234170675 } https://media.hingenexus.com/image/upload/bj5nkouwsmpy6kqiglja.jpg
+Score: { class: 'Not Like', score: 0.0019325966713950038 } https://media.hingenexus.com/image/upload/7w7675knobguqun24jxf.jpg
+Score: { class: 'Not Like', score: 0.24215613305568695 } https://media.hingenexus.com/image/upload/v1717518378/gljuw8l0foogiypnvblf.jpg
+Score: { class: 'Not Like', score: 0.37631115317344666 } https://media.hingenexus.com/image/upload/luludumy2445zvf83e1x.jpg
+Score: { class: 'Not Like', score: 0.43247658014297485 } https://media.hingenexus.com/image/upload/g7q7rmooamlffdaztajt.jpg
+Score: { class: 'Not Like', score: 0.08427978307008743 } https://media.hingenexus.com/image/upload/op7rsnaxaprsmc70zvd0.jpg
+Score: { class: 'Not Like', score: 0.2673192620277405 } https://media.hingenexus.com/image/upload/urulbr3nle3w0vl2w67d.jpg
+Score: { class: 'Like', score: 0.8789351582527161 } https://media.hingenexus.com/image/upload/1dg2l6buebv7rhn153z2.jpg
+Score: { class: 'Not Like', score: 0.10229097306728363 } https://media.hingenexus.com/image/upload/lmrbj85dnjfsj3celwls.jpg
+Score: { class: 'Not Like', score: 0.3482353091239929 } https://media.hingenexus.com/image/upload/jhouqjriir8rgmu1ol1u.jpg
+Score: { class: 'Not Like', score: 0.18471534550189972 } https://media.hingenexus.com/image/upload/wsydx5d72i2i4zzybrx1.jpg
+Score: { class: 'Like', score: 0.7720460891723633 } https://media.hingenexus.com/image/upload/mhmzobjoucrj6xjnxggf.jpg
+Score: { class: 'Not Like', score: 0.2059069722890854 } https://media.hingenexus.com/image/upload/v1717518381/ndrsfgwz1uw4cav4mqyk.jpg
+Score: { class: 'Not Like', score: 0.3340005576610565 } https://media.hingenexus.com/image/upload/ezvimw3ogtruha4hm8q7.jpg
+Score: { class: 'Not Like', score: 0.06540129333734512 } https://media.hingenexus.com/image/upload/n0qkvza5um4icnqq3qog.jpg
+Score: { class: 'Like', score: 0.5371214747428894 } https://media.hingenexus.com/image/upload/heivz8t1tueu7mpext6b.jpg
+Score: { class: 'Not Like', score: 0.05010475963354111 } https://media.hingenexus.com/image/upload/v1720420535/8qttgkqbw7100r4q7tra.jpg
+Score: { class: 'Not Like', score: 0.4517269432544708 } https://media.hingenexus.com/image/upload/v1689134941/qlaanwim7dck2gbpjkic.jpg
+Score: { class: 'Not Like', score: 0.3203631341457367 } https://media.hingenexus.com/image/upload/3hk8vs7gd8hcn8maajaj.jpg
+Score: { class: 'Like', score: 0.7923394441604614 } https://media.hingenexus.com/image/upload/pxbzgch1w0hsiqljwdxg.jpg
+Score: { class: 'Not Like', score: 0.32369184494018555 } https://media.hingenexus.com/image/upload/hru0pu0530vdbogn8j2i.jpg
+Score: { class: 'Like', score: 0.5802461504936218 } https://media.hingenexus.com/image/upload/tz3oc61oehlpwi3hoqcs.jpg
+Score: { class: 'Not Like', score: 0.021232029423117638 } https://media.hingenexus.com/image/upload/6k3rsoj2zhqumgy8uif7.jpg
+Score: { class: 'Like', score: 0.7460154294967651 } https://media.hingenexus.com/image/upload/mcxj6xhipwqltidziy5x.jpg
+Score: { class: 'Not Like', score: 0.02719058282673359 } https://media.hingenexus.com/image/upload/v1712554398/ostkup3621gqe50h3iie.jpg
+Score: { class: 'Not Like', score: 0.3280821740627289 } https://media.hingenexus.com/image/upload/kp3u8xtcfj5ra4yuhov7.jpg
+Score: { class: 'Like', score: 0.7145416736602783 } https://media.hingenexus.com/image/upload/n8niwho10rj1uofzoary.jpg
+Score: { class: 'Not Like', score: 0.16881823539733887 } https://media.hingenexus.com/image/upload/xnhgw4wda8qwc4b4f73k.jpg
+Score: { class: 'Not Like', score: 0.14438091218471527 } https://media.hingenexus.com/image/upload/2t8lzc3k7r6hbxhqrk14.jpg
+Score: { class: 'Not Like', score: 0.24014173448085785 } https://media.hingenexus.com/image/upload/7wvucfns17brrrmxu851.jpg
+Score: { class: 'Not Like', score: 0.3636748790740967 } https://media.hingenexus.com/image/upload/epg843xqf7f17tgtga31.jpg
+Score: { class: 'Not Like', score: 0.3891461491584778 } https://media.hingenexus.com/image/upload/5t0h3lwgefbxsucwceme.jpg
+Score: { class: 'Not Like', score: 0.023538166657090187 } https://media.hingenexus.com/image/upload/vqxub48czrgcbc50u2kl.jpg
+Score: { class: 'Like', score: 0.8386673927307129 } https://media.hingenexus.com/image/upload/n183rhf7xqofo1pzrbdl.jpg
+Score: { class: 'Not Like', score: 0.029152607545256615 } https://media.hingenexus.com/image/upload/munwl8g1xamnghdsexem.jpg
+Score: { class: 'Like', score: 0.7331109642982483 } https://media.hingenexus.com/image/upload/k6obi5tdu35koh7ywxp5.jpg
+Score: { class: 'Like', score: 0.590241014957428 } https://media.hingenexus.com/image/upload/xkycxeimjma32epu4xoq.jpg
+  Generated text lines:  [
+  "A random fact I love is: Pirates wore eye patches so they could see in the dark when they went into the hold of the ship because it wasn’t safe to carry lanterns below deck. -- pirates basically invented dark mode, that's genius. what's your latest rabbit hole?",
+  "Let's debate this topic: Who’s a better Spider-Man/Peter Parker -- Tobey coded the original web experience, fight me over coffee?",
+  "We're the same type of weird if: You have to look up actors when watching a movie to figure out where you know them from -- same energy, my runtime record is 6 IMDB tabs mid-movie."
+]
+  Generated text lines:  [
+  "Dating me is like: Divertido -- I'll be the judge of divertido, coffee tribunal?",
+  'Where I go when I want to feel a little more like myself: A la playa -- need to know if playa means beach or player here?',
+  "The way to win me over is: Siendo atento cariñoso -- my Spanish is rusty but my attention span isn't, coffee?"
+]
+  Generated text lines:  [
+  'I take pride in: My camping abilities. It may just setting up a tent, but it makes me feel like I’m ready for Survivor. -- camping sounds in-tents, when do we test these skills?',
+  'I’m in my element when: a game is afoot!\n' +
+    'I absolutely love trivia and games. On the other hand, I get weirdly intense and zero in, so maybe save it for after a few dates when I’ve accrued some good will -- forget the warmup dates, ready for competitive trivia?',
+  "We're the same type of weird if: you quote and reference movies a little more than is socially acceptable -- what's your quote-per-conversation ratio? need baseline data."
+]
+  Generated text lines:  [
+  'Typical Sunday: Yoga, farmers market trip, then relaxation mode rest of the day :) -- relaxation mode the rest of the day? is that like airplane mode but cozier?',
+  "We'll get along if: you have a good sense of humor and can hold a conversation -- hold a conversation? my record is 47 minutes, arms gave out, what's yours?",
+  "The key to my heart is: mac n cheese -- mac n cheese? that's some gouda taste, homemade or boxed version?"
+]
+  Generated text lines:  [
+  "The key to my heart is: Bringing home the most rogue vegetable you can find at the market -- I'll turnip with romanesco, what qualifies as actually rogue?",
+  "The one thing I'd love to know about you is: Do you believe in free will? -- do I even get a choice in answering this?",
+  "I'm looking for: Someone who wants to live 10 lives in this one life - Let’s be goat herders, travel the world, start businesses, make endless art, and climb lots of mountains. -- not kidding about goat herding - that life number one?"
+]
+  Generated text lines:  [
+  'My Love Language is: Food and laughter -- we speak the same language, coffee to test the dialect?',
+  "I'll pick the topic if you start the conversation: Best show on Netflix? -- Stranger Things. convince me otherwise over coffee?",
+  'My friends ask me for advice about: Their sick kids…. -- can I get a diagnosis on my coffee addiction?'
+]
+  Generated text lines:  [
+  "The one thing I'd love to know about you is: What has been bringing you joy lately? -- lately? taking macro shots of flowers that probably judge my photography skills. you?",
+  "I get myself out of a funk by: Singing, cooking/baking or long walks with the pup. -- is your pup hiring walk partners? i've got elite coffee-finding skills.",
+  "My Love Language is: Acts of Service and Quality Time -- quality time is my language too, when's a good time to practice?"
+]
+usage { prompt_tokens: 7756, completion_tokens: 3199, total_tokens: 10955 }
+  Generated text lines:  [
+  'My simple pleasures: Coffee\n' +
+    'Food\n' +
+    'Long walks \n' +
+    "Movies -- coffee's a simple pleasure, let's complicate it with company?",
+  'Typical Sunday: Go for a run, then a coffee and just chill the rest of the day -- you run then coffee, i just do coffee runs - compatible?',
+  "My greatest strength: Very cheerful and optimistic person -- optimistic is your superpower, what's your kryptonite?"
+]
+usage { prompt_tokens: 7720, completion_tokens: 3909, total_tokens: 11629 }
+Liking https://media.hingenexus.com/image/upload/kih2rs0urvusp42p32o8.jpg image with "crocs with sequins - canceling out or leveling up?". Average score: (0.3559550940990448). Context: My Love Language is: Food and laughter
+I'll pick the topic if you start the conversation: Best show on Netflix?
+My friends ask me for advice about: Their sick kids….
+Likes 10 Like Rate: 0.00%
+Score: { class: 'Like', score: 0.5156978368759155 } https://media.hingenexus.com/image/upload/rluyyvecle7drovyqsyk.jpg
+Score: { class: 'Like', score: 0.9662559628486633 } https://media.hingenexus.com/image/upload/grevablcqki8knlf1g8i.jpg
+Score: { class: 'Like', score: 0.7513161897659302 } https://media.hingenexus.com/image/upload/0510znxtpzlazvwwxuz8.jpg
+Score: { class: 'Like', score: 0.8207396864891052 } https://media.hingenexus.com/image/upload/gr4yqfda18n3rt06inb0.jpg
+Score: { class: 'Like', score: 0.7282220125198364 } https://media.hingenexus.com/image/upload/itoytssxv3taioiw0bel.jpg
+Score: { class: 'Not Like', score: 0.33462029695510864 } https://media.hingenexus.com/image/upload/ojmoh1vx5oxltgqjfg83.jpg
+  Generated text lines:  [
+  "My greatest strength: I make really good soups -- sounds souper impressive, what's the signature?",
+  'The best way to ask me out is by: asking to buy me a beer -- beer me the time and place?',
+  "The way to win me over is: communication. Tell me what’s up so I know what I’m getting into. -- we should debug this connection. what's first?"
+]
+usage { prompt_tokens: 7728, completion_tokens: 3927, total_tokens: 11655 }
+Liking https://media.hingenexus.com/image/upload/n8niwho10rj1uofzoary.jpg image with "teal streaks like that need a soundtrack, what's playing?". Average score: (0.263413742184639). Context: Dating me is like: Divertido
+Where I go when I want to feel a little more like myself: A la playa
+The way to win me over is: Siendo atento cariñoso
+Likes 11 Like Rate: 0.00%
+  Generated text lines:  [
+  "The one thing I'd love to know about you is: If you have seen the Wicked movie 🧙‍♀️🧚‍♀️ -- saw it! need critical intel: Elphaba or Glinda?",
+  "Typical Sunday: Getting brunch with my family, meal prepping for the week with music on, reading a book, and gym -- music during meal prep - clearly instrumental. what's your go-to?",
+  'The hallmark of a good relationship is: Communication, trust, kindness, laughter\n' +
+    "Bonus points if you are not the life of the party and tend to be more inclined to stay in and cook together -- staying in to cook together - perfect recipe. what's your specialty?"
+]
+Prompt: "The one thing I'd love to know about you is: If you have seen the Wicked movie 🧙‍♀️🧚‍♀️"
+  - [PICKUP LINE] "saw it! need critical intel: Elphaba or Glinda?"
+Total Likes: 10, Total Profiles Scanned: 0, Like Rate: 0.00%
+done
+usage { prompt_tokens: 7793, completion_tokens: 5699, total_tokens: 13492 }
+usage { prompt_tokens: 6967, completion_tokens: 5654, total_tokens: 12621 }
+usage { prompt_tokens: 7733, completion_tokens: 5261, total_tokens: 12994 }

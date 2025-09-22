@@ -1,5 +1,5 @@
 import { asyncQuickSort } from './async_sort';
-import { compare } from './openai';
+import { compare } from './llm';
 
 export async function llmSort(arr: string[]) {
   const newArr = await asyncQuickSort(
@@ -13,4 +13,3 @@ export async function llmSort(arr: string[]) {
   );
   return newArr;
 }
-

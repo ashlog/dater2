@@ -16,13 +16,17 @@ export type DecisionEntry = {
   profile?: { firstName: string; age?: number };
   imageScores?: { url: string; score: number }[];
   medianImageScore?: number;
+  openerPromptHash?: string;
+  model?: string;
+  deliveryStatus?: 'success' | 'error';
+  deliveryError?: { code?: string; message: string };
 };
 
 function resolveDecisionsPath(): string {
   const candidates = [
-    path.join(process.cwd(), 'src', 'profiles_decisions.json'),
-    path.join(process.cwd(), 'profiles_decisions.json'),
-    path.join(__dirname, '..', 'profiles_decisions.json'),
+    path.join(process.cwd(), 'src', 'profiles_decisions.jsonl'),
+    path.join(process.cwd(), 'profiles_decisions.jsonl'),
+    path.join(__dirname, '..', 'profiles_decisions.jsonl'),
   ];
   for (const p of candidates) {
     try {
@@ -30,25 +34,59 @@ function resolveDecisionsPath(): string {
       if (fs.existsSync(dir)) return p;
     } catch {}
   }
-  return path.join(__dirname, 'profiles_decisions.json');
+  return path.join(__dirname, 'profiles_decisions.jsonl');
 }
 
 const decisionsPath = resolveDecisionsPath();
 let decisionsWriteQueue: Promise<void> = Promise.resolve();
 
-export async function appendDecision(entry: DecisionEntry): Promise<void> {
+function resolveOpenerPromptMapPath(): string {
+  const dir = path.dirname(decisionsPath);
+  return path.join(dir, 'opener_prompts_map.json');
+}
+
+const openerPromptMapPath = resolveOpenerPromptMapPath();
+let openerPromptMapCache: Record<string, string> | null = null;
+
+async function loadOpenerPromptMap(): Promise<Record<string, string>> {
+  if (openerPromptMapCache) return openerPromptMapCache;
+  try {
+    const txt = await fs.promises.readFile(openerPromptMapPath, 'utf8');
+    const parsed = JSON.parse(txt);
+    openerPromptMapCache = parsed && typeof parsed === 'object' ? parsed : {};
+  } catch {
+    openerPromptMapCache = {};
+  }
+  return openerPromptMapCache!;
+}
+
+async function persistOpenerPromptMap(map: Record<string, string>): Promise<void> {
+  try {
+    await fs.promises.writeFile(openerPromptMapPath, JSON.stringify(map, null, 2));
+  } catch (e) {
+    console.error('Failed to persist opener_prompt map', e);
+  }
+}
+
+async function ensureOpenerPromptStored(hash: string, text: string): Promise<void> {
+  const map = await loadOpenerPromptMap();
+  if (map[hash]) return;
+  map[hash] = text;
+  await persistOpenerPromptMap(map);
+}
+
+export async function appendDecision(
+  entry: DecisionEntry,
+  options?: { openerPrompt?: { hash: string; text: string } }
+): Promise<void> {
   decisionsWriteQueue = decisionsWriteQueue.then(async () => {
     try {
-      let arr: DecisionEntry[] = [];
-      try {
-        const txt = await fs.promises.readFile(decisionsPath, 'utf8');
-        arr = JSON.parse(txt);
-        if (!Array.isArray(arr)) arr = [];
-      } catch {
-        arr = [];
+      const dir = path.dirname(decisionsPath);
+      await fs.promises.mkdir(dir, { recursive: true });
+      await fs.promises.appendFile(decisionsPath, JSON.stringify(entry) + '\n', 'utf8');
+      if (options?.openerPrompt) {
+        await ensureOpenerPromptStored(options.openerPrompt.hash, options.openerPrompt.text);
       }
-      arr.push(entry);
-      await fs.promises.writeFile(decisionsPath, JSON.stringify(arr, null, 2));
     } catch (e) {
       console.error('Failed to append decision', e);
     }

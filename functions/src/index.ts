@@ -16,7 +16,7 @@ import fs from 'fs';
 import path from 'path';
 import {SendbirdAPI} from './dater/sendbird';
 import {GetChannelsInput} from './dater/sendbirdtypes';
-import {chatImage, getDemographics} from './dater/openai';
+import {chatImage, getDemographics} from './dater/llm';
 import extract from 'extract-json-from-string';
 
 export const cron = onSchedule(
@@ -30,23 +30,27 @@ export const cron = onSchedule(
   },
   async event => {
     logger.info('Extracting.');
-    await run([loc_bayPalo, loc_mtv], 10);
+    await run([loc_bayPalo, loc_mtv], 1);
     logger.info('Done Extracting.');
   }
 );
 
 function main() {
   run(
-    // [loc_san_jose, loc_mtv, loc_bayPalo, loc_sf, loc_santaCruz, loc_lilburn],
+    [loc_san_jose, loc_mtv, loc_bayPalo, loc_sf, loc_santaCruz, loc_lilburn],
     // [loc_sf],
-    [loc_bayPalo, loc_mtv],
+    // [loc_bayPalo, loc_mtv],
     // [loc_santaCruz],
     // [loc_marrietta],
     // [loc_santaCruz],
     // [loc_lilburn],
-    1000
+    300
   ).then(() => {
     console.log('done');
+    process.exit(0);
+  }).catch((error) => {
+    console.error('Error in main:', error);
+    process.exit(1);
   });
 }
 

@@ -38,7 +38,7 @@ export class HingeAPIImpl implements HingeAPI {
     sessionId: string,
     options: {
       photoData?: {url: string; cdnId: string};
-      content?: {prompt: {question: string; answer: string}};
+      content?: {prompt: {contentId?: string; question: string; answer: string}};
       comment?: string;
     }
   ): Promise<void> {
@@ -66,7 +66,7 @@ export class HingeAPIImpl implements HingeAPI {
     const data = {
       subjectId,
       sessionId: sessionId,
-      content: {...contentValue, comment: options.comment},
+      content: options.comment ? {...contentValue, comment: options.comment} : contentValue,
       rating: 'like',
       ratingId: uuidv4().toUpperCase(),
       ratingToken: ratingToken,

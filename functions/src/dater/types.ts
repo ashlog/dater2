@@ -6,6 +6,7 @@ export interface Profile {
       {
         position: number;
         questionId: string;
+        contentId?: string;
         type: string;
         response: string;
       }
