@@ -18,6 +18,7 @@ import {SendbirdAPI} from './dater/sendbird';
 import {GetChannelsInput} from './dater/sendbirdtypes';
 import {chatImage, getDemographics} from './dater/llm';
 import extract from 'extract-json-from-string';
+import { loc_david_ca } from './dater/locations';
 
 export const cron = onSchedule(
   {
@@ -37,7 +38,8 @@ export const cron = onSchedule(
 
 function main() {
   run(
-    [loc_san_jose, loc_mtv, loc_bayPalo, loc_sf, loc_santaCruz, loc_lilburn],
+    // [loc_san_jose, loc_mtv, loc_bayPalo, loc_sf, loc_santaCruz, loc_lilburn],
+    [loc_david_ca],
     // [loc_sf],
     // [loc_bayPalo, loc_mtv],
     // [loc_santaCruz],

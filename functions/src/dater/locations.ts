@@ -1,3 +1,8 @@
+export const loc_david_ca = {
+  longitude: -121.7405,
+  latitude: 38.5449,
+};
+
 export const loc_san_jose = {
   longitude: -122.0311703,
   latitude: 37.305955,

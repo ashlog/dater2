@@ -182,8 +182,12 @@ async function buildImageOpeners(
     return { candidates: [{ photo: top.photo, comment: cleanedComment }], medianScore, contextPrompts: prompts };
   } catch (error) {
     if (error instanceof LLMRefusalError) {
+      // Log the refusal and re-throw so processProfileEntry can handle it
+      console.warn('[buildImageOpeners] LLM refused to generate image opener, re-throwing for fallback handling');
       throw error;
     }
+    // For other errors, log and return empty candidates
+    console.error('[buildImageOpeners] Unexpected error generating image opener:', error);
     return { candidates: [], medianScore, contextPrompts: prompts };
   }
 }
@@ -546,7 +550,18 @@ async function processProfileEntry(entry: [string, Profile], ctx: LikeContext, c
     return;
   }
 
-  const imageCandidatesPromise = buildImageOpeners(subject, filteredAnswers, { scored: validation.scored, medianScore: validation.medianScore });
+  // Start both image and text generation in parallel, with proper error handling
+  const imageCandidatesPromise = buildImageOpeners(subject, filteredAnswers, { scored: validation.scored, medianScore: validation.medianScore })
+    .catch((error) => {
+      // Catch errors immediately to prevent unhandled rejections
+      if (error instanceof LLMRefusalError) {
+        console.warn('[LLM_REFUSAL] Image generation refused (caught early):', error.stopReason);
+        return { error, candidates: [], medianScore: validation?.medianScore, contextPrompts: '' };
+      }
+      console.error('[buildImageOpeners] Unexpected error (caught early):', error);
+      throw error;
+    });
+
   const textCandidatesStart = Date.now();
   let textCandidates: { answer: { questionId: string; response: string }; prompt: string; line: string }[] = [];
   const refusalErrors: LLMRefusalError[] = [];
@@ -572,21 +587,19 @@ async function processProfileEntry(entry: [string, Profile], ctx: LikeContext, c
 
   const imageCandidatesStart = Date.now();
   let imageCandidates: { candidates: { photo: any; comment: string }[]; medianScore: number | undefined; contextPrompts: string };
-  try {
-    imageCandidates = await imageCandidatesPromise;
-  } catch (error) {
-    if (error instanceof LLMRefusalError) {
-      refusalErrors.push(error);
-      console.warn(
-        '[LLM_REFUSAL] Image generation refused for profile',
-        subject.profile.userId,
-        'stopReason=',
-        error.stopReason
-      );
-      imageCandidates = { candidates: [], medianScore: validation?.medianScore, contextPrompts: '' };
-    } else {
-      throw error;
-    }
+  const imageResult = await imageCandidatesPromise;
+  if ('error' in imageResult && imageResult.error) {
+    // Image generation was refused
+    refusalErrors.push(imageResult.error as LLMRefusalError);
+    console.warn(
+      '[LLM_REFUSAL] Image generation refused for profile',
+      subject.profile.userId,
+      'stopReason=',
+      (imageResult.error as LLMRefusalError).stopReason
+    );
+    imageCandidates = { candidates: [], medianScore: validation?.medianScore, contextPrompts: '' };
+  } else {
+    imageCandidates = imageResult as { candidates: { photo: any; comment: string }[]; medianScore: number | undefined; contextPrompts: string };
   }
   const imageCandidatesEnd = Date.now();
   console.log(`[TIMING] Image openers generation: ${imageCandidatesEnd - imageCandidatesStart}ms`);
