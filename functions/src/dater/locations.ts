@@ -1,3 +1,8 @@
+export const loc_gdansk_pl = {
+  longitude: 18.64661,
+  latitude: 54.35202,
+};
+
 export const loc_david_ca = {
   longitude: -121.7405,
   latitude: 38.5449,
