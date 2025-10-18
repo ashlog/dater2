@@ -178,6 +178,7 @@ class AnthropicProvider implements LLMProvider {
     if (!model) return 'claude-3-5-sonnet-20241022';
     const trimmed = model.trim();
     const aliasMap: Record<string, string> = {
+      'anthropic/claude-haiku-4.5': 'claude-haiku-4-5-20251001',
       'anthropic/claude-sonnet-4.5': 'claude-sonnet-4-5-20250929',
       'anthropic/claude-3-opus:beta': 'claude-3-opus-20240229',
       'anthropic/claude-3-haiku:beta': 'claude-3-haiku-20240307',

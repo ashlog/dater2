@@ -100,3 +100,36 @@ export function buildPromptsList(filteredAnswers: { questionId: string; response
     answer: a.response,
   }));
 }
+
+function resolveDryRunPath(): string {
+  const candidates = [
+    path.join(process.cwd(), 'src', 'dry_run_profiles.jsonl'),
+    path.join(process.cwd(), 'dry_run_profiles.jsonl'),
+    path.join(__dirname, '..', 'dry_run_profiles.jsonl'),
+  ];
+  for (const p of candidates) {
+    try {
+      const dir = path.dirname(p);
+      if (fs.existsSync(dir)) return p;
+    } catch {}
+  }
+  return path.join(__dirname, 'dry_run_profiles.jsonl');
+}
+
+const dryRunPath = resolveDryRunPath();
+let dryRunWriteQueue: Promise<void> = Promise.resolve();
+
+export async function appendDryRunDecision(
+  entry: DecisionEntry
+): Promise<void> {
+  dryRunWriteQueue = dryRunWriteQueue.then(async () => {
+    try {
+      const dir = path.dirname(dryRunPath);
+      await fs.promises.mkdir(dir, { recursive: true });
+      await fs.promises.appendFile(dryRunPath, JSON.stringify(entry) + '\n', 'utf8');
+    } catch (e) {
+      console.error('Failed to append dry run decision', e);
+    }
+  });
+  return dryRunWriteQueue;
+}

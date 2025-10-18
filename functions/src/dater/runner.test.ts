@@ -23,9 +23,16 @@ import * as decisionsLog from './decisions_log';
 import * as questions from './questions';
 import * as helpers from './helpers';
 import * as limits from './limits';
+import fs from 'fs';
 
 // Import the run function after mocks are set up
 import { run } from './runner';
+
+const fsMock = fs as unknown as {
+  appendFileSync: jest.Mock;
+  existsSync: jest.Mock;
+  mkdirSync: jest.Mock;
+};
 
 describe('Runner - maxLikes and visited property behavior', () => {
   let mockHinge: any;
@@ -89,6 +96,9 @@ describe('Runner - maxLikes and visited property behavior', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
+    fsMock.appendFileSync = jest.fn();
+    fsMock.existsSync = jest.fn().mockReturnValue(true);
+    fsMock.mkdirSync = jest.fn();
 
     // Setup mock Hinge API
     mockHinge = {
@@ -189,6 +199,88 @@ describe('Runner - maxLikes and visited property behavior', () => {
         this.raw = raw;
       }
     };
+  });
+
+  describe('profile cache and logging integration', () => {
+    test('fetches fresh profiles, updates cache, generates openers, logs decision, and sends like', async () => {
+      const settings: Settings = { latitude: 37.75, longitude: -122.44, label: 'Test City' };
+      const profile = createMockProfile('user-new', 'Dana');
+
+      // Initial cache hit returns no unvisited profiles so we fetch fresh ones
+      (profileCache.readProfilesCache as jest.Mock).mockResolvedValueOnce({});
+      (profileCache.getUnvisited as jest.Mock)
+        .mockReturnValueOnce([])
+        .mockReturnValue([]); // Subsequent calls return empty to avoid extra batches
+
+      mockHinge.getRecommendations.mockResolvedValueOnce({
+        feeds: [
+          {
+            subjects: [{ subjectId: 'user-new', ratingToken: 'token-new' }],
+            preview: { subjects: [] }
+          }
+        ]
+      });
+      mockHinge.getProfiles.mockResolvedValueOnce([profile]);
+
+      (llm.generateImageOpenerFromYaml as jest.Mock).mockResolvedValue('Great photo opener!');
+      (llm.generateOpenersFromYamlBatch as jest.Mock).mockResolvedValue(
+        new Map([['1', 'Witty text opener!']])
+      );
+      (llm.bestPl as jest.Mock).mockResolvedValue(1); // Prefer text opener over image
+      mockHinge.sendLike.mockResolvedValue({});
+
+      await run([settings], 5);
+
+      expect(mockHinge.getRecommendations).toHaveBeenCalledWith(
+        settings.longitude,
+        settings.latitude
+      );
+      expect(mockHinge.getProfiles).toHaveBeenCalledTimes(1);
+      expect(profileCache.upsertLocationBatch).toHaveBeenCalledWith(
+        `${settings.latitude},${settings.longitude}`,
+        expect.arrayContaining([
+          expect.objectContaining({
+            ratingToken: 'token-new',
+            subjectId: 'user-new',
+            visited: false,
+            profile
+          })
+        ])
+      );
+      expect(llm.generateImageOpenerFromYaml).toHaveBeenCalled();
+      expect(llm.generateOpenersFromYamlBatch).toHaveBeenCalled();
+      expect(mockHinge.sendLike).toHaveBeenCalledTimes(1);
+      expect(mockHinge.sendLike.mock.calls[0][3]).toEqual(
+        expect.objectContaining({ comment: 'Witty text opener!' })
+      );
+      expect(decisionsLog.appendDecision).toHaveBeenCalledTimes(1);
+      expect(decisionsLog.appendDecision).toHaveBeenCalledWith(
+        expect.objectContaining({
+          decision: 'like',
+          decisionSource: 'text',
+          comment: 'Witty text opener!',
+          deliveryStatus: 'success'
+        }),
+        expect.anything()
+      );
+      expect(profileCache.markVisited).toHaveBeenCalledWith(
+        undefined,
+        `${settings.latitude},${settings.longitude}`,
+        'token-new'
+      );
+      expect(fsMock.appendFileSync).toHaveBeenCalledTimes(1);
+      const benchmarkPayload = fsMock.appendFileSync.mock.calls[0][1] as string;
+      const benchmarkEntry = JSON.parse(benchmarkPayload.trim());
+      expect(benchmarkEntry.date).toMatch(/^\d{4}-\d{2}-\d{2}$/);
+      expect(benchmarkEntry.locations[0]).toEqual(
+        expect.objectContaining({
+          label: 'Test City',
+          scanned: 1,
+          likes: 1,
+          averageAge: 25,
+        })
+      );
+    });
   });
 
   describe('maxLikes behavior', () => {

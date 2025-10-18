@@ -16,8 +16,9 @@ import { runningLocally } from '../globals';
 import pLimit from 'p-limit';
 import { timeout } from './utils';
 import fs from 'fs';
+import path from 'path';
 import { readProfilesCache, locationKeyOf, getUnvisited, markVisited, CachedEntry, Settings, upsertLocationBatch } from './profile_cache';
-import { buildPromptsList, appendDecision } from './decisions_log';
+import { buildPromptsList, appendDecision, appendDryRunDecision } from './decisions_log';
 import { getQuestionById } from './questions';
 import { cleanPickupLineResponse, isBadResponse } from './helpers';
 import { createLikeLimiter, createCancelToken, createHingeRequestLimiter } from './limits';
@@ -25,7 +26,7 @@ import { all } from 'axios';
 
 const concurrency = 2;
 const llmProvider: LLMProviderName = 'anthropic';
-const model = 'anthropic/claude-sonnet-4.5';
+const model = 'anthropic/claude-haiku-4.5';
 const thinkingBudgetTokens = 1024;
 
 setLLMProvider(llmProvider);
@@ -72,7 +73,37 @@ type LikeContext = {
   setting: Settings;
   locKey: string;
   failureCounter: { consecutive: number; max: number };
+  locationStats: { scanned: number; ageSum: number };
+  scanOnly: boolean;
 };
+
+function resolveBenchmarkLogPath(): string {
+  const candidates = [
+    path.join(process.cwd(), 'benchmarks.jsonl'),
+    path.join(process.cwd(), 'benchmarks', 'benchmarks.jsonl'),
+    path.join(__dirname, '..', 'benchmarks.jsonl'),
+  ];
+  for (const candidate of candidates) {
+    try {
+      const dir = path.dirname(candidate);
+      if (fs.existsSync(dir)) return candidate;
+    } catch { }
+  }
+  return path.join(process.cwd(), 'benchmarks.jsonl');
+}
+
+function appendBenchmarkEntry(entry: Record<string, unknown>) {
+  try {
+    const logPath = resolveBenchmarkLogPath();
+    const dir = path.dirname(logPath);
+    if (!fs.existsSync(dir)) {
+      fs.mkdirSync(dir, { recursive: true });
+    }
+    fs.appendFileSync(logPath, JSON.stringify(entry) + '\n', { encoding: 'utf8' });
+  } catch (error) {
+    console.error('[BENCHMARK] Failed to record benchmark entry', error);
+  }
+}
 
 async function fetchProfilesForSetting(setting: Settings, locKey: string, hingeRequestLimiter: ReturnType<typeof createHingeRequestLimiter>, cancelToken: ReturnType<typeof createCancelToken>) {
   let cache = await readProfilesCache();
@@ -261,16 +292,17 @@ async function recordSkipAndVisit(
   ratingToken: string,
   filteredAnswers: { questionId: string; response: string }[],
   locKey: string,
-  validation?: { scored: { url: string; score: number }[]; medianScore: number }
+  validation?: { scored: { url: string; score: number }[]; medianScore: number },
+  scanOnly = false
 ) {
   try {
     const openerPrompt = await getOpenerPromptMetadata();
-    await appendDecision({
+    const decisionEntry = {
       timestamp: new Date().toISOString(),
       location: { latitude: setting.latitude, longitude: setting.longitude },
       userId: subject.profile.userId,
       ratingToken,
-      decision: 'skip',
+      decision: 'skip' as const,
       images: subject.profile.photos.map(p => p.url),
       prompts: buildPromptsList(filteredAnswers.map(a => ({ questionId: a.questionId, response: a.response }))),
       profile: { firstName: subject.profile.firstName, age: subject.profile.age },
@@ -278,12 +310,20 @@ async function recordSkipAndVisit(
       medianImageScore: validation?.medianScore,
       openerPromptHash: openerPrompt.hash,
       model,
-      deliveryStatus: 'success',
-    }, { openerPrompt });
+      deliveryStatus: 'success' as const,
+    };
+    
+    if (scanOnly) {
+      await appendDryRunDecision(decisionEntry);
+    } else {
+      await appendDecision(decisionEntry, { openerPrompt });
+    }
   } catch { }
-  try {
-    await markVisited(undefined, locKey, ratingToken);
-  } catch { }
+  if (!scanOnly) {
+    try {
+      await markVisited(undefined, locKey, ratingToken);
+    } catch { }
+  }
 }
 
 async function recordRefusalAndVisit(
@@ -330,13 +370,19 @@ async function recordRefusalAndVisit(
   } catch (logError) {
     console.error('Failed to record refusal decision entry', logError);
   }
-  try {
-    await markVisited(undefined, ctx.locKey, ratingToken);
-  } catch (visitError) {
-    console.error('Failed to mark rating token as visited after refusal', visitError);
+  if (!ctx.scanOnly) {
+    try {
+      await markVisited(undefined, ctx.locKey, ratingToken);
+    } catch (visitError) {
+      console.error('Failed to mark rating token as visited after refusal', visitError);
+    }
+  } else {
+    console.log('[SCAN-ONLY] Profile not marked as visited after refusal - remains available for real likes');
   }
   console.log(
-    '[LLM_REFUSAL] Marked profile as visited after refusal. Likes:',
+    ctx.scanOnly 
+      ? '[LLM_REFUSAL] Profile not marked as visited after refusal - remains available for real likes. Likes:'
+      : '[LLM_REFUSAL] Marked profile as visited after refusal. Likes:',
     ctx.likeLimiter.getUsed(),
     'Like Rate:',
     ctx.getLikeRate().toFixed(2) + '%'
@@ -351,7 +397,7 @@ async function likeWithImage(
   filteredAnswers: { questionId: string; response: string }[],
   validation?: { scored: { url: string; score: number }[]; medianScore: number }
 ) {
-  const { hingeRequestLimiter, setting, locKey, likeLimiter, getLikeRate, cancelToken } = ctx;
+  const { hingeRequestLimiter, setting, locKey, likeLimiter, getLikeRate, cancelToken, scanOnly } = ctx;
   if (cancelToken.isAborted()) {
     // Release like reservation if cancelled
     likeLimiter.release();
@@ -361,62 +407,80 @@ async function likeWithImage(
   const best = imageCandidate.bestAnswer;
   const promptsList = buildPromptsList(filteredAnswers.map(a => ({ questionId: a.questionId, response: a.response })));
   let error: unknown = null;
-  try {
-    hingeRequestLimiter.tryConsume();
-    console.log('Liking ' + best.photo.url + ' image with "' + best.comment + '". Average score: (' + imageCandidate.medianScore + '). Context:', imageCandidate.contextPrompts);
-    await hinge.sendLike(subject.profile.userId, ratingToken, sessionId, { photoData: { url: best.photo.url, cdnId: best.photo.cdnId }, comment: best.comment });
-  } catch (e) {
-    error = e;
-    likeLimiter.release();
-    // Don't abort on individual like errors - they might be transient
-    console.error('Error sending like:', e);
-  } finally {
+  
+  if (!scanOnly) {
     try {
-      let openerPrompt: { text: string; hash: string } | null = null;
-      try {
-        openerPrompt = await getOpenerPromptMetadata();
-      } catch (metaError) {
-        console.error('Failed to load opener prompt metadata', metaError);
-      }
-      await appendDecision({
-        timestamp: new Date().toISOString(),
-        location: { latitude: setting.latitude, longitude: setting.longitude },
-        userId: subject.profile.userId,
-        ratingToken,
-        decision: 'like',
-        decisionSource: 'image',
-        comment: best.comment,
-        photoUsed: best.photo.url,
-        images: subject.profile.photos.map(p => p.url),
-        prompts: promptsList,
-        profile: { firstName: subject.profile.firstName, age: subject.profile.age },
-        medianImageScore: imageCandidate.medianScore as any,
-        imageScores: validation?.scored,
-        openerPromptHash: openerPrompt?.hash,
-        model,
-        deliveryStatus: error ? 'error' : 'success',
-        deliveryError: error ? formatDeliveryError(error) : undefined,
-      }, openerPrompt ? { openerPrompt } : undefined);
-    } catch (logError) {
-      console.error('Failed to record decision entry', logError);
+      hingeRequestLimiter.tryConsume();
+      console.log('Liking ' + best.photo.url + ' image with "' + best.comment + '". Average score: (' + imageCandidate.medianScore + '). Context:', imageCandidate.contextPrompts);
+      await hinge.sendLike(subject.profile.userId, ratingToken, sessionId, { photoData: { url: best.photo.url, cdnId: best.photo.cdnId }, comment: best.comment });
+    } catch (e) {
+      error = e;
+      likeLimiter.release();
+      // Don't abort on individual like errors - they might be transient
+      console.error('Error sending like:', e);
     }
-  }
-  // Mark as visited if like was successful OR if we got a 400 (invalid request - no point retrying)
-  if (!error) {
-    await markVisited(undefined, locKey, ratingToken);
-    console.log('Likes', likeLimiter.getUsed(), 'Like Rate:', getLikeRate().toFixed(2) + '%');
   } else {
-    // Check if error is a 400 (bad request) - if so, mark as visited to avoid retrying
-    const errorInfo = formatDeliveryError(error);
-    const is400 = errorInfo.code === '400' || errorInfo.message.includes('400');
-
-    if (is400) {
-      await markVisited(undefined, locKey, ratingToken);
-      console.log('Like failed with 400 (invalid request), marking as visited. Likes:', likeLimiter.getUsed(), 'Like Rate:', getLikeRate().toFixed(2) + '%');
-    } else {
-      // Don't mark as visited for transient errors - profile will remain unvisited for retry
-      console.log('Like failed with transient error, profile left unvisited for retry. Likes:', likeLimiter.getUsed(), 'Like Rate:', getLikeRate().toFixed(2) + '%');
+    console.log('[SCAN-ONLY] Would like ' + best.photo.url + ' image with "' + best.comment + '". Average score: (' + imageCandidate.medianScore + '). Context:', imageCandidate.contextPrompts);
+  }
+  
+  try {
+    let openerPrompt: { text: string; hash: string } | null = null;
+    try {
+      openerPrompt = await getOpenerPromptMetadata();
+    } catch (metaError) {
+      console.error('Failed to load opener prompt metadata', metaError);
     }
+    
+    const decisionEntry = {
+      timestamp: new Date().toISOString(),
+      location: { latitude: setting.latitude, longitude: setting.longitude },
+      userId: subject.profile.userId,
+      ratingToken,
+      decision: 'like' as const,
+      decisionSource: 'image' as const,
+      comment: best.comment,
+      photoUsed: best.photo.url,
+      images: subject.profile.photos.map(p => p.url),
+      prompts: promptsList,
+      profile: { firstName: subject.profile.firstName, age: subject.profile.age },
+      medianImageScore: imageCandidate.medianScore as any,
+      imageScores: validation?.scored,
+      openerPromptHash: openerPrompt?.hash,
+      model,
+      deliveryStatus: scanOnly ? 'success' as const : (error ? 'error' as const : 'success' as const),
+      deliveryError: scanOnly ? undefined : (error ? formatDeliveryError(error) : undefined),
+    };
+    
+    if (scanOnly) {
+      await appendDryRunDecision(decisionEntry);
+    } else {
+      await appendDecision(decisionEntry, openerPrompt ? { openerPrompt } : undefined);
+    }
+  } catch (logError) {
+    console.error('Failed to record decision entry', logError);
+  }
+  
+  // Mark as visited if like was successful OR if we got a 400 (invalid request - no point retrying)
+  // In scan-only mode, don't mark as visited so profiles remain available for real likes
+  if (!scanOnly) {
+    if (!error) {
+      await markVisited(undefined, locKey, ratingToken);
+      console.log('Likes', likeLimiter.getUsed(), 'Like Rate:', getLikeRate().toFixed(2) + '%');
+    } else {
+      // Check if error is a 400 (bad request) - if so, mark as visited to avoid retrying
+      const errorInfo = formatDeliveryError(error);
+      const is400 = errorInfo.code === '400' || errorInfo.message.includes('400');
+
+      if (is400) {
+        await markVisited(undefined, locKey, ratingToken);
+        console.log('Like failed with 400 (invalid request), marking as visited. Likes:', likeLimiter.getUsed(), 'Like Rate:', getLikeRate().toFixed(2) + '%');
+      } else {
+        // Don't mark as visited for transient errors - profile will remain unvisited for retry
+        console.log('Like failed with transient error, profile left unvisited for retry. Likes:', likeLimiter.getUsed(), 'Like Rate:', getLikeRate().toFixed(2) + '%');
+      }
+    }
+  } else {
+    console.log('[SCAN-ONLY] Profile not marked as visited - remains available for real likes. Likes:', likeLimiter.getUsed(), 'Like Rate:', getLikeRate().toFixed(2) + '%');
   }
 }
 
@@ -428,7 +492,7 @@ async function likeWithText(
   filteredAnswers: { questionId: string; response: string }[],
   validation?: { scored: { url: string; score: number }[]; medianScore: number }
 ) {
-  const { hingeRequestLimiter, setting, locKey, likeLimiter, getLikeRate, cancelToken } = ctx;
+  const { hingeRequestLimiter, setting, locKey, likeLimiter, getLikeRate, cancelToken, scanOnly } = ctx;
   if (cancelToken.isAborted()) {
     // Release like reservation if cancelled
     likeLimiter.release();
@@ -438,73 +502,91 @@ async function likeWithText(
   const question = getQuestionById(bestAnswer.answer.questionId);
   const promptsList = buildPromptsList(filteredAnswers.map(a => ({ questionId: a.questionId, response: a.response })));
   let error: unknown = null;
-  try {
-    hingeRequestLimiter.tryConsume();
-    console.log('Prompt: "' + bestAnswer.prompt + '"\n  - [PICKUP LINE] "' + bestAnswer.line + '"');
-    // Find the original answer object to get contentId
-    const originalAnswer = subject.profile.answers.find(a => a.questionId === bestAnswer.answer.questionId);
-    await hinge.sendLike(subject.profile.userId, ratingToken, sessionId, {
-      content: {
-        prompt: {
-          contentId: originalAnswer?.contentId,
-          question: question,
-          answer: bestAnswer.answer.response
-        }
-      },
-      comment: bestAnswer.line
-    });
-  } catch (e) {
-    error = e;
-    likeLimiter.release();
-    // Don't abort on individual like errors - they might be transient
-    console.error('Error sending like:', e);
-  } finally {
+  
+  if (!scanOnly) {
     try {
-      let openerPrompt: { text: string; hash: string } | null = null;
-      try {
-        openerPrompt = await getOpenerPromptMetadata();
-      } catch (metaError) {
-        console.error('Failed to load opener prompt metadata', metaError);
-      }
-      await appendDecision({
-        timestamp: new Date().toISOString(),
-        location: { latitude: setting.latitude, longitude: setting.longitude },
-        userId: subject.profile.userId,
-        ratingToken,
-        decision: 'like',
-        decisionSource: 'text',
-        comment: bestAnswer.line,
-        photoUsed: null,
-        images: subject.profile.photos.map(p => p.url),
-        prompts: promptsList,
-        profile: { firstName: subject.profile.firstName, age: subject.profile.age },
-        imageScores: validation?.scored,
-        medianImageScore: validation?.medianScore,
-        openerPromptHash: openerPrompt?.hash,
-        model,
-        deliveryStatus: error ? 'error' : 'success',
-        deliveryError: error ? formatDeliveryError(error) : undefined,
-      }, openerPrompt ? { openerPrompt } : undefined);
-    } catch (logError) {
-      console.error('Failed to record decision entry', logError);
+      hingeRequestLimiter.tryConsume();
+      console.log('Prompt: "' + bestAnswer.prompt + '"\n  - [PICKUP LINE] "' + bestAnswer.line + '"');
+      // Find the original answer object to get contentId
+      const originalAnswer = subject.profile.answers.find(a => a.questionId === bestAnswer.answer.questionId);
+      await hinge.sendLike(subject.profile.userId, ratingToken, sessionId, {
+        content: {
+          prompt: {
+            contentId: originalAnswer?.contentId,
+            question: question,
+            answer: bestAnswer.answer.response
+          }
+        },
+        comment: bestAnswer.line
+      });
+    } catch (e) {
+      error = e;
+      likeLimiter.release();
+      // Don't abort on individual like errors - they might be transient
+      console.error('Error sending like:', e);
     }
-  }
-  // Mark as visited if like was successful OR if we got a 400 (invalid request - no point retrying)
-  if (!error) {
-    await markVisited(undefined, locKey, ratingToken);
-    console.log('Likes', likeLimiter.getUsed(), 'Like Rate:', getLikeRate().toFixed(2) + '%');
   } else {
-    // Check if error is a 400 (bad request) - if so, mark as visited to avoid retrying
-    const errorInfo = formatDeliveryError(error);
-    const is400 = errorInfo.code === '400' || errorInfo.message.includes('400');
-
-    if (is400) {
-      await markVisited(undefined, locKey, ratingToken);
-      console.log('Like failed with 400 (invalid request), marking as visited. Likes:', likeLimiter.getUsed(), 'Like Rate:', getLikeRate().toFixed(2) + '%');
-    } else {
-      // Don't mark as visited for transient errors - profile will remain unvisited for retry
-      console.log('Like failed with transient error, profile left unvisited for retry. Likes:', likeLimiter.getUsed(), 'Like Rate:', getLikeRate().toFixed(2) + '%');
+    console.log('[SCAN-ONLY] Prompt: "' + bestAnswer.prompt + '"\n  - [PICKUP LINE] "' + bestAnswer.line + '"');
+  }
+  
+  try {
+    let openerPrompt: { text: string; hash: string } | null = null;
+    try {
+      openerPrompt = await getOpenerPromptMetadata();
+    } catch (metaError) {
+      console.error('Failed to load opener prompt metadata', metaError);
     }
+    
+    const decisionEntry = {
+      timestamp: new Date().toISOString(),
+      location: { latitude: setting.latitude, longitude: setting.longitude },
+      userId: subject.profile.userId,
+      ratingToken,
+      decision: 'like' as const,
+      decisionSource: 'text' as const,
+      comment: bestAnswer.line,
+      photoUsed: null,
+      images: subject.profile.photos.map(p => p.url),
+      prompts: promptsList,
+      profile: { firstName: subject.profile.firstName, age: subject.profile.age },
+      imageScores: validation?.scored,
+      medianImageScore: validation?.medianScore,
+      openerPromptHash: openerPrompt?.hash,
+      model,
+      deliveryStatus: scanOnly ? 'success' as const : (error ? 'error' as const : 'success' as const),
+      deliveryError: scanOnly ? undefined : (error ? formatDeliveryError(error) : undefined),
+    };
+    
+    if (scanOnly) {
+      await appendDryRunDecision(decisionEntry);
+    } else {
+      await appendDecision(decisionEntry, openerPrompt ? { openerPrompt } : undefined);
+    }
+  } catch (logError) {
+    console.error('Failed to record decision entry', logError);
+  }
+  
+  // Mark as visited if like was successful OR if we got a 400 (invalid request - no point retrying)
+  // In scan-only mode, don't mark as visited so profiles remain available for real likes
+  if (!scanOnly) {
+    if (!error) {
+      await markVisited(undefined, locKey, ratingToken);
+      console.log('Likes', likeLimiter.getUsed(), 'Like Rate:', getLikeRate().toFixed(2) + '%');
+    } else {
+      // Check if error is a 400 (bad request) - if so, mark as visited to avoid retrying
+      const errorInfo = formatDeliveryError(error);
+      const is400 = errorInfo.code === '400' || errorInfo.message.includes('400');
+
+      if (is400) {
+        await markVisited(undefined, locKey, ratingToken);
+        console.log('Like failed with 400 (invalid request), marking as visited. Likes:', likeLimiter.getUsed(), 'Like Rate:', getLikeRate().toFixed(2) + '%');
+      } else {
+        // Don't mark as visited for transient errors - profile will remain unvisited for retry
+        console.log('Like failed with transient error, profile left unvisited for retry. Likes:', likeLimiter.getUsed(), 'Like Rate:', getLikeRate().toFixed(2) + '%');
+      }
+    }
+  } else {
+    console.log('[SCAN-ONLY] Profile not marked as visited - remains available for real likes. Likes:', likeLimiter.getUsed(), 'Like Rate:', getLikeRate().toFixed(2) + '%');
   }
 }
 
@@ -527,6 +609,8 @@ async function processProfileEntry(entry: [string, Profile], ctx: LikeContext, c
   console.log(`[TIMING] Like reservation: ${afterReservation - startTime}ms`);
 
   counters.profileCount++;
+  ctx.locationStats.scanned++;
+  ctx.locationStats.ageSum += typeof subject.profile.age === 'number' ? subject.profile.age : 0;
   const filteredAnswers = subject.profile.answers.filter(it => it.type === 'text');
 
   // Pre-validation: only proceed if image scores pass basic threshold
@@ -546,63 +630,72 @@ async function processProfileEntry(entry: [string, Profile], ctx: LikeContext, c
     );
     // Release the like reservation - we're not using it
     ctx.likeLimiter.release();
-    await recordSkipAndVisit(ctx.setting, subject, ratingToken, filteredAnswers, ctx.locKey, validation as any);
+    await recordSkipAndVisit(ctx.setting, subject, ratingToken, filteredAnswers, ctx.locKey, validation as any, ctx.scanOnly);
     return;
   }
 
-  // Start both image and text generation in parallel, with proper error handling
-  const imageCandidatesPromise = buildImageOpeners(subject, filteredAnswers, { scored: validation.scored, medianScore: validation.medianScore })
-    .catch((error) => {
-      // Catch errors immediately to prevent unhandled rejections
-      if (error instanceof LLMRefusalError) {
-        console.warn('[LLM_REFUSAL] Image generation refused (caught early):', error.stopReason);
-        return { error, candidates: [], medianScore: validation?.medianScore, contextPrompts: '' };
-      }
-      console.error('[buildImageOpeners] Unexpected error (caught early):', error);
-      throw error;
-    });
-
-  const textCandidatesStart = Date.now();
+  // In scan-only mode, skip expensive pickup line generation
+  let imageCandidates: { candidates: { photo: any; comment: string }[]; medianScore: number | undefined; contextPrompts: string };
   let textCandidates: { answer: { questionId: string; response: string }; prompt: string; line: string }[] = [];
   const refusalErrors: LLMRefusalError[] = [];
-  try {
-    textCandidates = filteredAnswers.length > 0 ? await generateTextOpeners(subject, filteredAnswers) : [];
-  } catch (error) {
-    if (error instanceof LLMRefusalError) {
-      refusalErrors.push(error);
+
+  if (ctx.scanOnly) {
+    console.log('[SCAN-ONLY] Skipping pickup line generation - only scoring images');
+    // In scan-only mode, just create empty candidates since we're not generating lines
+    imageCandidates = { candidates: [], medianScore: validation?.medianScore, contextPrompts: '' };
+    textCandidates = [];
+  } else {
+    // Start both image and text generation in parallel, with proper error handling
+    const imageCandidatesPromise = buildImageOpeners(subject, filteredAnswers, { scored: validation.scored, medianScore: validation.medianScore })
+      .catch((error) => {
+        // Catch errors immediately to prevent unhandled rejections
+        if (error instanceof LLMRefusalError) {
+          console.warn('[LLM_REFUSAL] Image generation refused (caught early):', error.stopReason);
+          return { error, candidates: [], medianScore: validation?.medianScore, contextPrompts: '' };
+        }
+        console.error('[buildImageOpeners] Unexpected error (caught early):', error);
+        throw error;
+      });
+
+    const textCandidatesStart = Date.now();
+    try {
+      textCandidates = filteredAnswers.length > 0 ? await generateTextOpeners(subject, filteredAnswers) : [];
+    } catch (error) {
+      if (error instanceof LLMRefusalError) {
+        refusalErrors.push(error);
+        console.warn(
+          '[LLM_REFUSAL] Text generation refused for profile',
+          subject.profile.userId,
+          'stopReason=',
+          error.stopReason
+        );
+        textCandidates = [];
+      } else {
+        console.error('Unexpected error during text opener generation', error);
+        textCandidates = [];
+      }
+    }
+    const textCandidatesEnd = Date.now();
+    console.log(`[TIMING] Text openers generation: ${textCandidatesEnd - textCandidatesStart}ms`);
+
+    const imageCandidatesStart = Date.now();
+    const imageResult = await imageCandidatesPromise;
+    if ('error' in imageResult && imageResult.error) {
+      // Image generation was refused
+      refusalErrors.push(imageResult.error as LLMRefusalError);
       console.warn(
-        '[LLM_REFUSAL] Text generation refused for profile',
+        '[LLM_REFUSAL] Image generation refused for profile',
         subject.profile.userId,
         'stopReason=',
-        error.stopReason
+        (imageResult.error as LLMRefusalError).stopReason
       );
-      textCandidates = [];
+      imageCandidates = { candidates: [], medianScore: validation?.medianScore, contextPrompts: '' };
     } else {
-      console.error('Unexpected error during text opener generation', error);
-      textCandidates = [];
+      imageCandidates = imageResult as { candidates: { photo: any; comment: string }[]; medianScore: number | undefined; contextPrompts: string };
     }
+    const imageCandidatesEnd = Date.now();
+    console.log(`[TIMING] Image openers generation: ${imageCandidatesEnd - imageCandidatesStart}ms`);
   }
-  const textCandidatesEnd = Date.now();
-  console.log(`[TIMING] Text openers generation: ${textCandidatesEnd - textCandidatesStart}ms`);
-
-  const imageCandidatesStart = Date.now();
-  let imageCandidates: { candidates: { photo: any; comment: string }[]; medianScore: number | undefined; contextPrompts: string };
-  const imageResult = await imageCandidatesPromise;
-  if ('error' in imageResult && imageResult.error) {
-    // Image generation was refused
-    refusalErrors.push(imageResult.error as LLMRefusalError);
-    console.warn(
-      '[LLM_REFUSAL] Image generation refused for profile',
-      subject.profile.userId,
-      'stopReason=',
-      (imageResult.error as LLMRefusalError).stopReason
-    );
-    imageCandidates = { candidates: [], medianScore: validation?.medianScore, contextPrompts: '' };
-  } else {
-    imageCandidates = imageResult as { candidates: { photo: any; comment: string }[]; medianScore: number | undefined; contextPrompts: string };
-  }
-  const imageCandidatesEnd = Date.now();
-  console.log(`[TIMING] Image openers generation: ${imageCandidatesEnd - imageCandidatesStart}ms`);
 
   const allCandidates: { type: 'image' | 'text'; text: string; photo?: any; prompt?: string; answer?: { questionId: string; response: string } }[] = [];
   for (const ic of imageCandidates.candidates) allCandidates.push({ type: 'image', text: ic.comment, photo: ic.photo });
@@ -611,6 +704,43 @@ async function processProfileEntry(entry: [string, Profile], ctx: LikeContext, c
   console.log(`[TIMING] Total candidates generated: ${allCandidates.length} (${imageCandidates.candidates.length} image, ${textCandidates.length} text)`);
 
   if (allCandidates.length === 0) {
+    if (ctx.scanOnly) {
+      // In scan-only mode, just record the decision based on image validation
+      // Since we passed validation, this would have been a like
+      console.log('[SCAN-ONLY] No pickup lines generated, but image validation passed - would have liked');
+      ctx.likeLimiter.release(); // Release the reservation since we're not actually liking
+      
+      // Record as a like decision in scan-only mode
+      try {
+        const openerPrompt = await getOpenerPromptMetadata();
+        const decisionEntry = {
+          timestamp: new Date().toISOString(),
+          location: { latitude: ctx.setting.latitude, longitude: ctx.setting.longitude },
+          userId: subject.profile.userId,
+          ratingToken,
+          decision: 'like' as const,
+          decisionSource: 'image' as const,
+          comment: '', // No comment generated
+          photoUsed: validation?.scored && validation.scored.length > 0 
+            ? validation.scored.reduce((acc, curr) => acc.score > curr.score ? acc : curr).url
+            : subject.profile.photos[0]?.url || null,
+          images: subject.profile.photos.map(p => p.url),
+          prompts: buildPromptsList(filteredAnswers.map(a => ({ questionId: a.questionId, response: a.response }))),
+          profile: { firstName: subject.profile.firstName, age: subject.profile.age },
+          imageScores: validation?.scored,
+          medianImageScore: validation?.medianScore,
+          openerPromptHash: openerPrompt.hash,
+          model,
+          deliveryStatus: 'success' as const,
+        };
+        await appendDryRunDecision(decisionEntry);
+      } catch { }
+      
+      // Don't mark as visited in scan-only mode
+      console.log('[SCAN-ONLY] Profile not marked as visited - remains available for real likes');
+      return;
+    }
+    
     if (refusalErrors.length > 0) {
       // Every generation path refused. Instead of retrying forever, fire off a best-effort
       // like with a high-quality photo and no comment so we can move on.
@@ -692,23 +822,32 @@ async function processProfileEntry(entry: [string, Profile], ctx: LikeContext, c
   // Reset consecutive failures on successful generation
   ctx.failureCounter.consecutive = 0;
 
-  // Final ranker across ALL generations via single JSON index selection
-  const bestPickerStart = Date.now();
-  let bestIndex: number;
-  try {
-    bestIndex = await bestPl(allCandidates.map(c => c.text), model);
-  } catch (error) {
-    if (error instanceof LLMRefusalError) {
-      refusalErrors.push(error);
-      await recordRefusalAndVisit(ctx, subject, ratingToken, filteredAnswers, validation as any, error);
-      return;
-    }
-    throw error;
-  }
-  const bestPickerEnd = Date.now();
-  console.log(`[TIMING] Best picker: ${bestPickerEnd - bestPickerStart}ms (selected index ${bestIndex})`);
+  let best: { type: 'image' | 'text'; text: string; photo?: any; prompt?: string; answer?: { questionId: string; response: string } };
 
-  const best = allCandidates[Math.max(0, Math.min(bestIndex, allCandidates.length - 1))];
+  if (ctx.scanOnly) {
+    // In scan-only mode, we don't have pickup lines to rank, so just pick the first available option
+    // This shouldn't happen since we skip generation, but just in case
+    console.log('[SCAN-ONLY] Skipping pickup line ranking - no lines generated');
+    best = allCandidates[0] || { type: 'image', text: '', photo: subject.profile.photos[0] };
+  } else {
+    // Final ranker across ALL generations via single JSON index selection
+    const bestPickerStart = Date.now();
+    let bestIndex: number;
+    try {
+      bestIndex = await bestPl(allCandidates.map(c => c.text), model);
+    } catch (error) {
+      if (error instanceof LLMRefusalError) {
+        refusalErrors.push(error);
+        await recordRefusalAndVisit(ctx, subject, ratingToken, filteredAnswers, validation as any, error);
+        return;
+      }
+      throw error;
+    }
+    const bestPickerEnd = Date.now();
+    console.log(`[TIMING] Best picker: ${bestPickerEnd - bestPickerStart}ms (selected index ${bestIndex})`);
+
+    best = allCandidates[Math.max(0, Math.min(bestIndex, allCandidates.length - 1))];
+  }
 
   // Log the final winner locally for inspection as a single readable line with context
   if (runningLocally) {
@@ -737,15 +876,54 @@ async function processProfileEntry(entry: [string, Profile], ctx: LikeContext, c
   }
 
   const likeStart = Date.now();
-  if (best.type === 'image' && best.photo) {
-    const imageCandidate = { bestAnswer: { photo: best.photo, comment: best.text }, medianScore: imageCandidates.medianScore, contextPrompts: imageCandidates.contextPrompts } as const;
-    await likeWithImage(ctx, subject, ratingToken, imageCandidate, filteredAnswers, validation as any);
-  } else if (best.type === 'text' && best.answer && best.prompt) {
-    const bestAnswer = { answer: best.answer, prompt: best.prompt, line: best.text } as const;
-    await likeWithText(ctx, subject, ratingToken, bestAnswer as any, filteredAnswers, validation as any);
+  
+  if (ctx.scanOnly) {
+    // In scan-only mode, just record the decision based on image validation
+    // Since we passed validation, this would have been a like
+    console.log('[SCAN-ONLY] Recording like decision based on image validation');
+    ctx.likeLimiter.release(); // Release the reservation since we're not actually liking
+    
+    // Record as a like decision in scan-only mode
+    try {
+      const openerPrompt = await getOpenerPromptMetadata();
+      const decisionEntry = {
+        timestamp: new Date().toISOString(),
+        location: { latitude: ctx.setting.latitude, longitude: ctx.setting.longitude },
+        userId: subject.profile.userId,
+        ratingToken,
+        decision: 'like' as const,
+        decisionSource: 'image' as const,
+        comment: '', // No comment generated in scan-only mode
+        photoUsed: validation?.scored && validation.scored.length > 0 
+          ? validation.scored.reduce((acc, curr) => acc.score > curr.score ? acc : curr).url
+          : subject.profile.photos[0]?.url || null,
+        images: subject.profile.photos.map(p => p.url),
+        prompts: buildPromptsList(filteredAnswers.map(a => ({ questionId: a.questionId, response: a.response }))),
+        profile: { firstName: subject.profile.firstName, age: subject.profile.age },
+        imageScores: validation?.scored,
+        medianImageScore: validation?.medianScore,
+        openerPromptHash: openerPrompt.hash,
+        model,
+        deliveryStatus: 'success' as const,
+      };
+      await appendDryRunDecision(decisionEntry);
+    } catch { }
+    
+    // Don't mark as visited in scan-only mode
+    console.log('[SCAN-ONLY] Profile not marked as visited - remains available for real likes');
   } else {
-    await recordSkipAndVisit(ctx.setting, subject, ratingToken, filteredAnswers, ctx.locKey, validation as any);
+    // Normal mode - process with actual pickup lines
+    if (best.type === 'image' && best.photo) {
+      const imageCandidate = { bestAnswer: { photo: best.photo, comment: best.text }, medianScore: imageCandidates.medianScore, contextPrompts: imageCandidates.contextPrompts } as const;
+      await likeWithImage(ctx, subject, ratingToken, imageCandidate, filteredAnswers, validation as any);
+    } else if (best.type === 'text' && best.answer && best.prompt) {
+      const bestAnswer = { answer: best.answer, prompt: best.prompt, line: best.text } as const;
+      await likeWithText(ctx, subject, ratingToken, bestAnswer as any, filteredAnswers, validation as any);
+    } else {
+      await recordSkipAndVisit(ctx.setting, subject, ratingToken, filteredAnswers, ctx.locKey, validation as any, ctx.scanOnly);
+    }
   }
+  
   const likeEnd = Date.now();
   console.log(`[TIMING] Like/skip operation: ${likeEnd - likeStart}ms`);
 
@@ -784,7 +962,7 @@ async function validateProfileImages(subject: Profile): Promise<{ pass: boolean;
   return { pass: anyCandidate, topScore: top, medianScore: median, scored };
 }
 
-export async function run(settings: Settings[], maxLikes = 100000) {
+export async function run(settings: Settings[], maxLikes = 100000, profilesPerLocation = Infinity, scanOnly = false) {
   let profileCount = 0;
   let consecutiveGenerationFailures = 0;
   const MAX_CONSECUTIVE_FAILURES = 3;
@@ -792,17 +970,36 @@ export async function run(settings: Settings[], maxLikes = 100000) {
   const cancelToken = createCancelToken();
   const hingeRequestLimiter = createHingeRequestLimiter(cancelToken, 2000);
   const getLikeRate = () => (profileCount > 0 ? (likeLimiter.getUsed() / profileCount) * 100 : 0);
+  const perLocationStats: {
+    label: string;
+    latitude: number;
+    longitude: number;
+    scanned: number;
+    likes: number;
+    likeRate: number;
+    averageAge: number;
+  }[] = [];
 
   for (const setting of settings) {
     const locKey = locationKeyOf(setting);
-    console.log(`\n========== Processing location: ${locKey} ==========`);
+    const locationLabel = setting.label ?? locKey;
+    const locationTarget = Number.isFinite(profilesPerLocation) && profilesPerLocation > 0 ? profilesPerLocation : Infinity;
+    const locationStartProfileCount = profileCount;
+    const locationStartLikes = likeLimiter.getUsed();
+    const locationStats = { scanned: 0, ageSum: 0 };
+    console.log(`\n========== Processing location: ${locationLabel} (${locKey}) ==========`);
     console.log(`Current likes: ${likeLimiter.getUsed()}/${maxLikes}`);
     try {
       while (!likeLimiter.isExhausted() && !cancelToken.isAborted()) {
+        const processedForLocation = profileCount - locationStartProfileCount;
+        if (processedForLocation >= locationTarget) {
+          console.log(`[LOCATION] Profile scan target (${locationTarget}) reached for: ${locationLabel}`);
+          break;
+        }
         const profileMap = await fetchProfilesForSetting(setting, locKey, hingeRequestLimiter, cancelToken);
         // If no profiles available for this location, try next location
         if (profileMap.size === 0) {
-          console.log(`[LOCATION] No more profiles available for location: ${locKey}, moving to next location`);
+          console.log(`[LOCATION] No more profiles available for location: ${locationLabel}, moving to next location`);
           break;
         }
         const ctx: LikeContext = {
@@ -812,7 +1009,9 @@ export async function run(settings: Settings[], maxLikes = 100000) {
           getLikeRate,
           setting,
           locKey,
-          failureCounter: { consecutive: consecutiveGenerationFailures, max: MAX_CONSECUTIVE_FAILURES }
+          failureCounter: { consecutive: consecutiveGenerationFailures, max: MAX_CONSECUTIVE_FAILURES },
+          locationStats,
+          scanOnly
         };
         const limit = pLimit(concurrency);
         const counters = { profileCount };
@@ -832,7 +1031,52 @@ export async function run(settings: Settings[], maxLikes = 100000) {
     } catch (e) {
       console.error(e);
     }
+    const scannedForLocation = locationStats.scanned;
+    const likesForLocation = Math.max(0, likeLimiter.getUsed() - locationStartLikes);
+    const locationLikeRate = scannedForLocation > 0 ? (likesForLocation / scannedForLocation) * 100 : 0;
+    const averageAge = scannedForLocation > 0 ? locationStats.ageSum / scannedForLocation : 0;
+    perLocationStats.push({
+      label: locationLabel,
+      latitude: setting.latitude,
+      longitude: setting.longitude,
+      scanned: scannedForLocation,
+      likes: likesForLocation,
+      likeRate: locationLikeRate,
+      averageAge,
+    });
+    console.log(
+      `[BENCHMARK] ${locationLabel}: scanned ${scannedForLocation} profiles, likes ${likesForLocation}, like rate ${locationLikeRate.toFixed(2)}%, avg age ${averageAge.toFixed(1)}`
+    );
     if (likeLimiter.isExhausted() || cancelToken.isAborted()) break;
   }
   console.log(`Total Likes: ${likeLimiter.getUsed()}, Total Profiles Scanned: ${profileCount}, Like Rate: ${getLikeRate().toFixed(2)}%`);
+  if (perLocationStats.length > 0) {
+    console.log('\n[BENCHMARK] Per-location summary:');
+    for (const stat of perLocationStats) {
+      console.log(
+        `[BENCHMARK] ${stat.label}: scanned ${stat.scanned}, likes ${stat.likes}, like rate ${stat.likeRate.toFixed(2)}%, avg age ${stat.averageAge.toFixed(1)}`
+      );
+    }
+  }
+  const nowIso = new Date().toISOString();
+  appendBenchmarkEntry({
+    timestamp: nowIso,
+    date: nowIso.split('T')[0],
+    maxLikes,
+    profilesPerLocation: Number.isFinite(profilesPerLocation) ? profilesPerLocation : null,
+    totals: {
+      likes: likeLimiter.getUsed(),
+      scanned: profileCount,
+      likeRate: getLikeRate(),
+    },
+    locations: perLocationStats.map(stat => ({
+      label: stat.label,
+      latitude: stat.latitude,
+      longitude: stat.longitude,
+      scanned: stat.scanned,
+      likes: stat.likes,
+      likeRate: stat.likeRate,
+      averageAge: stat.averageAge,
+    })),
+  });
 }

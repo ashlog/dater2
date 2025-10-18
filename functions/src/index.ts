@@ -1,13 +1,7 @@
 import {
   loc_bayPalo,
-  loc_lilburn,
-  loc_monterey,
   loc_mtv,
-  loc_san_jose,
-  loc_santaCruz,
-  loc_sf,
   run,
-  loc_marrietta,
 } from './dater';
 import {logger} from 'firebase-functions';
 import {onSchedule} from 'firebase-functions/v2/scheduler';
@@ -18,7 +12,7 @@ import {SendbirdAPI} from './dater/sendbird';
 import {GetChannelsInput} from './dater/sendbirdtypes';
 import {chatImage, getDemographics} from './dater/llm';
 import extract from 'extract-json-from-string';
-import { loc_david_ca, loc_gdansk_pl } from './dater/locations';
+import { loc_gdansk_pl, loc_monterey, loc_paris_fr, loc_santaCruz, loc_sf, loc_warsaw_pl, topHotCities } from './dater/locations';
 
 export const cron = onSchedule(
   {
@@ -38,16 +32,10 @@ export const cron = onSchedule(
 
 function main() {
   run(
-    [loc_gdansk_pl],
-    // [loc_san_jose, loc_mtv, loc_bayPalo, loc_sf, loc_santaCruz, loc_lilburn],
-    // [loc_david_ca],
-    // [loc_sf],
+    // [loc_warsaw_pl, loc_gdansk_pl],
+    [loc_sf, loc_santaCruz, loc_monterey],
     // [loc_bayPalo, loc_mtv],
-    // [loc_santaCruz],
-    // [loc_marrietta],
-    // [loc_santaCruz],
-    // [loc_lilburn],
-    300
+    400,
   ).then(() => {
     console.log('done');
     process.exit(0);

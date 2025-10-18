@@ -60,6 +60,7 @@ export async function writeProfilesCache(cache: ProfilesCache): Promise<void> {
 export type Settings = {
   longitude: number;
   latitude: number;
+  label?: string;
 };
 
 export function locationKeyOf(settings: Settings): string {
@@ -86,10 +87,16 @@ export async function markVisited(_cache: ProfilesCache | undefined, key: string
     }
     const loc = cache[key];
     if (!loc || !Array.isArray(loc.batch)) return;
-    const entry = loc.batch.find(e => e.ratingToken === ratingToken);
-    if (entry && !entry.visited) {
-      entry.visited = true;
-      entry.visitedAt = new Date().toISOString();
+    const now = new Date().toISOString();
+    let updated = false;
+    for (const entry of loc.batch) {
+      if (entry.ratingToken === ratingToken && !entry.visited) {
+        entry.visited = true;
+        entry.visitedAt = now;
+        updated = true;
+      }
+    }
+    if (updated) {
       await fs.promises.writeFile(profilesCachePath, JSON.stringify(cache, null, 2));
     }
   });
