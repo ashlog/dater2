@@ -15,6 +15,10 @@ jest.mock('./helpers');
 jest.mock('./limits');
 jest.mock('./utils');
 jest.mock('fs');
+jest.mock('axios', () => ({
+  __esModule: true,
+  default: { get: jest.fn().mockResolvedValue({ data: 'OK' }) },
+}));
 
 import * as llm from './llm';
 import * as token from './token';
@@ -104,6 +108,7 @@ describe('Runner - maxLikes and visited property behavior', () => {
     mockHinge = {
       getRecommendations: jest.fn().mockResolvedValue({ feeds: [], preview: { subjects: [] } }),
       getProfiles: jest.fn().mockResolvedValue([]),
+      textReview: jest.fn().mockResolvedValue({ hcmRunId: 'test-hcm-id', isHarmful: false }),
       sendLike: jest.fn()
     };
     (token as any).hinge = mockHinge;
@@ -185,6 +190,12 @@ describe('Runner - maxLikes and visited property behavior', () => {
     // Setup mock helpers
     (helpers.cleanPickupLineResponse as jest.Mock).mockImplementation((s: string) => s);
     (helpers.isBadResponse as jest.Mock).mockImplementation((s: string) => !s); // Returns true if empty
+
+    // Provide cost tracker mocks
+    (llm.getCostSummary as jest.Mock).mockReturnValue({
+      inputTokens: 0, outputTokens: 0, cacheReadTokens: 0, cacheWriteTokens: 0, totalCost: 0, calls: 0,
+    });
+    (llm.resetCostTracker as jest.Mock).mockImplementation(() => {});
 
     // Provide LLMRefusalError class for refusal handling branches
     (llm as any).LLMRefusalError = class extends Error {

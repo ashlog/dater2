@@ -31,11 +31,14 @@ export const cron = onSchedule(
 );
 
 function main() {
+  const maxLikesFlag = process.argv.find((_, i, a) => a[i - 1] === '--max-likes');
+  const maxLikes = maxLikesFlag ? parseInt(maxLikesFlag, 10) : 400;
+
   run(
     // [loc_warsaw_pl, loc_gdansk_pl],
     [loc_sf, loc_santaCruz, loc_monterey],
     // [loc_bayPalo, loc_mtv],
-    400,
+    maxLikes,
   ).then(() => {
     console.log('done');
     process.exit(0);

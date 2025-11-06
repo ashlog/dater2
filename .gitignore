@@ -52,4 +52,8 @@ dist
 .vscode
 functions/src/profiles_decisions.json
 functions/src/profiles_cache.json
+functions/src/profiles_cache.json *.json
+functions/src/profiles_decisions.json *.json
+functions/src/eval_results*.json
+prod-examples.chls
 .env

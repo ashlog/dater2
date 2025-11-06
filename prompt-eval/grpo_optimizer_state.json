@@ -1,0 +1,20 @@
+{
+  "experiences": [
+    {
+      "id": "G1",
+      "insight": "Successful lines demonstrate genuine profile attention by referencing specific, concrete details (gym habits, stairmaster claims, personality contradictions) rather than generic interests. Failed lines either ignore profile details entirely or reference them so vaguely they could apply to anyone.",
+      "context": "When crafting personalized openers: extract 1-2 specific, unusual details from the profile (not just 'likes fitness') and weave them into the line. Generic references to stated interests (swimming, fitness) without specific details performs worse than curious questions about personality contradictions.",
+      "createdAt": "2025-12-02T09:12:45.207Z",
+      "updatedAt": "2025-12-02T09:12:45.207Z"
+    },
+    {
+      "id": "G2",
+      "insight": "Successful lines balance directness with humor/charm—they respect stated preferences for 'time and place' clarity by actually proposing something concrete (coffee, margaritas, stairmaster challenge) while keeping tone light and playful. Failed lines either become too earnest/formal, too cryptic/poetic, or propose vague hangouts without the humorous edge that makes directness feel approachable rather than demanding.",
+      "context": "When someone explicitly states preference for direct communication: honor that with concrete proposals, but pair them with self-aware humor, wordplay, or teasing tone. Avoid purely earnest or overly artistic approaches—the directness needs charm to feel like invitation rather than ultimatum.",
+      "createdAt": "2025-12-02T09:12:45.207Z",
+      "updatedAt": "2025-12-02T09:12:45.207Z"
+    }
+  ],
+  "lastTrainedAt": "2025-12-02T09:12:45.208Z",
+  "totalTrainingBatches": 2
+}

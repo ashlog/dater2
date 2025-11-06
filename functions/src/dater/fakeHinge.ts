@@ -9,6 +9,10 @@ export class FakeHingeAPI implements HingeAPI {
     private deviceHeaders: {[key: string]: string}
   ) {}
 
+  async textReview(receiverId: string, text: string): Promise<{hcmRunId: string; isHarmful: boolean}> {
+    return {hcmRunId: 'fake-id', isHarmful: false};
+  }
+
   async getProfiles(ids: string[]): Promise<Profile[]> {
     return profiles as never as Profile[];
   }

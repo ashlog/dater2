@@ -40216,3 +40216,143 @@ Image: https://media.hingenexus.com/image/upload/74ch6s0r2201dj1m24b6.jpg
 FINAL [TEXT] | user=Clare (21) | context=[A random fact I love is: that horses cannot throw up || First round is on me if: you also enjoy hunting for scorpions]
 Prompt: "Two truths and a lie: I have been chased by a moose. I have a sewing needle stuck in my thumb. I don’t have a middle name."
   - [PICKUP LINE] "the moose chase is real, the needle is fake, but which one's the story you lead with at parties?"
+FINAL [TEXT] | user=Amelia (20) | context=[My simple pleasures: A cute little Venmo 
+- ameliaachase || Don't hate me if I: Try to predict the future]
+Prompt: "I go crazy for: Tacos and margs"
+  - [PICKUP LINE] "tacos and margs as a first test? shell we?"
+FINAL [TEXT] | user=Yura (21) | context=[The best way to ask me out is by: Plz find somewhere that’s low pressure || Biggest risk I've taken: Downloading this app and looking for a long term relationship]
+Prompt: "My Love Language is: Please be SWEET"
+  - [PICKUP LINE] "SWEET certified, though I take my coffee bitter... does that balance out?"
+FINAL [TEXT] | user=jade (21) | context=[I go crazy for: (\_/)
+ ⋆༝⋆   🥕 miffy || Together, we could: weightlift]
+Prompt: "My simple pleasures: cooking recently >"
+  - [PICKUP LINE] "any kitchen disasters worth bragging about yet?"
+FINAL [TEXT] | user=Grace (19) | context=[I’m in my element when: i’m at the lake 😌 || What if I told you that: you couldn’t out drink me 🤷🏻‍♀️]
+Prompt: "I'll fall for you if: you’re a 🚩🚩"
+  - [PICKUP LINE] "alphabetically or by severity?"
+FINAL [IMAGE] | user=Marcela (20) | context=[Typical Sunday: Watching movies || This year, I really want to: Travel || My simple pleasures: Spend time with my family and friends]
+Image: https://media.hingenexus.com/image/upload/ajvrw1z01xbj816hn1lx.jpg
+  - [PICKUP LINE] "that floral phone case is doing all the talking... what's the sunday movie?"
+FINAL [TEXT] | user=victoria (21) | context=[A life goal of mine: to scare men 🤭👹 .. and travel. || Together, we could: ✨rob a bank✨]
+Prompt: "I won't shut up about: dragons 🧌"
+  - [PICKUP LINE] "okay but western or eastern dragons? this is critical intel 🧌"
+FINAL [TEXT] | user=Alexia (21) | context=[I go crazy for: Chocolate lava cake || Biggest risk I've taken: Downloading this app]
+Prompt: "I'll fall for you if: Have a goatee"
+  - [PICKUP LINE] "is goatee a hard requirement or open to applications?"
+FINAL [IMAGE] | user=Sharon (21) | context=[I go crazy for: almond milk || If loving this is wrong, I don't want to be right: brown eyes || The one thing you should know about me is: I will ponder my magic 8 ball]
+Image: https://media.hingenexus.com/image/upload/r5k57dcjjaez4h6pj8l5.jpg
+  - [PICKUP LINE] "asked my magic 8 ball if I should message you first... yours agree?"
+FINAL [TEXT] | user=Sarah (20) | context=[The one thing I'd love to know about you is: Who someone is as a person genuinely || All I ask is that you: Be honest]
+Prompt: "When I need advice, I go to: Music"
+  - [PICKUP LINE] "does your playlist take walk-ins, what's the usual prescription?"
+FINAL [TEXT] | user=Lily (21) | context=[I geek out on: Watching any Chicago Blackhawks game || One thing I'll never do again: Drink Tito’s ever !!]
+Prompt: "Change my mind about: Dr. Pepper is the best drink"
+  - [PICKUP LINE] "dr. pepper has no medical degree, i need to hear the full case"
+FINAL [TEXT] | user=Tessa (20) | context=[I get myself out of a funk by: do my makeup and pretend i'm filming a youtube makeup tutorial 😭 || My most irrational fear: caves, squat toilets, airplane bathrooms, someone is about to murder me at all times ext. ext.]
+Prompt: "My simple pleasures: collecting porcelain dolls, watching video essays & reading yuri 🐰"
+  - [PICKUP LINE] "the porcelain dolls have names, don't they"
+FINAL [TEXT] | user=Mary (19) | context=[An award my family would give me: 🎈󠐮󠐹󠐺󠐶󠐮 󠐺󠐷󠐮󠐨󠐶s󠐻󠐨n󠐮󠐶󠐹󠐹α󠐩󠐶󠐷󠐶󠐻p󠐹󠐹󠐻󠐻󠐮;󠐩󠐶󠐷󠐻m󠐹󠐩a󠐮󠐶󠐻r󠐶󠐮󠐮󠐮i󠐨󠐺󠐶󠐨󠐶󠐻e󠐷󠐹󠐺󠐹󠐹󠐻l󠐺󠐶z󠐶󠐩󠐶󠐶󠐺󠐺i󠐨󠐮󠐶󠐷󠐮b󠐹󠐹󠐹󠐹u󠐺󠐻x󠐨󠐷 || In my friend group, I’m the one who: plans spontaneous road trips and keeps everyone laughing 😂🚗]
+Prompt: "The kindest thing someone has ever done for me: My bestie surprised me with a cute handwritten letter. 💌"
+  - [PICKUP LINE] "does typed count, or do I need to come back with stationery?"
+FINAL [TEXT] | user=Ellen (21) | context=[A life goal of mine: Medical school || The way to win me over is: Emotional intelligence and good communication!]
+Prompt: "My greatest strength: Pushing pull doors"
+  - [PICKUP LINE] "i pull push doors  -  rivals or legends?"
+FINAL [TEXT] | user=Madisen (20) | context=[Typical Sunday: Always at work  || I wish I could tell the younger version of myself: Some days will be hard, but man, when it's good, it's amazing ]
+Prompt: "Worst idea I've ever had: I can jump that far. Missed the wall "
+  - [PICKUP LINE] "in your defense, the wall failed to communicate its coordinates"
+FINAL [TEXT] | user=Juli (20) | context=[My simple pleasures: I love playing video games, drawing, singing. I absolutely just love being out, whenever possible
+
+Rn I’m playing coral island but I love fps’s and sandbox games || I go crazy for: I’m a complete foodie. I love eating with someone even if it’s cereal, it keeps me grounded.]
+Prompt: "A life goal of mine: Living in a different country, completely independent. Just doin my own thing"
+  - [PICKUP LINE] "completely independent until the menu's in another language... which country?"
+FINAL [TEXT] | user=Soko (20) | context=[I'm looking for: gentle and respectful || I'll fall for you if: you’re crazy about me]
+Prompt: "We're the same type of weird if: you like to do spontaneous things and take trips around the country and nothing hurts like a good hike!"
+  - [PICKUP LINE] "you had me at 'nothing hurts like a good hike' - which trail earned that badge?"
+FINAL [TEXT] | user=Jordyn (19) | context=[My simple pleasures: red wine, the end of Good Will Hunting, sunsets, fresh flowers and a fat blunt || Green flags I look for: you can hold eye contact]
+Prompt: "Unusual skills: i’m really good at chess"
+  - [PICKUP LINE] "already feel like a pawn here, should I be worried?"
+FINAL [IMAGE] | user=Paulina (21) | context=[A life goal of mine: Is to travel to all the continents || Green flags I look for: good relationship with your family. I’d like to gain a family when I settle down || You should *not* go out with me if: we need to text 24/7 I really value when both of us can keep some independence]
+Image: https://media.hingenexus.com/image/upload/7iespckjezwv46ghwwu4.jpg
+  - [PICKUP LINE] "i can do 23 hours silent, does 1 hour of chaos still count?"
+FINAL [TEXT] | user=kacia (20) | context=[My simple pleasures: champagne & spa days || I wind down by: self care]
+Prompt: "Green flags I look for: high maintenance"
+  - [PICKUP LINE] "sent back a latte for the wrong milk ratio, how's my application looking?"
+FINAL [TEXT] | user=Serena (20) | context=[The one thing I'd love to know about you is: Cats or dogs || I won't shut up about: Junkrat]
+Prompt: "The way to win me over is: 💵"
+  - [PICKUP LINE] "noted, sending my pitch deck"
+FINAL [TEXT] | user=Kiki (21) | context=[You should *not* go out with me if: You’re boring || What if I told you that: I love you]
+Prompt: "Unusual skills: I play the piano🥰 
+
+
+ig: @itspersiaa"
+  - [PICKUP LINE] "piano is your 'unusual' skill? high-key curious what the usual ones are"
+FINAL [TEXT] | user=syana (21) | context=[Two truths and a lie: i’ve been to antarctica 
+i’ve worked with vogue
+i’m an amazing chef || Green flags I look for: is taller than me]
+Prompt: "Typical Sunday: hungover"
+  - [PICKUP LINE] "not a hangover, that's your body debriefing from Saturday's field research"
+FINAL [TEXT] | user=Mary (19) | context=[In my friend group, I’m the one who: plans spontaneous road trips and keeps everyone laughing 😂🚗 || The kindest thing someone has ever done for me: My bestie surprised me with a cute handwritten letter. 💌]
+Prompt: "An award my family would give me: 🎈󠐮󠐹󠐺󠐶󠐮 󠐺󠐷󠐮󠐨󠐶s󠐻󠐨n󠐮󠐶󠐹󠐹α󠐩󠐶󠐷󠐶󠐻p󠐹󠐹󠐻󠐻󠐮;󠐩󠐶󠐷󠐻m󠐹󠐩a󠐮󠐶󠐻r󠐶󠐮󠐮󠐮i󠐨󠐺󠐶󠐨󠐶󠐻e󠐷󠐹󠐺󠐹󠐹󠐻l󠐺󠐶z󠐶󠐩󠐶󠐶󠐺󠐺i󠐨󠐮󠐶󠐷󠐮b󠐹󠐹󠐹󠐹u󠐺󠐻x󠐨󠐷"
+  - [PICKUP LINE] "a 🎈 family award has me curious  -  what did you win it for?"
+FINAL [TEXT] | user=Ellen (21) | context=[A life goal of mine: Medical school || My greatest strength: Pushing pull doors]
+Prompt: "The way to win me over is: Emotional intelligence and good communication!"
+  - [PICKUP LINE] "loud and clear: i'm interested  -  what's your move?"
+FINAL [TEXT] | user=Madisen (20) | context=[Typical Sunday: Always at work  || I wish I could tell the younger version of myself: Some days will be hard, but man, when it's good, it's amazing ]
+Prompt: "Worst idea I've ever had: I can jump that far. Missed the wall "
+  - [PICKUP LINE] "okay but what was on the other side of that wall?"
+FINAL [TEXT] | user=Juli (20) | context=[My simple pleasures: I love playing video games, drawing, singing. I absolutely just love being out, whenever possible
+
+Rn I’m playing coral island but I love fps’s and sandbox games || A life goal of mine: Living in a different country, completely independent. Just doin my own thing]
+Prompt: "I go crazy for: I’m a complete foodie. I love eating with someone even if it’s cereal, it keeps me grounded."
+  - [PICKUP LINE] "cereal keeping you grounded from a self-proclaimed foodie? what's the go-to bowl?"
+FINAL [TEXT] | user=Soko (20) | context=[We're the same type of weird if: you like to do spontaneous things and take trips around the country and nothing hurts like a good hike! || I'm looking for: gentle and respectful]
+Prompt: "I'll fall for you if: you’re crazy about me"
+  - [PICKUP LINE] "already planning which trail to drag you on, does that qualify?"
+FINAL [TEXT] | user=Paulina (21) | context=[A life goal of mine: Is to travel to all the continents || Green flags I look for: good relationship with your family. I’d like to gain a family when I settle down]
+Prompt: "You should *not* go out with me if: we need to text 24/7 I really value when both of us can keep some independence"
+  - [PICKUP LINE] "my read receipts just sighed in relief"
+FINAL [TEXT] | user=Jordyn (19) | context=[Unusual skills: i’m really good at chess || Green flags I look for: you can hold eye contact]
+Prompt: "My simple pleasures: red wine, the end of Good Will Hunting, sunsets, fresh flowers and a fat blunt"
+  - [PICKUP LINE] "listing the end of Good Will Hunting and not the whole movie is very specific damage... who hurt you?"
+FINAL [TEXT] | user=kacia (20) | context=[My simple pleasures: champagne & spa days || I wind down by: self care]
+Prompt: "Green flags I look for: high maintenance"
+  - [PICKUP LINE] "finally, a green flag i actually qualify for"
+FINAL [TEXT] | user=Serena (20) | context=[I won't shut up about: Junkrat || The way to win me over is: 💵]
+Prompt: "The one thing I'd love to know about you is: Cats or dogs"
+  - [PICKUP LINE] "cats, but I've owned a parrot, disqualified or upgraded?"
+FINAL [TEXT] | user=syana (21) | context=[Typical Sunday: hungover || Green flags I look for: is taller than me]
+Prompt: "Two truths and a lie: i’ve been to antarctica 
+i’ve worked with vogue
+i’m an amazing chef"
+  - [PICKUP LINE] "calling it: the chef. nobody self-reports 'amazing'"
+FINAL [TEXT] | user=Kiki (21) | context=[You should *not* go out with me if: You’re boring || What if I told you that: I love you]
+Prompt: "Unusual skills: I play the piano🥰 
+
+
+ig: @itspersiaa"
+  - [PICKUP LINE] "listing piano as unusual is the most noteworthy undersell I've seen, what's your go-to song?"
+FINAL [TEXT] | user=Juli (20) | context=[My simple pleasures: I love playing video games, drawing, singing. I absolutely just love being out, whenever possible
+
+Rn I’m playing coral island but I love fps’s and sandbox games || I go crazy for: I’m a complete foodie. I love eating with someone even if it’s cereal, it keeps me grounded.]
+Prompt: "A life goal of mine: Living in a different country, completely independent. Just doin my own thing"
+  - [PICKUP LINE] "living abroad completely solo is the move, which country's first?"
+FINAL [TEXT] | user=Soko (20) | context=[We're the same type of weird if: you like to do spontaneous things and take trips around the country and nothing hurts like a good hike! || I'm looking for: gentle and respectful]
+Prompt: "I'll fall for you if: you’re crazy about me"
+  - [PICKUP LINE] "clinical definition of crazy, or just wildly enthusiastic?"
+FINAL [TEXT] | user=Paulina (21) | context=[A life goal of mine: Is to travel to all the continents || You should *not* go out with me if: we need to text 24/7 I really value when both of us can keep some independence]
+Prompt: "Green flags I look for: good relationship with your family. I’d like to gain a family when I settle down"
+  - [PICKUP LINE] "family references? strong. my mom's already got the curry going"
+FINAL [IMAGE] | user=Jordyn (19) | context=[My simple pleasures: red wine, the end of Good Will Hunting, sunsets, fresh flowers and a fat blunt || Unusual skills: i’m really good at chess || Green flags I look for: you can hold eye contact]
+Image: https://media.hingenexus.com/image/upload/nkumgv4xyzjnjp3zv86f.jpg
+  - [PICKUP LINE] "chess? bold of you to lead with a threat"
+FINAL [TEXT] | user=Serena (20) | context=[The one thing I'd love to know about you is: Cats or dogs || I won't shut up about: Junkrat]
+Prompt: "The way to win me over is: 💵"
+  - [PICKUP LINE] "noted, venmo or cash?"
+FINAL [TEXT] | user=kacia (20) | context=[My simple pleasures: champagne & spa days || I wind down by: self care]
+Prompt: "Green flags I look for: high maintenance"
+  - [PICKUP LINE] "high maintenance checks out, my coffee order alone takes two sentences to explain"
+FINAL [TEXT] | user=Juli (20) | context=[My simple pleasures: I love playing video games, drawing, singing. I absolutely just love being out, whenever possible
+
+Rn I’m playing coral island but I love fps’s and sandbox games || I go crazy for: I’m a complete foodie. I love eating with someone even if it’s cereal, it keeps me grounded.]
+Prompt: "A life goal of mine: Living in a different country, completely independent. Just doin my own thing"
+  - [PICKUP LINE] "which country are you moving to so i know where to accidentally run into you"

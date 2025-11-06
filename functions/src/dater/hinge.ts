@@ -9,7 +9,8 @@ export class HingeAPIImpl implements HingeAPI {
 
   constructor(
     private authToken: string,
-    private deviceHeaders: {[key: string]: string}
+    private deviceHeaders: {[key: string]: string},
+    private playerId?: string
   ) {}
 
   private getHeaders() {
@@ -32,6 +33,14 @@ export class HingeAPIImpl implements HingeAPI {
     ).data;
   }
 
+  async textReview(receiverId: string, text: string): Promise<{hcmRunId: string; isHarmful: boolean}> {
+    const url = `${this.baseURL}/flag/textreview`;
+    const response = await axios.post<{hcmRunId: string; isHarmful: boolean}>(url, {receiverId, text}, {
+      headers: this.getHeaders(),
+    });
+    return response.data;
+  }
+
   async sendLike(
     subjectId: string,
     ratingToken: string,
@@ -40,9 +49,10 @@ export class HingeAPIImpl implements HingeAPI {
       photoData?: {url: string; cdnId: string};
       content?: {prompt: {contentId?: string; question: string; answer: string}};
       comment?: string;
+      hcmRunId?: string;
     }
   ): Promise<void> {
-    const url = `${this.baseURL}/rate/v1/initiate`;
+    const url = `${this.baseURL}/rate/v2/initiate`;
 
     const contentValue = options.content
       ? options.content
@@ -63,11 +73,11 @@ export class HingeAPIImpl implements HingeAPI {
           },
         };
 
-    const data = {
+    const data: Record<string, unknown> = {
       subjectId,
       sessionId: sessionId,
       content: options.comment ? {...contentValue, comment: options.comment} : contentValue,
-      rating: 'like',
+      rating: 'note',
       ratingId: uuidv4().toUpperCase(),
       ratingToken: ratingToken,
       hasPairing: false,
@@ -75,6 +85,10 @@ export class HingeAPIImpl implements HingeAPI {
       initiatedWith: 'standard',
       created: new Date().toISOString(),
     };
+
+    if (options.hcmRunId) {
+      data.hcmRunId = options.hcmRunId;
+    }
 
     await axios.post(url, data, {
       headers: this.getHeaders(),
@@ -86,15 +100,13 @@ export class HingeAPIImpl implements HingeAPI {
     latitude: number
   ): Promise<FeedsResponse> {
     const data = {
-      excludedFeedIds: [],
-      longitude: longitude,
-      latitude: latitude,
-      genderPrefId: 1,
-      genderId: 0,
+      activeToday: false,
+      playerId: this.playerId,
+      newHere: false,
     };
 
     const response = await axios.post<FeedsResponse>(
-      `${this.baseURL}/rec`,
+      `${this.baseURL}/rec/v2`,
       data,
       {
         headers: this.getHeaders(),
@@ -105,7 +117,7 @@ export class HingeAPIImpl implements HingeAPI {
 
   async sendMessage(input: Message[]): Promise<void> {
     const headers = this.getHeaders();
-    const url = `${this.baseURL}/message/chat`;
+    const url = `${this.baseURL}/message/send`;
 
     await axios.post(url, input, {
       headers,

@@ -56,6 +56,39 @@ interface LLMResult {
   stopReason?: string;
 }
 
+// --- Cost tracker (uses cost from OpenRouter response) ---
+const costTracker = {
+  inputTokens: 0,
+  outputTokens: 0,
+  cacheReadTokens: 0,
+  cacheWriteTokens: 0,
+  totalCost: 0,
+  calls: 0,
+};
+
+function trackUsage(usage: any) {
+  if (!usage) return;
+  costTracker.inputTokens += usage.prompt_tokens ?? 0;
+  costTracker.outputTokens += usage.completion_tokens ?? 0;
+  costTracker.cacheReadTokens += usage.prompt_tokens_details?.cached_tokens ?? 0;
+  costTracker.cacheWriteTokens += usage.prompt_tokens_details?.cache_write_tokens ?? 0;
+  costTracker.totalCost += usage.cost ?? 0;
+  costTracker.calls++;
+}
+
+export function getCostSummary() {
+  return { ...costTracker };
+}
+
+export function resetCostTracker() {
+  costTracker.inputTokens = 0;
+  costTracker.outputTokens = 0;
+  costTracker.cacheReadTokens = 0;
+  costTracker.cacheWriteTokens = 0;
+  costTracker.totalCost = 0;
+  costTracker.calls = 0;
+}
+
 interface LLMProvider {
   readonly name: LLMProviderName;
   chat(request: ChatRequest): Promise<LLMResult>;
@@ -82,12 +115,15 @@ class OpenRouterProvider implements LLMProvider {
       temperature: rest.temperature,
       top_p: rest.top_p,
       reasoning: rest.reasoning,
+      // Route to Anthropic directly so cache_control works
+      provider: { order: ['anthropic'], allow_fallbacks: true },
       ...(rest.responseFormat
         ? { response_format: { type: rest.responseFormat } as any }
         : {}),
     } as any);
 
     const content = response.choices?.[0]?.message?.content ?? '';
+    trackUsage(response.usage);
     return {
       content,
       usage: response.usage,
@@ -108,6 +144,7 @@ class OpenRouterProvider implements LLMProvider {
       stop: request.stop,
     });
     const content = response.choices?.[0]?.text ?? '';
+    trackUsage(response.usage);
     return {
       content,
       usage: response.usage,
@@ -633,6 +670,11 @@ export async function getOpenerPromptMetadata(): Promise<{ text: string; hash: s
     openerPromptHashCache = createHash('sha256').update(text).digest('hex');
   }
   return { text, hash: openerPromptHashCache };
+}
+
+export function setOpenerPromptOverride(text: string | null): void {
+  openerPromptCache = text;
+  openerPromptHashCache = text ? createHash('sha256').update(text).digest('hex') : null;
 }
 
 function buildOutputContractYaml(mode: 'single' | 'batch'): string {

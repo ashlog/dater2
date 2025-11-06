@@ -10,23 +10,26 @@ import {
   type LLMProviderName,
   setLLMThinkingConfig,
   LLMRefusalError,
+  getCostSummary,
+  resetCostTracker,
 } from './llm';
 import { hinge, sessionId } from './token';
 import { runningLocally } from '../globals';
 import pLimit from 'p-limit';
 import { timeout } from './utils';
 import fs from 'fs';
+import os from 'os';
 import path from 'path';
 import { readProfilesCache, locationKeyOf, getUnvisited, markVisited, CachedEntry, Settings, upsertLocationBatch } from './profile_cache';
 import { buildPromptsList, appendDecision, appendDryRunDecision } from './decisions_log';
 import { getQuestionById } from './questions';
 import { cleanPickupLineResponse, isBadResponse } from './helpers';
 import { createLikeLimiter, createCancelToken, createHingeRequestLimiter } from './limits';
-import { all } from 'axios';
+import axios from 'axios';
 
 const concurrency = 2;
 const llmProvider: LLMProviderName = 'anthropic';
-const model = 'anthropic/claude-haiku-4.5';
+const model = 'claude-haiku-4-5-20251001';
 const thinkingBudgetTokens = 1024;
 
 setLLMProvider(llmProvider);
@@ -411,8 +414,14 @@ async function likeWithImage(
   if (!scanOnly) {
     try {
       hingeRequestLimiter.tryConsume();
+      const review = await hinge.textReview(subject.profile.userId, best.comment);
+      if (review.isHarmful) {
+        console.log('Text review flagged comment as harmful, skipping like for', subject.profile.userId);
+        likeLimiter.release();
+        return;
+      }
       console.log('Liking ' + best.photo.url + ' image with "' + best.comment + '". Average score: (' + imageCandidate.medianScore + '). Context:', imageCandidate.contextPrompts);
-      await hinge.sendLike(subject.profile.userId, ratingToken, sessionId, { photoData: { url: best.photo.url, cdnId: best.photo.cdnId }, comment: best.comment });
+      await hinge.sendLike(subject.profile.userId, ratingToken, sessionId, { photoData: { url: best.photo.url, cdnId: best.photo.cdnId }, comment: best.comment, hcmRunId: review.hcmRunId });
     } catch (e) {
       error = e;
       likeLimiter.release();
@@ -464,6 +473,8 @@ async function likeWithImage(
   // In scan-only mode, don't mark as visited so profiles remain available for real likes
   if (!scanOnly) {
     if (!error) {
+      // Reset consecutive failures on successful like
+      ctx.failureCounter.consecutive = 0;
       await markVisited(undefined, locKey, ratingToken);
       console.log('Likes', likeLimiter.getUsed(), 'Like Rate:', getLikeRate().toFixed(2) + '%');
     } else {
@@ -475,8 +486,24 @@ async function likeWithImage(
         await markVisited(undefined, locKey, ratingToken);
         console.log('Like failed with 400 (invalid request), marking as visited. Likes:', likeLimiter.getUsed(), 'Like Rate:', getLikeRate().toFixed(2) + '%');
       } else {
-        // Don't mark as visited for transient errors - profile will remain unvisited for retry
-        console.log('Like failed with transient error, profile left unvisited for retry. Likes:', likeLimiter.getUsed(), 'Like Rate:', getLikeRate().toFixed(2) + '%');
+        // Increment consecutive failure counter for non-400 Hinge errors
+        ctx.failureCounter.consecutive++;
+        console.log(
+          'Like failed with transient error, profile left unvisited for retry. Likes:',
+          likeLimiter.getUsed(),
+          'Like Rate:',
+          getLikeRate().toFixed(2) + '%',
+          `(consecutive failures: ${ctx.failureCounter.consecutive}/${ctx.failureCounter.max})`
+        );
+
+        // Check if we've hit the failure limit
+        if (ctx.failureCounter.consecutive >= ctx.failureCounter.max) {
+          console.error(
+            `FATAL: ${ctx.failureCounter.consecutive} consecutive Hinge API failures detected.`,
+            'Hinge API may be experiencing issues. Killing the app to prevent further failures.'
+          );
+          process.exit(1);
+        }
       }
     }
   } else {
@@ -506,6 +533,12 @@ async function likeWithText(
   if (!scanOnly) {
     try {
       hingeRequestLimiter.tryConsume();
+      const review = await hinge.textReview(subject.profile.userId, bestAnswer.line);
+      if (review.isHarmful) {
+        console.log('Text review flagged comment as harmful, skipping like for', subject.profile.userId);
+        likeLimiter.release();
+        return;
+      }
       console.log('Prompt: "' + bestAnswer.prompt + '"\n  - [PICKUP LINE] "' + bestAnswer.line + '"');
       // Find the original answer object to get contentId
       const originalAnswer = subject.profile.answers.find(a => a.questionId === bestAnswer.answer.questionId);
@@ -517,7 +550,8 @@ async function likeWithText(
             answer: bestAnswer.answer.response
           }
         },
-        comment: bestAnswer.line
+        comment: bestAnswer.line,
+        hcmRunId: review.hcmRunId
       });
     } catch (e) {
       error = e;
@@ -570,6 +604,8 @@ async function likeWithText(
   // In scan-only mode, don't mark as visited so profiles remain available for real likes
   if (!scanOnly) {
     if (!error) {
+      // Reset consecutive failures on successful like
+      ctx.failureCounter.consecutive = 0;
       await markVisited(undefined, locKey, ratingToken);
       console.log('Likes', likeLimiter.getUsed(), 'Like Rate:', getLikeRate().toFixed(2) + '%');
     } else {
@@ -581,8 +617,24 @@ async function likeWithText(
         await markVisited(undefined, locKey, ratingToken);
         console.log('Like failed with 400 (invalid request), marking as visited. Likes:', likeLimiter.getUsed(), 'Like Rate:', getLikeRate().toFixed(2) + '%');
       } else {
-        // Don't mark as visited for transient errors - profile will remain unvisited for retry
-        console.log('Like failed with transient error, profile left unvisited for retry. Likes:', likeLimiter.getUsed(), 'Like Rate:', getLikeRate().toFixed(2) + '%');
+        // Increment consecutive failure counter for non-400 Hinge errors
+        ctx.failureCounter.consecutive++;
+        console.log(
+          'Like failed with transient error, profile left unvisited for retry. Likes:',
+          likeLimiter.getUsed(),
+          'Like Rate:',
+          getLikeRate().toFixed(2) + '%',
+          `(consecutive failures: ${ctx.failureCounter.consecutive}/${ctx.failureCounter.max})`
+        );
+
+        // Check if we've hit the failure limit
+        if (ctx.failureCounter.consecutive >= ctx.failureCounter.max) {
+          console.error(
+            `FATAL: ${ctx.failureCounter.consecutive} consecutive Hinge API failures detected.`,
+            'Hinge API may be experiencing issues. Killing the app to prevent further failures.'
+          );
+          process.exit(1);
+        }
       }
     }
   } else {
@@ -962,7 +1014,44 @@ async function validateProfileImages(subject: Profile): Promise<{ pass: boolean;
   return { pass: anyCandidate, topScore: top, medianScore: median, scored };
 }
 
+async function ensureSiglipServer(): Promise<void> {
+  const url = 'http://localhost:5200/healthcheck';
+  try {
+    await axios.get(url, { timeout: 3000 });
+    return;
+  } catch {
+    // Not running — try to start it
+  }
+
+  console.log('Siglip server not running, starting it...');
+  const { spawn } = await import('child_process');
+  const siglipDir = path.join(os.homedir(), 'projects/siglip-test');
+  const child = spawn('/opt/homebrew/Caskroom/miniconda/base/envs/siglip-test/bin/python', ['api_bagged.py'], {
+    cwd: siglipDir,
+    detached: true,
+    stdio: ['ignore', 'pipe', 'pipe'],
+  });
+  let startupError = '';
+  child.stderr?.on('data', (data: Buffer) => { startupError += data.toString(); });
+  child.unref();
+
+  // Poll until ready (up to 30s for model loading)
+  for (let i = 0; i < 60; i++) {
+    await new Promise(r => setTimeout(r, 500));
+    try {
+      await axios.get(url, { timeout: 2000 });
+      console.log('Siglip server started successfully');
+      return;
+    } catch {
+      // still starting
+    }
+  }
+  throw new Error(`Siglip server failed to start within 30s${startupError ? '\n' + startupError : ''}`);
+}
+
 export async function run(settings: Settings[], maxLikes = 100000, profilesPerLocation = Infinity, scanOnly = false) {
+  await ensureSiglipServer();
+  resetCostTracker();
   let profileCount = 0;
   let consecutiveGenerationFailures = 0;
   const MAX_CONSECUTIVE_FAILURES = 3;
@@ -1079,4 +1168,14 @@ export async function run(settings: Settings[], maxLikes = 100000, profilesPerLo
       averageAge: stat.averageAge,
     })),
   });
+
+  // Print LLM cost summary
+  const cost = getCostSummary();
+  console.log(`\n[COST] LLM calls: ${cost.calls}, Total: $${cost.totalCost.toFixed(4)}`);
+  console.log(`[COST] Input: ${cost.inputTokens} tokens, Output: ${cost.outputTokens} tokens`);
+  console.log(`[COST] Cache read: ${cost.cacheReadTokens} tokens, Cache write: ${cost.cacheWriteTokens} tokens`);
+  if (cost.inputTokens + cost.cacheReadTokens > 0) {
+    const cacheHitRate = (cost.cacheReadTokens / (cost.inputTokens + cost.cacheReadTokens + cost.cacheWriteTokens)) * 100;
+    console.log(`[COST] Cache hit rate: ${cacheHitRate.toFixed(1)}%`);
+  }
 }
