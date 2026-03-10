@@ -28,8 +28,8 @@ import { createLikeLimiter, createCancelToken, createHingeRequestLimiter } from 
 import axios from 'axios';
 
 const concurrency = 2;
-const llmProvider: LLMProviderName = 'anthropic';
-const model = 'claude-haiku-4-5-20251001';
+const llmProvider: LLMProviderName = 'claude-direct';
+const model = 'claude-opus-4-6';
 const thinkingBudgetTokens = 1024;
 
 setLLMProvider(llmProvider);
@@ -425,7 +425,11 @@ async function likeWithImage(
     } catch (e) {
       error = e;
       likeLimiter.release();
-      // Don't abort on individual like errors - they might be transient
+      if ((e as any)?.response?.status === 402) {
+        console.error('402 Payment Required — Hinge like limit reached, aborting.');
+        cancelToken.abort(e);
+        return;
+      }
       console.error('Error sending like:', e);
     }
   } else {
@@ -556,7 +560,11 @@ async function likeWithText(
     } catch (e) {
       error = e;
       likeLimiter.release();
-      // Don't abort on individual like errors - they might be transient
+      if ((e as any)?.response?.status === 402) {
+        console.error('402 Payment Required — Hinge like limit reached, aborting.');
+        cancelToken.abort(e);
+        return;
+      }
       console.error('Error sending like:', e);
     }
   } else {

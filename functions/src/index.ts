@@ -1,5 +1,6 @@
 import {
   loc_bayPalo,
+  loc_lilburn,
   loc_mtv,
   run,
 } from './dater';
@@ -35,9 +36,7 @@ function main() {
   const maxLikes = maxLikesFlag ? parseInt(maxLikesFlag, 10) : 400;
 
   run(
-    // [loc_warsaw_pl, loc_gdansk_pl],
-    [loc_sf, loc_santaCruz, loc_monterey],
-    // [loc_bayPalo, loc_mtv],
+    [loc_lilburn],
     maxLikes,
   ).then(() => {
     console.log('done');

@@ -12,17 +12,21 @@
  *   npx ts-node src/eval_openers.ts --generate --samples 10 --models anthropic/claude-sonnet-4.5,anthropic/claude-haiku-4.5
  */
 
-import Anthropic from '@anthropic-ai/sdk';
 import fs from 'fs';
 import path from 'path';
 import dotenv from 'dotenv';
 import {
   generateOpenersFromYamlBatch,
+  generateOpenersFromYamlBatchBestOfN,
   getOpenerPromptMetadata,
   setLLMProvider,
+  cleanupLLMProvider,
   getCostSummary,
   resetCostTracker,
   setOpenerPromptOverride,
+  setLLMThinkingConfig,
+  chat as llmChat,
+  ChatCompletionMessageParam,
 } from './dater/llm';
 
 dotenv.config();
@@ -52,6 +56,7 @@ interface JudgeScores {
   creativity: DimensionScore;
   specificity: DimensionScore;
   human_likeness: DimensionScore;
+  closer_strength: DimensionScore;
 }
 
 interface EvalResult {
@@ -73,58 +78,20 @@ interface ModelAggregate {
   creativity: number;
   specificity: number;
   human_likeness: number;
+  closer_strength: number;
   avg: number;
 }
 
 type EvalArgs =
   | { mode: 'historical'; samples: number; hash?: string }
-  | { mode: 'generate'; samples: number; models: string[]; prompts?: string[] };
+  | { mode: 'generate'; samples: number; models: string[]; prompts?: string[]; bestOf?: number };
 
 // --- Config ---
 
-const JUDGE_MODEL = 'claude-haiku-4-5-20251001';
-const CONCURRENCY = 5;
-const GEN_CONCURRENCY = 3;
+const JUDGE_MODEL = 'claude-opus-4-6';
+const CONCURRENCY = 6;
+const GEN_CONCURRENCY = 6;
 
-// Haiku 4.5 pricing (per million tokens)
-const PRICING = {
-  input: 1.0,
-  output: 5.0,
-  cacheWrite: 1.25,
-  cacheRead: 0.1,
-};
-
-// --- Anthropic client ---
-
-const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
-
-// --- Cost tracker (judge calls via Anthropic direct) ---
-
-const costTracker = {
-  calls: 0,
-  inputTokens: 0,
-  outputTokens: 0,
-  cacheWriteTokens: 0,
-  cacheReadTokens: 0,
-};
-
-function trackUsage(usage: any) {
-  if (!usage) return;
-  costTracker.calls++;
-  costTracker.inputTokens += usage.input_tokens ?? 0;
-  costTracker.outputTokens += usage.output_tokens ?? 0;
-  costTracker.cacheWriteTokens += usage.cache_creation_input_tokens ?? 0;
-  costTracker.cacheReadTokens += usage.cache_read_input_tokens ?? 0;
-}
-
-function computeCost(): number {
-  return (
-    (costTracker.inputTokens * PRICING.input) / 1_000_000 +
-    (costTracker.outputTokens * PRICING.output) / 1_000_000 +
-    (costTracker.cacheWriteTokens * PRICING.cacheWrite) / 1_000_000 +
-    (costTracker.cacheReadTokens * PRICING.cacheRead) / 1_000_000
-  );
-}
 
 // --- System prompt (cached across all judge calls) ---
 // Must be 4096+ tokens for Haiku 4.5 prompt caching to activate.
@@ -250,10 +217,39 @@ How likely is this written by a real human vs. an AI? This is a detection task.
 - Simple, direct questions without clever framing
 - Natural casual tone like texting a friend
 
+## Dimension 6: CLOSER_STRENGTH (1-10)
+
+How well does the opener END? The last 3-4 words are what she remembers. Score based on whether the closer lands with impact or trails off.
+
+### Scoring Rubric:
+- **9-10**: The last words ARE the punch. The closer is the strongest part of the opener — a punchline, a mic-drop, or a short question that demands a reply. Reading only the ending gives you the full comedic/emotional hit.
+- **7-8**: Strong ending that works but could be slightly tighter. The closer carries momentum but isn't the absolute peak of the message.
+- **5-6**: Forgettable ending. The best part of the opener is in the middle, not at the end. The closer is functional but doesn't land with impact. Slight trailing off.
+- **3-4**: The closer deflates the opener. Hedges ("though", "but still", "just saying"), self-deprecating retreats that kill confidence, or explanations that undercut the punchline. The opener would be BETTER if the last few words were cut.
+- **1-2**: The closer actively kills the opener. Apologetic tone, permission-seeking ("if that's cool"), or so weak it makes her forget the good parts that came before.
+
+### Key factors:
+- Read ONLY the last 3-4 words. Do they land with confidence or trail off?
+- Could you cut the last few words and IMPROVE the opener? If yes, score 5 or below.
+- Does the ending hedge or retreat from the joke's confidence? ("trainable though", "no promises", "i'll try")
+- Does it end on something she can GRAB ONTO to reply?
+- Is the punchline at the END or buried in the middle?
+
+### Strong closer patterns:
+- Short question that demands an answer: "what happened", "should i be concerned"
+- Confident mic-drop: "no refunds", "this matters"
+- Self-deprecating that still OWNS it: "wrong department though" (owns the joke, doesn't retreat)
+
+### Weak closer patterns:
+- Hedging retreats: "trainable though", "but i'll try", "no pressure"
+- Permission-seeking: "if that's cool", "if you're into that"
+- Explaining the joke: "because X", "which means Y"
+- Trailing qualifiers: "just saying", "or something", "idk"
+
 ## Output Format
 
 You must respond with ONLY valid JSON, no other text before or after. Use this exact structure:
-{"reply_likelihood": {"score": N, "rationale": "..."}, "humor_quality": {"score": N, "rationale": "..."}, "creativity": {"score": N, "rationale": "..."}, "specificity": {"score": N, "rationale": "..."}, "human_likeness": {"score": N, "rationale": "..."}}
+{"reply_likelihood": {"score": N, "rationale": "..."}, "humor_quality": {"score": N, "rationale": "..."}, "creativity": {"score": N, "rationale": "..."}, "specificity": {"score": N, "rationale": "..."}, "human_likeness": {"score": N, "rationale": "..."}, "closer_strength": {"score": N, "rationale": "..."}}
 
 Where N is an integer from 1 to 10 and rationale is a single concise sentence explaining the score.
 
@@ -265,61 +261,61 @@ These examples show how to score openers of different quality levels. Study thes
 Profile: Sarah, 26
 Prompt: "I know the best spot in town for" → "finding random cats to pet"
 Opener: "what neighborhood we talking? i have a mental map of cat hotspots"
-Expected: {"reply_likelihood": {"score": 8, "rationale": "Specific engagement, easy question to answer, shows shared interest"}, "humor_quality": {"score": 7, "rationale": "Naturally funny concept of a mental cat map without forcing the joke"}, "creativity": {"score": 7, "rationale": "The 'mental map of cat hotspots' is an unexpected personal detail that reframes the conversation"}, "specificity": {"score": 8, "rationale": "Engages directly with the cat-petting detail and adds a specific personal angle"}, "human_likeness": {"score": 9, "rationale": "All lowercase, casual tone, reveals personal quirk, feels like a real text"}}
+Expected: {"reply_likelihood": {"score": 8, "rationale": "Specific engagement, easy question to answer, shows shared interest"}, "humor_quality": {"score": 7, "rationale": "Naturally funny concept of a mental cat map without forcing the joke"}, "creativity": {"score": 7, "rationale": "The 'mental map of cat hotspots' is an unexpected personal detail that reframes the conversation"}, "specificity": {"score": 8, "rationale": "Engages directly with the cat-petting detail and adds a specific personal angle"}, "human_likeness": {"score": 9, "rationale": "All lowercase, casual tone, reveals personal quirk, feels like a real text"}, "closer_strength": {"score": 8, "rationale": "'cat hotspots' is a fun image to end on — memorable and easy to riff on"}}
 
 ### Example 2 (Generic AI rephrase):
 Profile: Emily, 24
 Prompt: "A life goal of mine" → "Learn to make pasta from scratch"
 Opener: "ok homemade pasta is elite - are we talking ravioli level ambition or starting with the basics?"
-Expected: {"reply_likelihood": {"score": 7, "rationale": "Good engagement and question, though slightly structured"}, "humor_quality": {"score": 5, "rationale": "Mild humor with 'elite' and 'ambition' framing, nothing actually funny"}, "creativity": {"score": 3, "rationale": "No creative device — just restates 'pasta' and asks the obvious follow-up about what kind"}, "specificity": {"score": 6, "rationale": "References pasta specifically but the either/or question is generic enough for any cooking prompt"}, "human_likeness": {"score": 4, "rationale": "'ok' opener + dash + either/or question is a common AI formula"}}
+Expected: {"reply_likelihood": {"score": 7, "rationale": "Good engagement and question, though slightly structured"}, "humor_quality": {"score": 5, "rationale": "Mild humor with 'elite' and 'ambition' framing, nothing actually funny"}, "creativity": {"score": 3, "rationale": "No creative device — just restates 'pasta' and asks the obvious follow-up about what kind"}, "specificity": {"score": 6, "rationale": "References pasta specifically but the either/or question is generic enough for any cooking prompt"}, "human_likeness": {"score": 4, "rationale": "'ok' opener + dash + either/or question is a common AI formula"}, "closer_strength": {"score": 5, "rationale": "Ends on 'starting with the basics' — functional but forgettable, the either/or fizzles"}}
 
 ### Example 3 (Formulaic AI pattern):
 Profile: Jessica, 27
 Prompt: "You'd never know it, but I" → "can solve a Rubik's cube in under 2 minutes"
 Opener: "ok hold up - a Rubik's cube in under 2 minutes?? I need the full origin story. Are we talking casual hobby or competitive speedcuber?"
-Expected: {"reply_likelihood": {"score": 6, "rationale": "Has a question but feels like an interview rather than banter"}, "humor_quality": {"score": 3, "rationale": "No actual humor, just performed surprise and a formulaic question"}, "creativity": {"score": 2, "rationale": "Zero creative device — just rephrases what she said and asks for elaboration"}, "specificity": {"score": 7, "rationale": "Does reference the specific 2-minute Rubik's cube detail"}, "human_likeness": {"score": 2, "rationale": "Classic AI formula: 'ok hold up' + rephrase + demand for story + either/or question"}}
+Expected: {"reply_likelihood": {"score": 6, "rationale": "Has a question but feels like an interview rather than banter"}, "humor_quality": {"score": 3, "rationale": "No actual humor, just performed surprise and a formulaic question"}, "creativity": {"score": 2, "rationale": "Zero creative device — just rephrases what she said and asks for elaboration"}, "specificity": {"score": 7, "rationale": "Does reference the specific 2-minute Rubik's cube detail"}, "human_likeness": {"score": 2, "rationale": "Classic AI formula: 'ok hold up' + rephrase + demand for story + either/or question"}, "closer_strength": {"score": 4, "rationale": "Ends on 'competitive speedcuber?' — the either/or trails off instead of landing"}}
 
 ### Example 4 (Simple and effective):
 Profile: Rachel, 25
 Prompt: "My simple pleasures" → "a perfect sunset and a glass of wine"
 Opener: "rooftop or beach sunset? important distinction"
-Expected: {"reply_likelihood": {"score": 8, "rationale": "Simple, playful question that's easy and fun to answer"}, "humor_quality": {"score": 6, "rationale": "Light humor in treating it as a serious question, charming not hilarious"}, "creativity": {"score": 5, "rationale": "Decent reframe as a serious distinction, but a fairly obvious follow-up question"}, "specificity": {"score": 7, "rationale": "Picks the sunset detail specifically and adds a new dimension to it"}, "human_likeness": {"score": 8, "rationale": "Short, direct, no unnecessary framing or filler — feels like a real person"}}
+Expected: {"reply_likelihood": {"score": 8, "rationale": "Simple, playful question that's easy and fun to answer"}, "humor_quality": {"score": 6, "rationale": "Light humor in treating it as a serious question, charming not hilarious"}, "creativity": {"score": 5, "rationale": "Decent reframe as a serious distinction, but a fairly obvious follow-up question"}, "specificity": {"score": 7, "rationale": "Picks the sunset detail specifically and adds a new dimension to it"}, "human_likeness": {"score": 8, "rationale": "Short, direct, no unnecessary framing or filler — feels like a real person"}, "closer_strength": {"score": 9, "rationale": "'important distinction' is a perfect deadpan mic-drop — two words that carry gravity and invite a reply"}}
 
 ### Example 5 (Great pun — creative but AI-sounding):
 Profile: Amanda, 25
 Prompt: "A random fact I love" → "otters hold paws while they sleep so they don't drift apart"
 Opener: "can I be your significant otter?"
-Expected: {"reply_likelihood": {"score": 8, "rationale": "Charming, memorable, easy to respond to with a laugh or playful yes"}, "humor_quality": {"score": 8, "rationale": "The pun genuinely lands — it's clever without being forced and fits the context perfectly"}, "creativity": {"score": 9, "rationale": "'Significant otter' is a brilliant pun that transforms the otter fact into a flirty proposition"}, "specificity": {"score": 9, "rationale": "Only works for this exact prompt — the pun is built entirely from her specific fact"}, "human_likeness": {"score": 7, "rationale": "Lowercase, short, natural — but the pun is almost too perfect for a casual first message"}}
+Expected: {"reply_likelihood": {"score": 8, "rationale": "Charming, memorable, easy to respond to with a laugh or playful yes"}, "humor_quality": {"score": 8, "rationale": "The pun genuinely lands — it's clever without being forced and fits the context perfectly"}, "creativity": {"score": 9, "rationale": "'Significant otter' is a brilliant pun that transforms the otter fact into a flirty proposition"}, "specificity": {"score": 9, "rationale": "Only works for this exact prompt — the pun is built entirely from her specific fact"}, "human_likeness": {"score": 7, "rationale": "Lowercase, short, natural — but the pun is almost too perfect for a casual first message"}, "closer_strength": {"score": 10, "rationale": "'significant otter' IS the punchline — the entire opener builds to these two words and they land perfectly"}}
 
 ### Example 6 (Deadpan genius):
 Profile: Sam, 26
 Prompt: "You'd never know it, but I" → "have been to 23 countries"
 Opener: "23 is such a specific number to stop at. what happened"
-Expected: {"reply_likelihood": {"score": 8, "rationale": "Funny angle that reframes their humble brag as suspicious, invites storytelling"}, "humor_quality": {"score": 8, "rationale": "Deadpan 'what happened' is genuinely funny — treats travel as if something went wrong"}, "creativity": {"score": 9, "rationale": "Brilliant reframe — instead of being impressed, acts like 23 is suspicious. Nobody expects that angle."}, "specificity": {"score": 9, "rationale": "Focuses on the specific number '23' — couldn't work for any other travel count"}, "human_likeness": {"score": 9, "rationale": "No capitals, dry humor, period instead of question mark — very human texting style"}}
+Expected: {"reply_likelihood": {"score": 8, "rationale": "Funny angle that reframes their humble brag as suspicious, invites storytelling"}, "humor_quality": {"score": 8, "rationale": "Deadpan 'what happened' is genuinely funny — treats travel as if something went wrong"}, "creativity": {"score": 9, "rationale": "Brilliant reframe — instead of being impressed, acts like 23 is suspicious. Nobody expects that angle."}, "specificity": {"score": 9, "rationale": "Focuses on the specific number '23' — couldn't work for any other travel count"}, "human_likeness": {"score": 9, "rationale": "No capitals, dry humor, period instead of question mark — very human texting style"}, "closer_strength": {"score": 10, "rationale": "'what happened' — two words, maximum impact, demands an answer, IS the punchline"}}
 
 ### Example 7 (Literal misread device):
 Profile: Kate, 28
 Prompt: "You should leave a comment if" → "you're a dog person"
 Opener: "I'm actually full human. Should I still leave a comment?"
-Expected: {"reply_likelihood": {"score": 7, "rationale": "Absurd enough to stand out, invites a playful response"}, "humor_quality": {"score": 8, "rationale": "Literal misread of 'dog person' as species is genuinely funny and unexpected"}, "creativity": {"score": 9, "rationale": "Takes 'dog person' literally as a human-dog hybrid — classic literal misread device perfectly executed"}, "specificity": {"score": 8, "rationale": "Built entirely around her specific 'dog person' phrase"}, "human_likeness": {"score": 7, "rationale": "Proper punctuation and structure are slightly formal but the humor style feels human"}}
+Expected: {"reply_likelihood": {"score": 7, "rationale": "Absurd enough to stand out, invites a playful response"}, "humor_quality": {"score": 8, "rationale": "Literal misread of 'dog person' as species is genuinely funny and unexpected"}, "creativity": {"score": 9, "rationale": "Takes 'dog person' literally as a human-dog hybrid — classic literal misread device perfectly executed"}, "specificity": {"score": 8, "rationale": "Built entirely around her specific 'dog person' phrase"}, "human_likeness": {"score": 7, "rationale": "Proper punctuation and structure are slightly formal but the humor style feels human"}, "closer_strength": {"score": 8, "rationale": "'should I still comment?' ends on a question that invites her to play along with the bit"}}
 
 ### Example 8 (Trying too hard — low creativity despite effort):
 Profile: Taylor, 24
 Prompt: "I get myself out of a funk by" → "baking sourdough and blasting 90s hip hop"
 Opener: "sourdough AND 90s hip hop?? this is the most chaotic self-care I've ever heard and I'm absolutely here for it - what's the go-to track, biggie or tupac?"
-Expected: {"reply_likelihood": {"score": 5, "rationale": "Too long and energetic for a first message, multiple questions compete for attention"}, "humor_quality": {"score": 4, "rationale": "'Chaotic self-care' is a social media phrase, not natural humor"}, "creativity": {"score": 3, "rationale": "No creative device — just reacts with performed surprise and asks the obvious music question"}, "specificity": {"score": 4, "rationale": "References both sourdough AND hip hop — profile-summarizing instead of single-hook commitment"}, "human_likeness": {"score": 2, "rationale": "Double question marks, 'absolutely here for it', combining multiple profile references — all AI hallmarks"}}
+Expected: {"reply_likelihood": {"score": 5, "rationale": "Too long and energetic for a first message, multiple questions compete for attention"}, "humor_quality": {"score": 4, "rationale": "'Chaotic self-care' is a social media phrase, not natural humor"}, "creativity": {"score": 3, "rationale": "No creative device — just reacts with performed surprise and asks the obvious music question"}, "specificity": {"score": 4, "rationale": "References both sourdough AND hip hop — profile-summarizing instead of single-hook commitment"}, "human_likeness": {"score": 2, "rationale": "Double question marks, 'absolutely here for it', combining multiple profile references — all AI hallmarks"}, "closer_strength": {"score": 4, "rationale": "'biggie or tupac?' is the obvious question anyone would ask — the closer defaults to a generic either/or"}}
 
 ### Example 9 (Direct quote — perfectly human, moderate creativity):
 Profile: Lisa, 23
 Prompt: "I'll fall for you if" → "you can quote The Office"
 Opener: "bears beets battlestar galactica"
-Expected: {"reply_likelihood": {"score": 7, "rationale": "Perfect reference that shows shared interest, easy to riff on"}, "humor_quality": {"score": 7, "rationale": "Using the quote directly is funnier than explaining it"}, "creativity": {"score": 6, "rationale": "It's the most famous Office quote — obvious choice, but letting the quote speak for itself is smart"}, "specificity": {"score": 9, "rationale": "Only works because she specifically asked for Office quotes"}, "human_likeness": {"score": 10, "rationale": "No framing, no question, just the reference itself — exactly what a real fan would do"}}
+Expected: {"reply_likelihood": {"score": 7, "rationale": "Perfect reference that shows shared interest, easy to riff on"}, "humor_quality": {"score": 7, "rationale": "Using the quote directly is funnier than explaining it"}, "creativity": {"score": 6, "rationale": "It's the most famous Office quote — obvious choice, but letting the quote speak for itself is smart"}, "specificity": {"score": 9, "rationale": "Only works because she specifically asked for Office quotes"}, "human_likeness": {"score": 10, "rationale": "No framing, no question, just the reference itself — exactly what a real fan would do"}, "closer_strength": {"score": 9, "rationale": "'battlestar galactica' — the quote builds in absurdity and ends on the most ridiculous item"}}
 
 ### Example 10 (Reversal device):
 Profile: Jess, 25
 Prompt: "I'm overly competitive about" → "absolutely nothing - I hate competition"
 Opener: "I bet I'm less competitive than you"
-Expected: {"reply_likelihood": {"score": 8, "rationale": "Creates instant playful tension that begs a response"}, "humor_quality": {"score": 9, "rationale": "The irony of competitively claiming to be non-competitive is effortlessly funny"}, "creativity": {"score": 10, "rationale": "Perfect reversal — turns her anti-competition stance into a competition. One of the best possible angles."}, "specificity": {"score": 9, "rationale": "Only works for this exact prompt about hating competition"}, "human_likeness": {"score": 9, "rationale": "Short, punchy, no filler — feels like a genuinely witty person's instinct"}}
+Expected: {"reply_likelihood": {"score": 8, "rationale": "Creates instant playful tension that begs a response"}, "humor_quality": {"score": 9, "rationale": "The irony of competitively claiming to be non-competitive is effortlessly funny"}, "creativity": {"score": 10, "rationale": "Perfect reversal — turns her anti-competition stance into a competition. One of the best possible angles."}, "specificity": {"score": 9, "rationale": "Only works for this exact prompt about hating competition"}, "human_likeness": {"score": 9, "rationale": "Short, punchy, no filler — feels like a genuinely witty person's instinct"}, "closer_strength": {"score": 10, "rationale": "'than you' — the entire joke hinges on these two words landing at the end, and they do perfectly"}}
 
 ## Common AI Patterns to Watch For
 
@@ -337,12 +333,13 @@ These patterns appear frequently in AI-generated openers and should lower the HU
 ## Important Notes
 
 - Be critical. Most AI-generated openers cluster around 3-5 on human_likeness and 3-5 on creativity. It's rare for an AI opener to score 8+ on either.
-- All 5 dimensions are independent. A boring but genuine message might score 7 on reply likelihood but 3 on humor and creativity. A brilliantly creative opener might still sound obviously AI.
+- All 6 dimensions are independent. A boring but genuine message might score 7 on reply likelihood but 3 on humor and creativity. A brilliantly creative opener might still sound obviously AI.
 - Don't let one strong dimension inflate others. Score each independently.
 - The rationale should be specific about what made you give that score, not generic praise or criticism.
 - When scoring HUMAN_LIKENESS, count the number of red flags present. 0 flags = 8-10, 1 flag = 6-7, 2 flags = 4-5, 3+ flags = 1-3.
 - When scoring CREATIVITY, ask: "What comedic device is being used?" If you can't name one (pun, reversal, literal misread, absurd escalation, faux-serious, deadpan reframe), the creativity score should be 4 or below.
-- When scoring SPECIFICITY, ask: "Would this opener work on a different profile with a similar topic?" If yes, score 5 or below.`;
+- When scoring SPECIFICITY, ask: "Would this opener work on a different profile with a similar topic?" If yes, score 5 or below.
+- When scoring CLOSER_STRENGTH, read ONLY the last 3-4 words in isolation. Ask: "Do these words land with impact? Would cutting them improve the opener?" If cutting them helps, score 5 or below.`;
 
 // --- Helpers ---
 
@@ -351,8 +348,10 @@ function parseArgs(): EvalArgs {
   let samples = 30;
   let generate = false;
   let hash: string | undefined;
-  let models: string[] = ['claude-sonnet-4-5-20250514', 'claude-haiku-4-5-20251001'];
+  let models: string[] = ['claude-opus-4-6'];
   let prompts: string[] | undefined;
+  let thinkingBudget: number | undefined;
+  let bestOf: number | undefined;
 
   for (let i = 0; i < args.length; i++) {
     if (args[i] === '--samples' && args[i + 1]) {
@@ -365,11 +364,21 @@ function parseArgs(): EvalArgs {
       models = args[i + 1].split(',').map((m) => m.trim());
     } else if (args[i] === '--prompts' && args[i + 1]) {
       prompts = args[i + 1].split(',').map((p) => p.trim());
+    } else if (args[i] === '--thinking' && args[i + 1]) {
+      thinkingBudget = parseInt(args[i + 1], 10);
+    } else if (args[i] === '--best-of' && args[i + 1]) {
+      bestOf = parseInt(args[i + 1], 10);
     }
   }
 
+  // Enable extended thinking if requested
+  if (thinkingBudget && thinkingBudget > 0) {
+    setLLMThinkingConfig({ type: 'enabled', budget_tokens: thinkingBudget });
+    console.log(`  Extended thinking enabled: budget_tokens=${thinkingBudget}`);
+  }
+
   if (generate) {
-    return { mode: 'generate', samples, models, prompts };
+    return { mode: 'generate', samples, models, prompts, bestOf };
   }
   return { mode: 'historical', samples, hash };
 }
@@ -432,27 +441,21 @@ function extractAndParseJSON(text: string): any {
 
 async function judgeOpener(d: Decision): Promise<JudgeScores | null> {
   try {
-    const response = await client.messages.create({
-      model: JUDGE_MODEL,
-      max_tokens: 500,
-      system: [
-        {
-          type: 'text',
-          text: JUDGE_SYSTEM_PROMPT,
-          cache_control: { type: 'ephemeral' },
-        },
-      ],
-      messages: [
-        { role: 'user', content: buildUserPrompt(d) },
-      ],
-    });
+    const systemMsg: ChatCompletionMessageParam = {
+      role: 'system',
+      content: [{
+        type: 'text',
+        text: JUDGE_SYSTEM_PROMPT,
+        cache_control: { type: 'ephemeral' },
+      }] as any,
+    };
 
-    trackUsage(response.usage);
-
-    const content = response.content
-      .filter((block): block is Anthropic.TextBlock => block.type === 'text')
-      .map((block) => block.text)
-      .join('\n');
+    const content = await llmChat(
+      buildUserPrompt(d),
+      [systemMsg],
+      JUDGE_MODEL,
+      'json_object',
+    );
 
     const parsed = extractAndParseJSON(content);
     if (
@@ -460,7 +463,8 @@ async function judgeOpener(d: Decision): Promise<JudgeScores | null> {
       parsed.humor_quality?.score != null &&
       parsed.creativity?.score != null &&
       parsed.specificity?.score != null &&
-      parsed.human_likeness?.score != null
+      parsed.human_likeness?.score != null &&
+      parsed.closer_strength?.score != null
     ) {
       return parsed as JudgeScores;
     }
@@ -509,6 +513,7 @@ function aggregate(results: EvalResult[]): ModelAggregate[] {
     const creativity = avg('creativity');
     const specificity = avg('specificity');
     const human = avg('human_likeness');
+    const closer = avg('closer_strength');
     aggregates.push({
       model,
       samples: n,
@@ -517,7 +522,8 @@ function aggregate(results: EvalResult[]): ModelAggregate[] {
       creativity: +creativity.toFixed(1),
       specificity: +specificity.toFixed(1),
       human_likeness: +human.toFixed(1),
-      avg: +((reply + humor + creativity + specificity + human) / 5).toFixed(1),
+      closer_strength: +closer.toFixed(1),
+      avg: +((reply + humor + creativity + specificity + human + closer) / 6).toFixed(1),
     });
   }
 
@@ -525,8 +531,8 @@ function aggregate(results: EvalResult[]): ModelAggregate[] {
 }
 
 function printReport(aggregates: ModelAggregate[]) {
-  const header = 'Model                              | Samples | Reply | Humor | Creat | Specf | Human | Avg';
-  const sep = '-----------------------------------|---------|-------|-------|-------|-------|-------|-----';
+  const header = 'Model                              | Samples | Reply | Humor | Creat | Specf | Human | Close | Avg';
+  const sep = '-----------------------------------|---------|-------|-------|-------|-------|-------|-------|-----';
   console.log('\n' + header);
   console.log(sep);
   for (const a of aggregates) {
@@ -537,40 +543,32 @@ function printReport(aggregates: ModelAggregate[]) {
     const creat = a.creativity.toFixed(1).padStart(5);
     const specf = a.specificity.toFixed(1).padStart(5);
     const human = a.human_likeness.toFixed(1).padStart(5);
+    const close = a.closer_strength.toFixed(1).padStart(5);
     const avg = a.avg.toFixed(1).padStart(4);
-    console.log(`${model} | ${samples}   | ${reply} | ${humor} | ${creat} | ${specf} | ${human} | ${avg}`);
+    console.log(`${model} | ${samples}   | ${reply} | ${humor} | ${creat} | ${specf} | ${human} | ${close} | ${avg}`);
   }
   console.log();
 }
 
-function printCostSummary(genCost?: { calls: number; totalCost: number }) {
-  const judgeCost = computeCost();
+function printCostSummary() {
+  const summary = getCostSummary();
   const cacheHitRate =
-    costTracker.cacheReadTokens + costTracker.cacheWriteTokens > 0
+    summary.cacheReadTokens + summary.cacheWriteTokens > 0
       ? (
-          (costTracker.cacheReadTokens /
-            (costTracker.cacheReadTokens + costTracker.cacheWriteTokens)) *
+          (summary.cacheReadTokens /
+            (summary.cacheReadTokens + summary.cacheWriteTokens)) *
           100
         ).toFixed(1)
       : '0.0';
 
-  console.log('--- Cost Summary (Judge) ---');
-  console.log(`  LLM calls:         ${costTracker.calls}`);
-  console.log(`  Input tokens:      ${costTracker.inputTokens.toLocaleString()}`);
-  console.log(`  Output tokens:     ${costTracker.outputTokens.toLocaleString()}`);
-  console.log(`  Cache write:       ${costTracker.cacheWriteTokens.toLocaleString()}`);
-  console.log(`  Cache read:        ${costTracker.cacheReadTokens.toLocaleString()}`);
+  console.log('--- Cost Summary (All) ---');
+  console.log(`  LLM calls:         ${summary.calls}`);
+  console.log(`  Input tokens:      ${summary.inputTokens.toLocaleString()}`);
+  console.log(`  Output tokens:     ${summary.outputTokens.toLocaleString()}`);
+  console.log(`  Cache write:       ${summary.cacheWriteTokens.toLocaleString()}`);
+  console.log(`  Cache read:        ${summary.cacheReadTokens.toLocaleString()}`);
   console.log(`  Cache hit rate:    ${cacheHitRate}%`);
-  console.log(`  Judge cost:        $${judgeCost.toFixed(4)}`);
-
-  if (genCost) {
-    console.log('--- Cost Summary (Generation) ---');
-    console.log(`  LLM calls:         ${genCost.calls}`);
-    console.log(`  Generation cost:   $${genCost.totalCost.toFixed(4)}`);
-    console.log(`--- Total cost:        $${(judgeCost + genCost.totalCost).toFixed(4)} ---`);
-  } else {
-    console.log(`  Total cost:        $${judgeCost.toFixed(4)}`);
-  }
+  console.log(`  Total cost:        $${summary.totalCost.toFixed(4)}`);
 }
 
 // --- Historical Mode ---
@@ -646,19 +644,43 @@ async function runHistoricalMode(args: { samples: number; hash?: string }) {
       samplesPerModel: args.samples,
       hashFilter: args.hash ?? null,
       totalEvals: evalResults.length,
-      cost: computeCost(),
-      tokens: { ...costTracker },
+      cost: getCostSummary().totalCost,
+      tokens: getCostSummary(),
     },
     aggregates,
     results: evalResults,
   };
   fs.writeFileSync(outputPath, JSON.stringify(output, null, 2));
   console.log(`\nDetailed results written to: ${outputPath}`);
+
+  // Append to persistent benchmark log (JSONL)
+  const benchmarkPath = path.join(__dirname, 'eval_benchmarks.jsonl');
+  const finalCost = getCostSummary();
+  for (const agg of aggregates) {
+    const entry = {
+      timestamp: new Date().toISOString(),
+      mode: 'historical',
+      model: agg.model,
+      hashFilter: args.hash ?? null,
+      samples: agg.samples,
+      reply_likelihood: agg.reply_likelihood,
+      humor_quality: agg.humor_quality,
+      creativity: agg.creativity,
+      specificity: agg.specificity,
+      human_likeness: agg.human_likeness,
+      closer_strength: agg.closer_strength,
+      avg: agg.avg,
+      cost: finalCost.totalCost,
+      judgeModel: JUDGE_MODEL,
+    };
+    fs.appendFileSync(benchmarkPath, JSON.stringify(entry) + '\n');
+  }
+  console.log(`Benchmark appended to: ${benchmarkPath}`);
 }
 
 // --- Generate Mode ---
 
-async function runGenerateMode(args: { samples: number; models: string[]; prompts?: string[] }) {
+async function runGenerateMode(args: { samples: number; models: string[]; prompts?: string[]; bestOf?: number }) {
   // Resolve prompt variants
   const promptVariants: { label: string; filePath: string }[] = [];
   if (args.prompts && args.prompts.length > 0) {
@@ -680,6 +702,7 @@ async function runGenerateMode(args: { samples: number; models: string[]; prompt
   console.log(`  ${args.samples} profiles × ${args.models.length} model(s) × ${promptVariants.length} prompt(s) = ${combos} combos`);
   console.log(`  Models: ${args.models.join(', ')}`);
   if (args.prompts) console.log(`  Prompts: ${promptVariants.map((p) => p.label).join(', ')}`);
+  if (args.bestOf && args.bestOf > 1) console.log(`  Best-of-${args.bestOf} generation enabled`);
   console.log(`  Judge model: ${JUDGE_MODEL} (Anthropic direct)\n`);
 
   // Load profiles: deduplicate by userId, take N unique profiles with text prompts
@@ -697,8 +720,9 @@ async function runGenerateMode(args: { samples: number; models: string[]; prompt
   }
   console.log(`Sampled ${uniqueProfiles.length} unique profiles from ${likes.length} text likes\n`);
 
-  // Set up generation provider
-  setLLMProvider('anthropic');
+  const provider = (process.env.LLM_PROVIDER || 'anthropic') as any;
+  setLLMProvider(provider);
+  console.log(`  Generation provider: ${provider}`);
   resetCostTracker();
 
   interface GeneratedOpener {
@@ -713,6 +737,53 @@ async function runGenerateMode(args: { samples: number; models: string[]; prompt
 
   const allGenerated: GeneratedOpener[] = [];
   const promptHashes: Map<string, string> = new Map();
+
+  // Pipeline: judge openers as they're generated
+  const judgeResultsMap = new Map<GeneratedOpener, { scores: JudgeScores | null }>();
+  const judgeQueue: GeneratedOpener[] = [];
+  let judgeWorkersDone = false;
+
+  function judgeOneOpener(gen: GeneratedOpener): Promise<{ scores: JudgeScores | null }> {
+    const syntheticDecision: Decision = {
+      timestamp: new Date().toISOString(),
+      decision: 'like',
+      decisionSource: 'text',
+      comment: gen.openerText,
+      prompts: [{ question: gen.promptQuestion, answer: gen.promptAnswer }],
+      profile: gen.profileDecision.profile,
+      model: gen.model,
+    };
+    return judgeOpener(syntheticDecision).then((scores) => ({ scores }));
+  }
+
+  // Start background judge workers that drain the queue while generation runs
+  const backgroundJudgePromise = (async () => {
+    const activeJudges: Promise<void>[] = [];
+    const processOne = async (gen: GeneratedOpener) => {
+      const result = await judgeOneOpener(gen);
+      judgeResultsMap.set(gen, result);
+      const done = judgeResultsMap.size;
+      if (done % 10 === 0) {
+        process.stdout.write(`  [pipeline] ${done} judged so far\n`);
+      }
+    };
+
+    while (!judgeWorkersDone || judgeQueue.length > 0) {
+      while (judgeQueue.length > 0 && activeJudges.length < CONCURRENCY) {
+        const gen = judgeQueue.shift()!;
+        const p = processOne(gen).then(() => {
+          activeJudges.splice(activeJudges.indexOf(p), 1);
+        });
+        activeJudges.push(p);
+      }
+      if (activeJudges.length > 0) {
+        await Promise.race(activeJudges);
+      } else {
+        await new Promise((r) => setTimeout(r, 50));
+      }
+    }
+    await Promise.all(activeJudges);
+  })();
 
   for (const variant of promptVariants) {
     // Set prompt override (or clear for default)
@@ -752,11 +823,13 @@ async function runGenerateMode(args: { samples: number; models: string[]; prompt
           const items = profileTasks.map((t) => ({ id: t.id, profilePrompt: t.profilePrompt }));
 
           try {
-            const results = await generateOpenersFromYamlBatch(items, profile.profile.firstName, model);
+            const results = args.bestOf && args.bestOf > 1
+              ? await generateOpenersFromYamlBatchBestOfN(items, profile.profile.firstName, model, args.bestOf)
+              : await generateOpenersFromYamlBatch(items, profile.profile.firstName, model);
             for (const task of profileTasks) {
               const text = results.get(task.id);
               if (text) {
-                allGenerated.push({
+                const opener: GeneratedOpener = {
                   model: comboLabel,
                   promptLabel: variant.label,
                   promptHash: promptMeta.hash,
@@ -764,7 +837,9 @@ async function runGenerateMode(args: { samples: number; models: string[]; prompt
                   promptQuestion: task.profile.prompts[task.promptIdx].question,
                   promptAnswer: task.profile.prompts[task.promptIdx].answer,
                   openerText: text,
-                });
+                };
+                allGenerated.push(opener);
+                judgeQueue.push(opener);
               }
             }
           } catch (e: any) {
@@ -789,37 +864,18 @@ async function runGenerateMode(args: { samples: number; models: string[]; prompt
   // Capture generation cost
   const genCostSummary = getCostSummary();
   console.log(`\nGeneration complete. ${allGenerated.length} total openers.`);
-  console.log(`Generation cost: $${genCostSummary.totalCost.toFixed(4)}\n`);
+  console.log(`Generation cost: $${genCostSummary.totalCost.toFixed(4)}`);
 
-  // Judge all generated openers
-  console.log(`Judging ${allGenerated.length} openers (concurrency: ${CONCURRENCY})...\n`);
+  // Signal background judges that no more openers are coming, then wait
+  judgeWorkersDone = true;
+  console.log(`Waiting for ${allGenerated.length - judgeResultsMap.size} remaining judge calls...\n`);
+  await backgroundJudgePromise;
 
-  let judgeCompleted = 0;
-  const judgeResults = await runWithConcurrency(
-    allGenerated,
-    async (gen) => {
-      const syntheticDecision: Decision = {
-        timestamp: new Date().toISOString(),
-        decision: 'like',
-        decisionSource: 'text',
-        comment: gen.openerText,
-        prompts: [{ question: gen.promptQuestion, answer: gen.promptAnswer }],
-        profile: gen.profileDecision.profile,
-        model: gen.model,
-      };
-      const scores = await judgeOpener(syntheticDecision);
-      judgeCompleted++;
-      if (judgeCompleted % 10 === 0 || judgeCompleted === allGenerated.length) {
-        process.stdout.write(`  ${judgeCompleted}/${allGenerated.length} judged\n`);
-      }
-      return { gen, scores };
-    },
-    CONCURRENCY
-  );
+  console.log(`  ${judgeResultsMap.size}/${allGenerated.length} judged`);
 
   const evalResults: EvalResult[] = [];
-  for (const { gen, scores } of judgeResults) {
-    if (!scores) continue;
+  for (const [gen, result] of judgeResultsMap) {
+    if (!result.scores) continue;
     evalResults.push({
       model: gen.model,
       comment: gen.openerText,
@@ -828,7 +884,7 @@ async function runGenerateMode(args: { samples: number; models: string[]; prompt
       profileName: gen.profileDecision.profile.firstName,
       profileAge: gen.profileDecision.profile.age,
       decisionSource: 'text',
-      scores,
+      scores: result.scores,
     });
   }
 
@@ -836,11 +892,12 @@ async function runGenerateMode(args: { samples: number; models: string[]; prompt
 
   const aggregates = aggregate(evalResults);
   printReport(aggregates);
-  printCostSummary({ calls: genCostSummary.calls, totalCost: genCostSummary.totalCost });
+  printCostSummary();
 
   // Write results with timestamp
   const ts = new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19);
   const outputPath = path.join(__dirname, `eval_results_gen_${ts}.json`);
+  const finalCost = getCostSummary();
   const output = {
     metadata: {
       mode: 'generate' as const,
@@ -851,15 +908,36 @@ async function runGenerateMode(args: { samples: number; models: string[]; prompt
       samplesPerModel: args.samples,
       totalGenerated: allGenerated.length,
       totalEvals: evalResults.length,
-      judgeCost: computeCost(),
-      generationCost: genCostSummary.totalCost,
-      totalCost: computeCost() + genCostSummary.totalCost,
+      totalCost: finalCost.totalCost,
     },
     aggregates,
     results: evalResults,
   };
   fs.writeFileSync(outputPath, JSON.stringify(output, null, 2));
   console.log(`\nDetailed results written to: ${outputPath}`);
+
+  // Append to persistent benchmark log (JSONL)
+  const benchmarkPath = path.join(__dirname, 'eval_benchmarks.jsonl');
+  for (const agg of aggregates) {
+    const entry = {
+      timestamp: new Date().toISOString(),
+      mode: 'generate',
+      model: agg.model,
+      promptVariants: Object.fromEntries(promptHashes),
+      samples: agg.samples,
+      reply_likelihood: agg.reply_likelihood,
+      humor_quality: agg.humor_quality,
+      creativity: agg.creativity,
+      specificity: agg.specificity,
+      human_likeness: agg.human_likeness,
+      closer_strength: agg.closer_strength,
+      avg: agg.avg,
+      cost: finalCost.totalCost,
+      judgeModel: JUDGE_MODEL,
+    };
+    fs.appendFileSync(benchmarkPath, JSON.stringify(entry) + '\n');
+  }
+  console.log(`Benchmark appended to: ${benchmarkPath}`);
 }
 
 // --- Main ---
@@ -873,7 +951,11 @@ async function main() {
   }
 }
 
-main().catch((e) => {
-  console.error('Fatal error:', e);
-  process.exit(1);
-});
+main()
+  .catch((e) => {
+    console.error('Fatal error:', e);
+    process.exit(1);
+  })
+  .finally(() => {
+    cleanupLLMProvider();
+  });

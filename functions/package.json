@@ -19,6 +19,7 @@
   },
   "main": "lib/index.js",
   "dependencies": {
+    "@anthropic-ai/claude-agent-sdk": "^0.2.71",
     "@anthropic-ai/sdk": "^0.65.0",
     "@sendbird/chat": "^4.3.0",
     "axios": "^1.3.2",

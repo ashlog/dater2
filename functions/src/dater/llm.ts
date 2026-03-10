@@ -1,5 +1,7 @@
 import OpenAI from 'openai';
 import Anthropic from '@anthropic-ai/sdk';
+import { query as agentQuery, unstable_v2_createSession } from '@anthropic-ai/claude-agent-sdk';
+import type { SDKSession, SDKMessage } from '@anthropic-ai/claude-agent-sdk';
 import type {
   TextBlockParam,
   ImageBlockParam,
@@ -26,7 +28,7 @@ dotenv.config();
 const OPENROUTER_API_KEY = process.env.OPENROUTER_API_KEY;
 const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY;
 
-export type LLMProviderName = 'openrouter' | 'anthropic';
+export type LLMProviderName = 'openrouter' | 'anthropic' | 'claude-agent' | 'claude-direct';
 
 interface ChatRequest {
   model: string;
@@ -66,13 +68,17 @@ const costTracker = {
   calls: 0,
 };
 
-function trackUsage(usage: any) {
+function trackUsage(usage: any, cost?: number) {
   if (!usage) return;
-  costTracker.inputTokens += usage.prompt_tokens ?? 0;
-  costTracker.outputTokens += usage.completion_tokens ?? 0;
-  costTracker.cacheReadTokens += usage.prompt_tokens_details?.cached_tokens ?? 0;
-  costTracker.cacheWriteTokens += usage.prompt_tokens_details?.cache_write_tokens ?? 0;
-  costTracker.totalCost += usage.cost ?? 0;
+  // OpenRouter/OpenAI format: prompt_tokens, completion_tokens
+  // Anthropic format: input_tokens, output_tokens
+  costTracker.inputTokens += usage.prompt_tokens ?? usage.input_tokens ?? 0;
+  costTracker.outputTokens += usage.completion_tokens ?? usage.output_tokens ?? 0;
+  costTracker.cacheReadTokens +=
+    usage.prompt_tokens_details?.cached_tokens ?? usage.cache_read_input_tokens ?? 0;
+  costTracker.cacheWriteTokens +=
+    usage.prompt_tokens_details?.cache_write_tokens ?? usage.cache_creation_input_tokens ?? 0;
+  costTracker.totalCost += cost ?? usage.cost ?? 0;
   costTracker.calls++;
 }
 
@@ -159,8 +165,14 @@ class AnthropicProvider implements LLMProvider {
   private readonly client: Anthropic | null;
   private readonly defaultMaxTokens = 5024;
 
-  constructor(apiKey: string | undefined) {
-    this.client = apiKey ? new Anthropic({ apiKey }) : null;
+  constructor(apiKey: string | undefined, opts?: { defaultHeaders?: Record<string, string>; baseURL?: string }) {
+    this.client = apiKey
+      ? new Anthropic({
+          apiKey,
+          ...(opts?.defaultHeaders ? { defaultHeaders: opts.defaultHeaders } : {}),
+          ...(opts?.baseURL ? { baseURL: opts.baseURL } : {}),
+        })
+      : null;
   }
 
   async chat(request: ChatRequest): Promise<LLMResult> {
@@ -170,21 +182,25 @@ class AnthropicProvider implements LLMProvider {
 
     const { system, messages } = await this.convertMessages(request.messages);
 
+    const thinkingConfig = this.resolveThinkingConfig(request);
+    const isThinking = thinkingConfig?.type === 'enabled';
     const response = await this.client.messages.create({
       model: this.normalizeModel(request.model),
       system: system ?? undefined,
       messages,
       max_tokens: request.maxTokens ?? this.defaultMaxTokens,
-      temperature: request.temperature,
-      top_p: request.top_p,
+      // Anthropic disallows temperature/top_p when thinking is enabled
+      ...(isThinking ? {} : { temperature: request.temperature, top_p: request.top_p }),
       stop_sequences: request.stop,
-      thinking: this.resolveThinkingConfig(request),
+      thinking: thinkingConfig,
     });
 
     const content = (response.content || [])
       .filter((block: any) => block.type === 'text' && typeof block.text === 'string')
       .map((block: any) => block.text)
       .join('\n');
+
+    trackUsage((response as any).usage);
 
     return {
       content,
@@ -338,19 +354,467 @@ class AnthropicProvider implements LLMProvider {
   private resolveThinkingConfig(request: ChatRequest): ThinkingConfigParam | undefined {
     const config = request.thinking;
     if (!config) return undefined;
-    if (config.type === 'enabled') {
+    if (config.type === 'enabled' && typeof config.budget_tokens === 'number') {
+      // Ensure max_tokens > budget_tokens so there's room for actual output
       const maxTokens = request.maxTokens ?? this.defaultMaxTokens;
-      if (typeof config.budget_tokens === 'number' && config.budget_tokens > maxTokens) {
-        return undefined;
+      if (config.budget_tokens >= maxTokens) {
+        request.maxTokens = config.budget_tokens + 4096;
       }
     }
     return config;
   }
 }
 
+class ClaudeAgentProvider implements LLMProvider {
+  readonly name: LLMProviderName = 'claude-agent';
+
+  // Pool of persistent sessions per model — enables concurrent calls.
+  private static POOL_SIZE = 4;
+  private pools = new Map<string, { sessions: SDKSession[]; queue: Array<(session: SDKSession) => void> }>();
+  // Track cumulative cost per session to compute per-call deltas
+  private sessionCostAccum = new WeakMap<SDKSession, number>();
+
+  private normalizeModel(model: string): string {
+    if (!model) return 'claude-sonnet-4-6';
+    const trimmed = model.trim();
+    if (trimmed.includes('/')) {
+      return trimmed.split('/').pop() || trimmed;
+    }
+    return trimmed;
+  }
+
+  private createSession(model: string): SDKSession {
+    return unstable_v2_createSession({
+      model,
+      permissionMode: 'dontAsk',
+      allowedTools: [],
+      disallowedTools: ['Read', 'Write', 'Edit', 'Bash', 'Glob', 'Grep', 'Agent', 'NotebookEdit'],
+      env: Object.fromEntries(
+        Object.entries(process.env).filter(([k]) => k !== 'CLAUDECODE' && k !== 'ANTHROPIC_API_KEY')
+      ),
+    });
+  }
+
+  private async acquireSession(model: string): Promise<SDKSession> {
+    let pool = this.pools.get(model);
+    if (!pool) {
+      pool = { sessions: [], queue: [] };
+      // Pre-create pool sessions
+      for (let i = 0; i < ClaudeAgentProvider.POOL_SIZE; i++) {
+        pool.sessions.push(this.createSession(model));
+      }
+      this.pools.set(model, pool);
+    }
+
+    // If a session is available, take it
+    if (pool.sessions.length > 0) {
+      return pool.sessions.pop()!;
+    }
+
+    // Otherwise wait for one to be released
+    return new Promise<SDKSession>((resolve) => {
+      pool!.queue.push(resolve);
+    });
+  }
+
+  private releaseSession(model: string, session: SDKSession): void {
+    const pool = this.pools.get(model);
+    if (!pool) return;
+
+    // If someone is waiting, give it directly
+    const waiter = pool.queue.shift();
+    if (waiter) {
+      waiter(session);
+    } else {
+      pool.sessions.push(session);
+    }
+  }
+
+  private removeSession(model: string, session: SDKSession): void {
+    // Replace a dead session with a fresh one
+    const pool = this.pools.get(model);
+    if (!pool) return;
+    try { session.close(); } catch {}
+    const fresh = this.createSession(model);
+    const waiter = pool.queue.shift();
+    if (waiter) {
+      waiter(fresh);
+    } else {
+      pool.sessions.push(fresh);
+    }
+  }
+
+  cleanup(): void {
+    for (const [, pool] of this.pools) {
+      for (const session of pool.sessions) {
+        try { session.close(); } catch {}
+      }
+      pool.sessions.length = 0;
+      pool.queue.length = 0;
+    }
+    this.pools.clear();
+  }
+
+  private async collectSessionResponse(session: SDKSession): Promise<{ text: string; cost: number; usage: any }> {
+    let text = '';
+    let cost = 0;
+    let usage: any = undefined;
+    for await (const msg of session.stream()) {
+      if (msg.type === 'assistant') {
+        const parts = ((msg as any).message?.content || [])
+          .filter((b: any) => b.type === 'text')
+          .map((b: any) => b.text);
+        text += parts.join('');
+      }
+      if (msg.type === 'result') {
+        cost = (msg as any).subtype === 'success' ? (msg as any).total_cost_usd : 0;
+        usage = (msg as any).subtype === 'success' ? (msg as any).usage : undefined;
+        break;
+      }
+    }
+    return { text, cost, usage };
+  }
+
+  private async clearSession(session: SDKSession): Promise<void> {
+    await session.send('/clear');
+    // Drain the stream until we get the result (init + result:success)
+    for await (const msg of session.stream()) {
+      if (msg.type === 'result') break;
+    }
+  }
+
+  async chat(request: ChatRequest): Promise<LLMResult> {
+    // Extract system prompt from system-role messages
+    let systemPrompt = '';
+    const nonSystemMessages: ChatCompletionMessageParam[] = [];
+
+    for (const msg of request.messages) {
+      if (msg.role === 'system') {
+        systemPrompt += this.extractText(msg.content) + '\n';
+      } else {
+        nonSystemMessages.push(msg);
+      }
+    }
+
+    // Convert non-system messages into Anthropic MessageParam content blocks,
+    // downloading any image URLs to base64 so the SDK subprocess never fetches Hinge URLs.
+    const anthropicMessages = await this.convertToAnthropicMessages(nonSystemMessages);
+    const model = this.normalizeModel(request.model);
+
+    let resultText = '';
+    let totalCost = 0;
+    let usage: any = undefined;
+
+    const session = await this.acquireSession(model);
+
+    try {
+      // Build the user message with system prompt prepended
+      const userContent: any[] = [];
+      if (systemPrompt.trim()) {
+        userContent.push({ type: 'text', text: `[SYSTEM INSTRUCTIONS]\n${systemPrompt.trim()}\n[END SYSTEM INSTRUCTIONS]` });
+      }
+      for (const msg of anthropicMessages) {
+        if (msg.role === 'user') {
+          const content = Array.isArray(msg.content) ? msg.content : [{ type: 'text', text: msg.content }];
+          userContent.push(...content);
+        }
+      }
+
+      await session.send({
+        type: 'user',
+        session_id: '',
+        message: { role: 'user', content: userContent },
+        parent_tool_use_id: null,
+      } as any);
+
+      const response = await this.collectSessionResponse(session);
+      resultText = response.text;
+      // total_cost_usd is cumulative per session — compute the delta
+      const prevCost = this.sessionCostAccum.get(session) || 0;
+      totalCost = Math.max(0, response.cost - prevCost);
+      this.sessionCostAccum.set(session, response.cost);
+      usage = response.usage;
+
+      // Clear context for next call, then return session to pool
+      await this.clearSession(session);
+      this.releaseSession(model, session);
+    } catch (e: any) {
+      // Session may have died — replace it in the pool
+      this.removeSession(model, session);
+      if (!resultText) throw e;
+    }
+
+    trackUsage(usage, totalCost);
+
+    return {
+      content: resultText,
+      usage,
+      stopReason: undefined,
+    };
+  }
+
+  async complete(request: CompletionRequest): Promise<LLMResult> {
+    return this.chat({
+      model: request.model,
+      messages: [{ role: 'user', content: request.prompt }],
+      maxTokens: request.maxTokens,
+      temperature: request.temperature,
+      top_p: request.top_p,
+      stop: request.stop,
+    });
+  }
+
+  private extractText(content: ChatCompletionMessageParam['content']): string {
+    if (typeof content === 'string') return content;
+    if (!Array.isArray(content)) return '';
+    return (content as any[])
+      .filter((p) => p.type === 'text')
+      .map((p) => p.text || '')
+      .filter(Boolean)
+      .join('\n');
+  }
+
+  /** Convert OpenAI-format messages to Anthropic MessageParam[], downloading images to base64. */
+  private async convertToAnthropicMessages(
+    messages: ChatCompletionMessageParam[]
+  ): Promise<MessageParam[]> {
+    const result: MessageParam[] = [];
+    for (const msg of messages) {
+      const role: 'user' | 'assistant' = msg.role === 'assistant' ? 'assistant' : 'user';
+      const content = await this.convertContent(msg.content);
+      if (content.length > 0) {
+        result.push({ role, content });
+      }
+    }
+    return result;
+  }
+
+  /** Convert OpenAI content parts to Anthropic ContentBlockParam[], fetching images as base64. */
+  private async convertContent(
+    content: ChatCompletionMessageParam['content']
+  ): Promise<ContentBlockParam[]> {
+    if (typeof content === 'string') {
+      return content.trim() ? [{ type: 'text', text: content }] : [];
+    }
+    if (!Array.isArray(content)) return [];
+
+    const blocks: ContentBlockParam[] = [];
+    for (const part of content as any[]) {
+      if (!part) continue;
+      if (part.type === 'text' && part.text?.trim()) {
+        blocks.push({ type: 'text', text: part.text });
+      } else if (part.type === 'image_url') {
+        const block = await this.convertImagePart(part);
+        if (block) blocks.push(block);
+      }
+    }
+    return blocks;
+  }
+
+  /** Convert an OpenAI image_url part to an Anthropic ImageBlockParam with base64 data. */
+  private async convertImagePart(part: any): Promise<ImageBlockParam | null> {
+    const rawUrl: string | undefined =
+      typeof part?.image_url === 'string' ? part.image_url : part?.image_url?.url;
+    if (!rawUrl) return null;
+
+    // Already a data URI — extract base64 directly
+    const dataMatch = rawUrl.match(/^data:(image\/[^;]+);base64,(.+)$/);
+    if (dataMatch) {
+      return {
+        type: 'image',
+        source: {
+          type: 'base64',
+          media_type: dataMatch[1] as 'image/jpeg' | 'image/png' | 'image/gif' | 'image/webp',
+          data: dataMatch[2],
+        },
+      };
+    }
+
+    // Regular URL — download and convert to base64
+    try {
+      const resp = await axios.get(rawUrl, { responseType: 'arraybuffer' });
+      const contentType = resp.headers['content-type'] || 'image/jpeg';
+      const mediaType = contentType.split(';')[0].trim() as
+        'image/jpeg' | 'image/png' | 'image/gif' | 'image/webp';
+      const data = Buffer.from(resp.data).toString('base64');
+      return {
+        type: 'image',
+        source: { type: 'base64', media_type: mediaType, data },
+      };
+    } catch (e) {
+      console.error('ClaudeAgentProvider: failed to download image for base64 conversion', e);
+      return null;
+    }
+  }
+}
+
+/**
+ * Extracts the OAuth token from a claude-agent session via mitmproxy,
+ * then uses the standard Anthropic SDK for direct API calls.
+ * Same auth as claude-agent, but no subprocess or Claude Code system prompt overhead.
+ */
+class ClaudeDirectProvider implements LLMProvider {
+  readonly name: LLMProviderName = 'claude-direct';
+  private inner: AnthropicProvider | null = null;
+  private initPromise: Promise<void> | null = null;
+
+  // Headers we want to replicate from the CLI's /v1/messages request
+  private static readonly HEADERS_TO_COPY = [
+    'x-app',
+    'user-agent',
+    'anthropic-beta',
+    'anthropic-dangerous-direct-browser-access',
+    'anthropic-version',
+  ];
+
+  private createInnerProvider(token: string, headers: Record<string, string>): AnthropicProvider {
+    const provider = new AnthropicProvider(token, { defaultHeaders: headers });
+    (provider as any).name = 'claude-direct';
+    return provider;
+  }
+
+  private static parseHeadersFromLog(log: string): Record<string, string> {
+    // Find the POST /v1/messages request block and extract headers
+    const requestMatch = log.match(/POST https:\/\/api\.anthropic\.com\/v1\/messages[^\n]*\n([\s\S]*?)(?:\n\n|\n *<<|\n\d)/);
+    if (!requestMatch) return {};
+
+    const headerBlock = requestMatch[1];
+    const headers: Record<string, string> = {};
+    for (const line of headerBlock.split('\n')) {
+      const m = line.match(/^\s+([^:]+):\s*(.+)$/);
+      if (m) {
+        const key = m[1].trim();
+        const val = m[2].trim();
+        if (ClaudeDirectProvider.HEADERS_TO_COPY.includes(key.toLowerCase())) {
+          headers[key] = val;
+        }
+      }
+    }
+    return headers;
+  }
+
+  private async ensureInit(): Promise<AnthropicProvider> {
+    if (this.inner) return this.inner;
+    if (!this.initPromise) {
+      this.initPromise = this.extractTokenAndInit();
+    }
+    await this.initPromise;
+    return this.inner!;
+  }
+
+  private async extractTokenAndInit(): Promise<void> {
+    const http = require('http');
+    const net = require('net');
+    const { createServer } = require('https');
+
+    // Start mitmproxy-style CONNECT proxy to capture the OAuth token
+    // We use a simple CONNECT proxy + TLS MITM with the mitmproxy CA
+    // Simpler approach: spawn a one-shot claude session through our local proxy
+    // and read the token from the mitmproxy capture that's already been done.
+
+    // First try: check if we already have a cached token
+    const tokenCachePath = require('path').join(require('os').homedir(), '.claude', '.oauth-token-cache');
+    const fsSync = require('fs');
+    if (fsSync.existsSync(tokenCachePath)) {
+      try {
+        const cached = JSON.parse(fsSync.readFileSync(tokenCachePath, 'utf-8'));
+        if (cached.token && cached.headers && cached.expiresAt && Date.now() < cached.expiresAt) {
+          console.log('[claude-direct] Using cached OAuth token + headers');
+          this.inner = this.createInnerProvider(cached.token, cached.headers);
+          return;
+        }
+      } catch {}
+    }
+
+    // Extract token by running mitmproxy capture
+    console.log('[claude-direct] Extracting OAuth token via mitmproxy...');
+    const { execSync, spawn } = require('child_process');
+
+    // Find a free port for mitmdump
+    const getPort = (): Promise<number> => new Promise((resolve) => {
+      const srv = net.createServer();
+      srv.listen(0, '127.0.0.1', () => {
+        const port = srv.address().port;
+        srv.close(() => resolve(port));
+      });
+    });
+
+    const port = await getPort();
+    const logFile = `/tmp/claude_direct_capture_${Date.now()}.log`;
+
+    // Start mitmdump
+    const mitm = spawn('mitmdump', ['--listen-port', String(port), '--set', 'flow_detail=3'], {
+      stdio: ['ignore', fsSync.openSync(logFile, 'w'), fsSync.openSync(logFile, 'a')],
+    });
+
+    await new Promise((r) => setTimeout(r, 2000)); // let mitmdump start
+
+    // Spawn a one-shot claude session through the proxy
+    const session = unstable_v2_createSession({
+      model: 'claude-haiku-4-5',
+      permissionMode: 'dontAsk',
+      allowedTools: [],
+      disallowedTools: ['Read', 'Write', 'Edit', 'Bash', 'Glob', 'Grep', 'Agent', 'NotebookEdit'],
+      env: {
+        ...Object.fromEntries(
+          Object.entries(process.env).filter(([k]) => k !== 'CLAUDECODE' && k !== 'ANTHROPIC_API_KEY')
+        ),
+        HTTPS_PROXY: `http://127.0.0.1:${port}`,
+        HTTP_PROXY: `http://127.0.0.1:${port}`,
+        NODE_TLS_REJECT_UNAUTHORIZED: '0',
+        SSL_CERT_FILE: require('path').join(require('os').homedir(), '.mitmproxy', 'mitmproxy-ca-cert.pem'),
+      },
+    });
+
+    await session.send('Say "ok"');
+    for await (const msg of session.stream()) {
+      if (msg.type === 'result') break;
+    }
+    session.close();
+
+    // Kill mitmdump and read the log
+    mitm.kill();
+    await new Promise((r) => setTimeout(r, 500));
+
+    const log = fsSync.readFileSync(logFile, 'utf-8');
+    const tokenMatch = log.match(/[Aa]uthorization: Bearer (sk-ant-oat01-[^\s]+)/);
+    const headers = ClaudeDirectProvider.parseHeadersFromLog(log);
+    fsSync.unlinkSync(logFile);
+
+    if (!tokenMatch) {
+      throw new Error('[claude-direct] Failed to extract OAuth token from capture');
+    }
+
+    const token = tokenMatch[1];
+    console.log(`[claude-direct] Got OAuth token: ${token.slice(0, 20)}...`);
+    console.log(`[claude-direct] Extracted headers:`, Object.keys(headers));
+
+    // Cache token + headers (assume 55 min expiry to be safe)
+    fsSync.writeFileSync(tokenCachePath, JSON.stringify({
+      token,
+      headers,
+      expiresAt: Date.now() + 55 * 60 * 1000,
+    }));
+
+    this.inner = this.createInnerProvider(token, headers);
+  }
+
+  async chat(request: ChatRequest): Promise<LLMResult> {
+    const provider = await this.ensureInit();
+    return provider.chat(request);
+  }
+
+  async complete(request: CompletionRequest): Promise<LLMResult> {
+    const provider = await this.ensureInit();
+    return provider.complete!(request);
+  }
+}
+
 const providers: Record<LLMProviderName, LLMProvider> = {
   openrouter: new OpenRouterProvider(OPENROUTER_API_KEY),
   anthropic: new AnthropicProvider(ANTHROPIC_API_KEY),
+  'claude-agent': new ClaudeAgentProvider(),
+  'claude-direct': new ClaudeDirectProvider(),
 };
 
 let activeProvider: LLMProviderName = (process.env.LLM_PROVIDER as LLMProviderName) || 'openrouter';
@@ -369,6 +833,13 @@ export function setLLMProvider(provider: LLMProviderName): void {
 
 export function getLLMProviderName(): LLMProviderName {
   return activeProvider;
+}
+
+export function cleanupLLMProvider(): void {
+  const provider = getProvider();
+  if ('cleanup' in provider && typeof (provider as any).cleanup === 'function') {
+    (provider as any).cleanup();
+  }
 }
 
 export function setLLMThinkingConfig(config: ThinkingConfigParam | undefined): void {
@@ -732,10 +1203,19 @@ export function extractAndParseJSON(text: string): any {
     // Continue to extraction logic
   }
 
-  // Extract JSON from first { to last }, ignoring markdown code blocks and other wrapper text
+  // Extract JSON from first {/[ to last }/], ignoring markdown code blocks and other wrapper text
   const firstBrace = trimmed.indexOf('{');
-  const lastBrace = trimmed.lastIndexOf('}');
+  const firstBracket = trimmed.indexOf('[');
+  const isArray = firstBracket !== -1 && (firstBrace === -1 || firstBracket < firstBrace);
 
+  if (isArray) {
+    const lastBracket = trimmed.lastIndexOf(']');
+    if (lastBracket > firstBracket) {
+      return JSON.parse(trimmed.substring(firstBracket, lastBracket + 1));
+    }
+  }
+
+  const lastBrace = trimmed.lastIndexOf('}');
   if (firstBrace === -1 || lastBrace === -1 || lastBrace <= firstBrace) {
     throw new Error('No valid JSON object found in text');
   }
@@ -869,6 +1349,97 @@ export async function generateOpenersFromYamlBatch(
     console.error('generateOpenersFromYamlBatch: regex fallback failed. Error:', regexError);
   }
   return map;
+}
+
+// Best-of-N generation: generate N batches in parallel, collect candidates, pick best via LLM.
+export async function generateOpenersFromYamlBatchBestOfN(
+  items: { id: string; profilePrompt: string }[],
+  herName: string,
+  model = 'gemini-2.5-flash',
+  n = 3
+): Promise<Map<string, string>> {
+  // Generate N batches in parallel
+  const batches = await Promise.all(
+    Array.from({ length: n }, () => generateOpenersFromYamlBatch(items, herName, model))
+  );
+
+  // Collect candidates per id
+  const candidatesById = new Map<string, string[]>();
+  for (const batch of batches) {
+    for (const [id, text] of batch) {
+      if (!text) continue;
+      const list = candidatesById.get(id) || [];
+      list.push(text);
+      candidatesById.set(id, list);
+    }
+  }
+
+  // For items with only 1 candidate, use it directly
+  const result = new Map<string, string>();
+  const toSelect: { id: string; candidates: string[]; prompt: string }[] = [];
+
+  for (const item of items) {
+    const candidates = candidatesById.get(item.id) || [];
+    if (candidates.length <= 1) {
+      if (candidates[0]) result.set(item.id, candidates[0]);
+    } else {
+      // Deduplicate
+      const unique = [...new Set(candidates)];
+      if (unique.length === 1) {
+        result.set(item.id, unique[0]);
+      } else {
+        toSelect.push({ id: item.id, candidates: unique, prompt: item.profilePrompt });
+      }
+    }
+  }
+
+  // Use Anthropic (Haiku) to pick the best candidate — direct call, no opener system prompt
+  if (toSelect.length > 0) {
+    const pickerModel = 'claude-haiku-4-5';
+    const selectionItems = toSelect.map((s) => {
+      const opts = s.candidates.map((c, j) => `${String.fromCharCode(65 + j)}) "${c}"`).join('\n');
+      return `ID: ${s.id}\nHer prompt: ${s.prompt}\n${opts}`;
+    }).join('\n---\n');
+
+    const pickerPrompt = `Pick the best Hinge opener for each prompt. Choose the one that:
+- Is wittiest and has a clear comedic twist
+- Is shortest and punchiest
+- Ends with something she'd reply to
+- Sounds most natural/human
+
+Return JSON only: [{"id": "...", "pick": "A"}]
+
+${selectionItems}`;
+
+    try {
+      const pickResult = await getProvider().chat({
+        model: pickerModel,
+        messages: [{ role: 'user', content: pickerPrompt }],
+        maxTokens: 1024,
+      });
+      const picks = extractAndParseJSON(pickResult.content);
+      const pickArr = Array.isArray(picks) ? picks : picks?.items || [];
+      for (const pick of pickArr) {
+        const match = toSelect.find((s) => s.id === pick.id);
+        if (match) {
+          const idx = (pick.pick || 'A').charCodeAt(0) - 65;
+          result.set(match.id, match.candidates[Math.min(idx, match.candidates.length - 1)]);
+        }
+      }
+      trackUsage(pickResult.usage);
+    } catch (e) {
+      console.error('Best-of-N selection failed, falling back to first candidate:', e);
+    }
+
+    // Fill any remaining with first candidate
+    for (const s of toSelect) {
+      if (!result.has(s.id)) {
+        result.set(s.id, s.candidates[0]);
+      }
+    }
+  }
+
+  return result;
 }
 
 // Generate an opener for an image using the YAML spec; includes bio and caption
