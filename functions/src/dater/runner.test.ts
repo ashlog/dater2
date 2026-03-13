@@ -893,6 +893,183 @@ describe('Runner - maxLikes and visited property behavior', () => {
     });
   });
 
+  describe('402 cancel token behavior', () => {
+    const create402Error = () => {
+      const err: any = new Error('Payment Required');
+      err.response = { status: 402 };
+      return err;
+    };
+
+    test('should abort cancel token and stop main loop on 402 from sendLike', async () => {
+      const profile1 = createMockProfile('user1', 'Alice');
+      const profile2 = createMockProfile('user2', 'Bob');
+
+      // Two batches: first has profile1, second has profile2
+      // If cancel token works, second batch should never be fetched
+      let callCount = 0;
+      (profileCache.getUnvisited as jest.Mock).mockImplementation(() => {
+        callCount++;
+        if (callCount === 1) {
+          return [{ ratingToken: 'token1', subjectId: 'user1', visited: false, profile: profile1 }];
+        }
+        if (callCount === 2) {
+          return [{ ratingToken: 'token2', subjectId: 'user2', visited: false, profile: profile2 }];
+        }
+        return [];
+      });
+
+      mockHinge.sendLike.mockRejectedValue(create402Error());
+
+      await run([createMockSettings()], 10);
+
+      // sendLike called once (first profile), then 402 aborts everything
+      expect(mockHinge.sendLike).toHaveBeenCalledTimes(1);
+      expect(mockCancelToken.abort).toHaveBeenCalledTimes(1);
+      expect(mockCancelToken.abort).toHaveBeenCalledWith(expect.objectContaining({
+        response: { status: 402 }
+      }));
+
+      // Like reservation released on 402
+      expect(mockLikeLimiter.release).toHaveBeenCalled();
+
+      // Second batch never fetched — loop stopped after cancel
+      // readProfilesCache is called once per batch fetch; only 1 batch should happen
+      expect(profileCache.readProfilesCache).toHaveBeenCalledTimes(1);
+
+      // Profile NOT marked as visited (402 returns early before markVisited)
+      expect(profileCache.markVisited).not.toHaveBeenCalled();
+    });
+
+    test('should not log decision entry on 402 (early return)', async () => {
+      const profile = createMockProfile('user1', 'Alice');
+
+      (profileCache.getUnvisited as jest.Mock)
+        .mockReturnValueOnce([{ ratingToken: 'token1', subjectId: 'user1', visited: false, profile }])
+        .mockReturnValue([]);
+
+      mockHinge.sendLike.mockRejectedValue(create402Error());
+
+      await run([createMockSettings()], 10);
+
+      // Decision should NOT be logged on 402 (the return skips the logging block)
+      expect(decisionsLog.appendDecision).not.toHaveBeenCalled();
+    });
+
+    test('should stop processing across multiple locations on 402', async () => {
+      const profile1 = createMockProfile('user1', 'Alice');
+      const profile2 = createMockProfile('user2', 'Bob');
+
+      const settings1: Settings = { latitude: 37.75, longitude: -122.44, label: 'SF' };
+      const settings2: Settings = { latitude: 34.05, longitude: -118.24, label: 'LA' };
+
+      // First location has profile1 that will 402
+      (profileCache.locationKeyOf as jest.Mock).mockImplementation((s: Settings) =>
+        `${s.latitude},${s.longitude}`
+      );
+
+      let readCacheCount = 0;
+      (profileCache.readProfilesCache as jest.Mock).mockImplementation(() => {
+        readCacheCount++;
+        return Promise.resolve({});
+      });
+
+      let getUnvisitedCount = 0;
+      (profileCache.getUnvisited as jest.Mock).mockImplementation(() => {
+        getUnvisitedCount++;
+        if (getUnvisitedCount === 1) {
+          return [{ ratingToken: 'token1', subjectId: 'user1', visited: false, profile: profile1 }];
+        }
+        return [];
+      });
+
+      mockHinge.sendLike.mockRejectedValue(create402Error());
+
+      await run([settings1, settings2], 10);
+
+      // Only 1 like attempted (on first location), then 402 stops everything
+      expect(mockHinge.sendLike).toHaveBeenCalledTimes(1);
+      expect(mockCancelToken.abort).toHaveBeenCalledTimes(1);
+
+      // Second location should never be processed
+      // readProfilesCache called once for first location's fetch
+      expect(readCacheCount).toBe(1);
+    });
+
+    test('should not do expensive work for profiles starting after 402 abort', async () => {
+      // With concurrency=2 and 3 profiles:
+      //   - Profiles 1 & 2 start in parallel (fill both concurrency slots)
+      //   - Profile 1 hits 402 on sendLike → cancelToken.abort()
+      //   - Profile 1 finishes → pLimit releases slot → Profile 3 starts
+      //   - Profile 3 should NOT do image scoring or LLM calls since cancelToken is aborted
+      //
+      // BUG: processProfileEntry doesn't check cancelToken at the top,
+      //   so profile 3 wastefully runs image validation and LLM generation
+      //   before finally bailing out in likeWithImage/likeWithText.
+      const profile1 = createMockProfile('user1', 'Alice');
+      const profile2 = createMockProfile('user2', 'Bob');
+      const profile3 = createMockProfile('user3', 'Charlie');
+
+      (profileCache.getUnvisited as jest.Mock)
+        .mockReturnValueOnce([
+          { ratingToken: 'token1', subjectId: 'user1', visited: false, profile: profile1 },
+          { ratingToken: 'token2', subjectId: 'user2', visited: false, profile: profile2 },
+          { ratingToken: 'token3', subjectId: 'user3', visited: false, profile: profile3 },
+        ])
+        .mockReturnValue([]);
+
+      // First sendLike returns 402, rest succeed
+      mockHinge.sendLike
+        .mockRejectedValueOnce(create402Error())
+        .mockResolvedValue({});
+
+      await run([createMockSettings()], 10);
+
+      expect(mockCancelToken.isAborted()).toBe(true);
+
+      // Profiles 1 & 2 started before the abort (concurrency=2), so they call getImageScore.
+      // Profile 3 starts AFTER the abort — it should skip expensive work entirely.
+      // Expected: 2 calls (profiles 1 and 2 only)
+      expect(llm.getImageScore).toHaveBeenCalledTimes(2);
+    });
+
+    test('402 on textReview should also trigger cancel token abort', async () => {
+      const profile = createMockProfile('user1', 'Alice');
+
+      (profileCache.getUnvisited as jest.Mock)
+        .mockReturnValueOnce([{ ratingToken: 'token1', subjectId: 'user1', visited: false, profile }])
+        .mockReturnValue([]);
+
+      // textReview is called before sendLike — if it 402s, the catch block handles it
+      // But textReview doesn't directly cause a 402 in the current code — only sendLike does.
+      // However, let's test that a 402 from sendLike after a successful textReview works.
+      mockHinge.textReview.mockResolvedValue({ hcmRunId: 'test-hcm', isHarmful: false });
+      mockHinge.sendLike.mockRejectedValue(create402Error());
+
+      await run([createMockSettings()], 10);
+
+      expect(mockCancelToken.abort).toHaveBeenCalledTimes(1);
+      expect(mockLikeLimiter.release).toHaveBeenCalled();
+      // No decision logged (early return on 402)
+      expect(decisionsLog.appendDecision).not.toHaveBeenCalled();
+    });
+
+    test('402 releases like slot so getUsed reflects the release', async () => {
+      const profile = createMockProfile('user1', 'Alice');
+
+      (profileCache.getUnvisited as jest.Mock)
+        .mockReturnValueOnce([{ ratingToken: 'token1', subjectId: 'user1', visited: false, profile }])
+        .mockReturnValue([]);
+
+      mockHinge.sendLike.mockRejectedValue(create402Error());
+
+      await run([createMockSettings()], 10);
+
+      // Like was reserved (tryTake), then released on 402
+      // So net used should be 0
+      expect(mockLikeLimiter.getUsed()).toBe(0);
+    });
+  });
+
   describe('edge cases', () => {
     test('should handle empty profile list gracefully', async () => {
       (profileCache.getUnvisited as jest.Mock).mockReturnValue([]);

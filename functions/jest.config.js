@@ -7,4 +7,7 @@ module.exports = {
     'src/**/*.ts',
     '!src/**/*.d.ts',
   ],
+  moduleNameMapper: {
+    '^@anthropic-ai/claude-agent-sdk$': '<rootDir>/src/__mocks__/claude-agent-sdk.js',
+  },
 };

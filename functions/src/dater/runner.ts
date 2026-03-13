@@ -502,11 +502,9 @@ async function likeWithImage(
 
         // Check if we've hit the failure limit
         if (ctx.failureCounter.consecutive >= ctx.failureCounter.max) {
-          console.error(
-            `FATAL: ${ctx.failureCounter.consecutive} consecutive Hinge API failures detected.`,
-            'Hinge API may be experiencing issues. Killing the app to prevent further failures.'
+          throw new Error(
+            `FATAL: ${ctx.failureCounter.consecutive} consecutive Hinge API failures detected. Hinge API may be experiencing issues.`
           );
-          process.exit(1);
         }
       }
     }
@@ -637,11 +635,9 @@ async function likeWithText(
 
         // Check if we've hit the failure limit
         if (ctx.failureCounter.consecutive >= ctx.failureCounter.max) {
-          console.error(
-            `FATAL: ${ctx.failureCounter.consecutive} consecutive Hinge API failures detected.`,
-            'Hinge API may be experiencing issues. Killing the app to prevent further failures.'
+          throw new Error(
+            `FATAL: ${ctx.failureCounter.consecutive} consecutive Hinge API failures detected. Hinge API may be experiencing issues.`
           );
-          process.exit(1);
         }
       }
     }
@@ -656,6 +652,10 @@ async function processProfileEntry(entry: [string, Profile], ctx: LikeContext, c
   const subject = entry[1];
 
   console.log(`\n[TIMING] Processing profile: ${subject.profile.firstName} (${subject.profile.userId})`);
+
+  if (ctx.cancelToken.isAborted()) {
+    return;
+  }
 
   // Reserve a like slot BEFORE expensive processing to avoid wasted work
   // If we decide not to like, we'll release it later
@@ -849,11 +849,9 @@ async function processProfileEntry(entry: [string, Profile], ctx: LikeContext, c
 
     // Check if we've hit the failure limit
     if (ctx.failureCounter.consecutive >= ctx.failureCounter.max) {
-      console.error(
-        `FATAL: ${ctx.failureCounter.consecutive} consecutive generation failures detected.`,
-        'OpenRouter may be experiencing issues. Killing the app to prevent further failures.'
+      throw new Error(
+        `FATAL: ${ctx.failureCounter.consecutive} consecutive generation failures detected. OpenRouter may be experiencing issues.`
       );
-      process.exit(1);
     }
 
     // Still log the decision for analytics, but DON'T mark as visited
@@ -1022,6 +1020,8 @@ async function validateProfileImages(subject: Profile): Promise<{ pass: boolean;
   return { pass: anyCandidate, topScore: top, medianScore: median, scored };
 }
 
+let siglipChildPid: number | null = null;
+
 async function ensureSiglipServer(): Promise<void> {
   const url = 'http://localhost:5200/healthcheck';
   try {
@@ -1042,6 +1042,7 @@ async function ensureSiglipServer(): Promise<void> {
   let startupError = '';
   child.stderr?.on('data', (data: Buffer) => { startupError += data.toString(); });
   child.unref();
+  siglipChildPid = child.pid ?? null;
 
   // Poll until ready (up to 30s for model loading)
   for (let i = 0; i < 60; i++) {
@@ -1057,8 +1058,28 @@ async function ensureSiglipServer(): Promise<void> {
   throw new Error(`Siglip server failed to start within 30s${startupError ? '\n' + startupError : ''}`);
 }
 
+function stopSiglipServer(): void {
+  if (siglipChildPid) {
+    try {
+      process.kill(siglipChildPid, 'SIGTERM');
+      console.log(`Siglip server (pid ${siglipChildPid}) stopped`);
+    } catch {
+      // already dead
+    }
+    siglipChildPid = null;
+  }
+}
+
 export async function run(settings: Settings[], maxLikes = 100000, profilesPerLocation = Infinity, scanOnly = false) {
   await ensureSiglipServer();
+  try {
+  return await _run(settings, maxLikes, profilesPerLocation, scanOnly);
+  } finally {
+    stopSiglipServer();
+  }
+}
+
+async function _run(settings: Settings[], maxLikes: number, profilesPerLocation: number, scanOnly: boolean) {
   resetCostTracker();
   let profileCount = 0;
   let consecutiveGenerationFailures = 0;
