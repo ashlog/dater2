@@ -3,6 +3,7 @@ import {
   loc_lilburn,
   loc_mtv,
   run,
+  runInstagram,
 } from './dater';
 import {logger} from 'firebase-functions';
 import {onSchedule} from 'firebase-functions/v2/scheduler';
@@ -251,6 +252,21 @@ async function readChatMessages() {
 //
 // test();
 
-main();
+if (process.argv.includes('--instagram')) {
+  const topNFlag = process.argv.find((_, i, a) => a[i - 1] === '--top');
+  const topN = topNFlag ? parseInt(topNFlag, 10) : 10;
+  runInstagram({ topN }).then((candidates) => {
+    console.log(`\nDone: ${candidates.length} openers generated`);
+    // Open results in browser
+    const { execSync } = require('child_process');
+    try { execSync('open ~/projects/siglip-test/ig_openers.html'); } catch {}
+    process.exit(0);
+  }).catch((error) => {
+    console.error('Error in Instagram mode:', error);
+    process.exit(1);
+  });
+} else {
+  main();
+}
 // updateLikeBuckets();
 // readChatMessages();

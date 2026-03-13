@@ -165,10 +165,15 @@ class AnthropicProvider implements LLMProvider {
   private readonly client: Anthropic | null;
   private readonly defaultMaxTokens = 5024;
 
-  constructor(apiKey: string | undefined, opts?: { defaultHeaders?: Record<string, string>; baseURL?: string }) {
-    this.client = apiKey
+  constructor(apiKey: string | undefined, opts?: { defaultHeaders?: Record<string, string>; baseURL?: string; authToken?: string }) {
+    const key = apiKey || opts?.authToken;
+    this.client = key
       ? new Anthropic({
-          apiKey,
+          // When using authToken (OAuth), explicitly null out apiKey to prevent
+          // the SDK from picking up ANTHROPIC_API_KEY from env
+          ...(opts?.authToken
+            ? { authToken: opts.authToken, apiKey: null as any }
+            : { apiKey: key }),
           ...(opts?.defaultHeaders ? { defaultHeaders: opts.defaultHeaders } : {}),
           ...(opts?.baseURL ? { baseURL: opts.baseURL } : {}),
         })
@@ -324,6 +329,24 @@ class AnthropicProvider implements LLMProvider {
     }
 
     const cacheControl = this.normalizeCacheControl(part?.cache_control);
+
+    // Handle data URIs — extract base64 directly instead of sending as URL
+    const dataMatch = rawUrl.match(/^data:(image\/[^;]+);base64,(.+)$/);
+    if (dataMatch) {
+      const block: ImageBlockParam = {
+        type: 'image',
+        source: {
+          type: 'base64',
+          media_type: dataMatch[1] as 'image/jpeg' | 'image/png' | 'image/gif' | 'image/webp',
+          data: dataMatch[2],
+        },
+      };
+      if (cacheControl) {
+        block.cache_control = cacheControl;
+      }
+      return block;
+    }
+
     const block: ImageBlockParam = {
       type: 'image',
       source: {
@@ -658,23 +681,27 @@ class ClaudeDirectProvider implements LLMProvider {
   private inner: AnthropicProvider | null = null;
   private initPromise: Promise<void> | null = null;
 
-  // Headers we want to replicate from the CLI's /v1/messages request
-  private static readonly HEADERS_TO_COPY = [
-    'x-app',
-    'user-agent',
-    'anthropic-beta',
-    'anthropic-dangerous-direct-browser-access',
-    'anthropic-version',
-  ];
+  // Headers to skip when copying (managed by the SDK or transport layer)
+  private static readonly HEADERS_TO_SKIP = new Set([
+    'host',
+    'connection',
+    'content-type',
+    'content-length',
+    'accept',
+    'accept-encoding',
+    'accept-language',
+    'sec-fetch-mode',
+    'authorization',
+  ]);
 
   private createInnerProvider(token: string, headers: Record<string, string>): AnthropicProvider {
-    const provider = new AnthropicProvider(token, { defaultHeaders: headers });
+    const provider = new AnthropicProvider(undefined, { authToken: token, defaultHeaders: headers });
     (provider as any).name = 'claude-direct';
     return provider;
   }
 
   private static parseHeadersFromLog(log: string): Record<string, string> {
-    // Find the POST /v1/messages request block and extract headers
+    // Find the POST /v1/messages request block and extract ALL headers
     const requestMatch = log.match(/POST https:\/\/api\.anthropic\.com\/v1\/messages[^\n]*\n([\s\S]*?)(?:\n\n|\n *<<|\n\d)/);
     if (!requestMatch) return {};
 
@@ -685,7 +712,7 @@ class ClaudeDirectProvider implements LLMProvider {
       if (m) {
         const key = m[1].trim();
         const val = m[2].trim();
-        if (ClaudeDirectProvider.HEADERS_TO_COPY.includes(key.toLowerCase())) {
+        if (!ClaudeDirectProvider.HEADERS_TO_SKIP.has(key.toLowerCase())) {
           headers[key] = val;
         }
       }
@@ -789,24 +816,55 @@ class ClaudeDirectProvider implements LLMProvider {
     console.log(`[claude-direct] Got OAuth token: ${token.slice(0, 20)}...`);
     console.log(`[claude-direct] Extracted headers:`, Object.keys(headers));
 
-    // Cache token + headers (assume 55 min expiry to be safe)
+    // Cache token + headers for 24 hours
     fsSync.writeFileSync(tokenCachePath, JSON.stringify({
       token,
       headers,
-      expiresAt: Date.now() + 55 * 60 * 1000,
+      expiresAt: Date.now() + 24 * 60 * 60 * 1000,
     }));
 
     this.inner = this.createInnerProvider(token, headers);
   }
 
+  private invalidateAndRetry(): void {
+    // Clear cached token so next ensureInit re-extracts
+    const tokenCachePath = require('path').join(require('os').homedir(), '.claude', '.oauth-token-cache');
+    try { require('fs').unlinkSync(tokenCachePath); } catch {}
+    this.inner = null;
+    this.initPromise = null;
+    console.log('[claude-direct] Token expired, will re-extract on next call');
+  }
+
+  private isAuthError(e: any): boolean {
+    return e?.status === 401 || e?.error?.type === 'authentication_error';
+  }
+
   async chat(request: ChatRequest): Promise<LLMResult> {
     const provider = await this.ensureInit();
-    return provider.chat(request);
+    try {
+      return await provider.chat(request);
+    } catch (e: any) {
+      if (this.isAuthError(e)) {
+        this.invalidateAndRetry();
+        const fresh = await this.ensureInit();
+        return fresh.chat(request);
+      }
+      throw e;
+    }
   }
 
   async complete(request: CompletionRequest): Promise<LLMResult> {
     const provider = await this.ensureInit();
-    return provider.complete!(request);
+    try {
+      return await provider.complete!(request);
+    } catch (e: any) {
+      if (this.isAuthError(e)) {
+        this.invalidateAndRetry();
+        const fresh = await this.ensureInit();
+        return fresh.complete!(request);
+      }
+      throw e;
+    }
   }
 }
 
@@ -1661,15 +1719,24 @@ export interface ImageScore {
   class: string;
 }
 
-export async function getImageScore(url: string): Promise<ImageScore> {
+export async function getImageScore(url: string, retries = 2): Promise<ImageScore> {
   const endpoint = 'http://localhost:5200/predict';
   const params = { image_url: url };
-  try {
-    return (await axios.post<ImageScore>(endpoint, params)).data;
-  } catch (e) {
-    console.error('getImageScore error: Make sure to run siglip server!', e);
-    throw e;
+  for (let attempt = 0; attempt <= retries; attempt++) {
+    try {
+      return (await axios.post<ImageScore>(endpoint, params)).data;
+    } catch (e: any) {
+      const status = e?.response?.status;
+      if (attempt < retries && status === 400) {
+        console.warn(`getImageScore 400 for ${url}, retrying (${attempt + 1}/${retries})...`);
+        await new Promise(r => setTimeout(r, 1000 * (attempt + 1)));
+        continue;
+      }
+      console.error('getImageScore error: Make sure to run siglip server!', e);
+      throw e;
+    }
   }
+  throw new Error('getImageScore: unreachable');
 }
 
 export async function saveImage(

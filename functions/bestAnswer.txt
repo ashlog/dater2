@@ -43180,3 +43180,196 @@ Image: https://media.hingenexus.com/image/upload/rzcan7o8cnk1h3lek7jh.jpg
 FINAL [IMAGE] | user=Ana (21) | context=[Typical Sunday: Go to Trader Joe’s and complain about how packed it is || The key to my heart is: Flowers || Together, we could: Plan our weekend trip]
 Image: https://media.hingenexus.com/image/upload/kq741jktmfsd2y27c1yz.jpg
   - [PICKUP LINE] "you don't go to trader joe's for groceries. complaining is the hobby. what aisle sets you off worst"
+FINAL [IMAGE] | user=KaCey (19) | context=[To me, relaxation is: Just sleeping forever || A random fact I love is: The German word for raccoon translates to laundry bear || The dorkiest thing about me is: I get way too into music and wrestling]
+Image: https://media.hingenexus.com/image/upload/z6yrr20cyt5683k3fdtr.jpg
+  - [PICKUP LINE] "laundry bear is an undefeated wrestling name. what's the signature move"
+FINAL [IMAGE] | user=Geraldine  (20) | context=[The way to win me over is: Amo las flores  || My greatest strength: Mi familia  || This year, I really want to: Ser feliz ♡]
+Image: https://media.hingenexus.com/image/upload/bzdltza307d34psub043.jpg
+  - [PICKUP LINE] "you posted the cheat code to your own heart. what difficulty am i playing on"
+FINAL [TEXT] | user=KaCey (19) | context=[To me, relaxation is: Just sleeping forever || The dorkiest thing about me is: I get way too into music and wrestling]
+Prompt: "A random fact I love is: The German word for raccoon translates to laundry bear"
+  - [PICKUP LINE] "laundry bear implies raccoons are cleaning those trash cans. what do they know that we don't"
+FINAL [TEXT] | user=Cooper (21) | context=[A life goal of mine: GET MORE JACKED + BETTER AT PLAYING MY BEAUTIFUL FENDER JAZZ BASS + BEFRIEND EVERYONE (ig @cooperownbey) || I want someone who: Has other stuff going on (I’m so busy & need someone who matches me there), and a nice voice :’) what someone sounds like is miles more important than what they look like IMO. Bonus points if your job contributes to society.]
+Prompt: "In my friend group, I’m the one who: is an introvert’s worst nightmare. Comments made by my friends include “social anxiety fears her” and “she’s like if Naruto were a little bit smarter”"
+  - [PICKUP LINE] "naruto but smarter is just sasuke. which village are you defecting from"
+FINAL [IMAGE] | user=Lya (19) | context=[Something that's non-negotiable for me is: someone who is respectful and kind! || I won't shut up about: my dogs and books! || How to pronounce my name: just like the name “Leah”!]
+Image: https://media.hingenexus.com/image/upload/vz2yiz4zrhtioepe8mqe.jpg
+  - [PICKUP LINE] "your name is three letters and came with instructions. what's the lore"
+FINAL [TEXT] | user=Isabel (19) | context=[A boundary of mine is: no hookups! let’s trust and love each other first, ok? i wanna get to know you first ☺️☺️☺️ || I geek out on: psych! and no i can’t psychoanalyse you, i just love learning about the brain and neurotransmitters and hormones 🫡🫡]
+Prompt: "The one thing I'd love to know about you is: what’s a super unconventional first date idea you’d love to try? 👀👀"
+  - [PICKUP LINE] "science museum at night then arguing over which extinct animal had the worst PR. you in"
+FINAL [TEXT] | user=Ellen (21) | context=[A life goal of mine: Medical school || My greatest strength: Pushing pull doors]
+Prompt: "The way to win me over is: Emotional intelligence and good communication!"
+  - [PICKUP LINE] "good communication and emotional intelligence. so you've dated engineers before"
+FINAL [TEXT] | user=Sarah (18) | context=[My most irrational fear: meeting a guy that chews loudly || A life goal of mine: finding people that don’t chew loudly]
+Prompt: "Don't hate me if I: jump you for chewing loud"
+  - [PICKUP LINE] "jump me for chewing loud on a first date or do i get a warning shot"
+FINAL [TEXT] | user=Paulina (21) | context=[Therapy recently taught me: No vivo del juicio ajeno || I go crazy for: Ir a entrenar, comer pasta y un hombre que tenga iniciativa]
+Prompt: "Something my pet thinks about me: Que su mamá es demasiado amorosa y le da todo lo mejor haha"
+  - [PICKUP LINE] "your pet gets todo lo mejor and i'd have to compete with that. what's the application process"
+FINAL [IMAGE] | user=Anniston  (19) | context=[Together, we could: go to art museums and share earbuds  || The one thing you should know about me is: i will order chicken tenders and ranch anytime i have the opportunity  || I go crazy for: music, art, acts of service and lego batman]
+Image: https://media.hingenexus.com/image/upload/rzcan7o8cnk1h3lek7jh.jpg
+  - [PICKUP LINE] "someone once denied you chicken tenders and you made it a life policy. who was it"
+FINAL [IMAGE] | user=Ana (21) | context=[Typical Sunday: Go to Trader Joe’s and complain about how packed it is || The key to my heart is: Flowers || Together, we could: Plan our weekend trip]
+Image: https://media.hingenexus.com/image/upload/kq741jktmfsd2y27c1yz.jpg
+  - [PICKUP LINE] "trader joe's is your toxic relationship and sunday is date night isn't it"
+FINAL [TEXT] | user=KaCey (19) | context=[To me, relaxation is: Just sleeping forever || A random fact I love is: The German word for raccoon translates to laundry bear]
+Prompt: "The dorkiest thing about me is: I get way too into music and wrestling"
+  - [PICKUP LINE] "wrestling has entrance music so really it's just one hobby. who's your walkout song"
+FINAL [TEXT] | user=Geraldine  (20) | context=[My greatest strength: Mi familia  || This year, I really want to: Ser feliz ♡]
+Prompt: "The way to win me over is: Amo las flores "
+  - [PICKUP LINE] "amo las flores is a warning. how many plants have you kidnapped"
+FINAL [TEXT] | user=Lya (19) | context=[Something that's non-negotiable for me is: someone who is respectful and kind! || I won't shut up about: my dogs and books!]
+Prompt: "How to pronounce my name: just like the name “Leah”!"
+  - [PICKUP LINE] "spelled like a side quest character but pronounced like a normal person. which one are you"
+FINAL [TEXT] | user=Cooper (21) | context=[A life goal of mine: GET MORE JACKED + BETTER AT PLAYING MY BEAUTIFUL FENDER JAZZ BASS + BEFRIEND EVERYONE (ig @cooperownbey) || I want someone who: Has other stuff going on (I’m so busy & need someone who matches me there), and a nice voice :’) what someone sounds like is miles more important than what they look like IMO. Bonus points if your job contributes to society.]
+Prompt: "In my friend group, I’m the one who: is an introvert’s worst nightmare. Comments made by my friends include “social anxiety fears her” and “she’s like if Naruto were a little bit smarter”"
+  - [PICKUP LINE] "naruto but smarter is just sasuke. are you admitting to a villain arc"
+FINAL [IMAGE] | user=Sarah (18) | context=[My most irrational fear: meeting a guy that chews loudly || A life goal of mine: finding people that don’t chew loudly || Don't hate me if I: jump you for chewing loud]
+Image: https://media.hingenexus.com/image/upload/6fufmeyfzlqnxfm2pum7.jpg
+  - [PICKUP LINE] "three prompts about chewing. this isn't a fear it's a manifesto. who hurt you"
+FINAL [TEXT] | user=Isabel (19) | context=[A boundary of mine is: no hookups! let’s trust and love each other first, ok? i wanna get to know you first ☺️☺️☺️ || I geek out on: psych! and no i can’t psychoanalyse you, i just love learning about the brain and neurotransmitters and hormones 🫡🫡]
+Prompt: "The one thing I'd love to know about you is: what’s a super unconventional first date idea you’d love to try? 👀👀"
+  - [PICKUP LINE] "science museum then boba but we narrate everything like attenborough. who's the specimen"
+FINAL [TEXT] | user=Ellen (21) | context=[A life goal of mine: Medical school || My greatest strength: Pushing pull doors]
+Prompt: "The way to win me over is: Emotional intelligence and good communication!"
+  - [PICKUP LINE] "good communication and emotional intelligence. so you've dated engineers before"
+FINAL [TEXT] | user=Ana (21) | context=[Typical Sunday: Go to Trader Joe’s and complain about how packed it is || Together, we could: Plan our weekend trip]
+Prompt: "The key to my heart is: Flowers"
+  - [PICKUP LINE] "flowers die in like four days. you want someone who commits to temporary beauty. what's the funeral flower"
+FINAL [TEXT] | user=Paulina (21) | context=[I go crazy for: Ir a entrenar, comer pasta y un hombre que tenga iniciativa || Something my pet thinks about me: Que su mamá es demasiado amorosa y le da todo lo mejor haha]
+Prompt: "Therapy recently taught me: No vivo del juicio ajeno"
+  - [PICKUP LINE] "therapy taught you not to live by others' judgment and yet here we are on hinge. who's judging who"
+FINAL [TEXT] | user=Anniston  (19) | context=[Together, we could: go to art museums and share earbuds  || The one thing you should know about me is: i will order chicken tenders and ranch anytime i have the opportunity ]
+Prompt: "I go crazy for: music, art, acts of service and lego batman "
+  - [PICKUP LINE] "lego batman is just regular batman with commitment issues. which piece are you missing"
+FINAL [TEXT] | user=Amelia (21) | context=[Green flags I look for: princess treatment || My Love Language is: physical touch]
+Prompt: "The way to win me over is: buy me ice cream or cheesecake :)"
+  - [PICKUP LINE] ""or" is doing a lot of work here. is there a cheesecake ice cream treaty or do i have to pick a side"
+FINAL [TEXT] | user=Alejandra (20) | context=[The best way to ask me out is by: You can find me on IG: @aleejadiaaz || This year, I really want to: Build something meaningful and travel to beautiful places.]
+Prompt: "The way to win me over is: Make me laugh, be yourself, and don’t overthink it."
+  - [PICKUP LINE] "don't overthink it is the hardest instruction you can give a software engineer. what's plan b"
+FINAL [TEXT] | user=Alexis (21) | context=[Green flags I look for: A gentleman, please don’t try to win an argument with me. || My Love Language is: Act of service]
+Prompt: "I go crazy for: Badminton"
+  - [PICKUP LINE] "badminton is just tennis that chose peace. how'd you radicalize"
+FINAL [TEXT] | user=Sarah (21) | context=[Try to guess this about me: My #1 artist on Spotify 👀👀👀
+
+& tell me why you think that ! || Two truths and a lie: 1. My favorite hockey team is the Bruins
+2. I’ve touched 2/3 of Greta Van Fleet
+3. I use strawberry toothpaste]
+Prompt: "Where I go when I want to feel a little more like myself: Coffee -> Tj Maxx -> Ulta -> Target -> Mexican Restaurant & Margs"
+  - [PICKUP LINE] "that's not a shopping trip that's a pilgrimage. do the margs absolve you of the tj maxx purchases"
+FINAL [TEXT] | user=Kylie (21) | context=[I go crazy for: a sense of humor. Extra points for dad jokes😛 || The one thing I'd love to know about you is: literally anything about your pets.]
+Prompt: "All I ask is that you: buy me flowers and not lie about your height"
+  - [PICKUP LINE] "i'm 5'11 but 6'1 in flower delivery crocs. which height do you want"
+FINAL [TEXT] | user=Rachel (21) | context=[I wind down by: Polluting large water supplies, spreading misinformation about marsupials on Reddit, interfering with air traffic control, and television || My simple pleasures: Rock climbing and Mexican food]
+Prompt: "I geek out on: Animals specifically my gerbils"
+  - [PICKUP LINE] "gerbils are just hamsters with a PR team. who's their agent"
+FINAL [TEXT] | user=Chloe (19) | context=[My Love Language is: Physical touch, quality time and words of affirmation!!! But I’m big on touch because it can be grounding || Together, we could: Take each other off this app]
+Prompt: "You should leave a comment if: You also love Star Wars or Harry Potter"
+  - [PICKUP LINE] "star wars and harry potter are both just custody battles with swords. who wins"
+FINAL [TEXT] | user=Evelyn (21) | context=[What I order for the table: Fried pickles 
+A dip 
+Chips/bread || Change my mind about: Literally anything]
+Prompt: "This year, I really want to: Experience new places, meet new people, learn more 
+Try new foods ( learn to like sushi )"
+  - [PICKUP LINE] ""learn to like sushi" in parentheses like it's classified intel. who hurt you with raw fish"
+FINAL [TEXT] | user=Ida (21) | context=[Something that's non-negotiable for me is: Good communication || I hype myself up by: Scream singing to my favorite songs in the car]
+Prompt: "Most spontaneous thing I've done: Moved to the US on my own to live with and work for a family that I didn’t know"
+  - [PICKUP LINE] "you moved countries for strangers. what's your vetting process because i might not pass"
+FINAL [TEXT] | user=MC (21) | context=[My therapist would say I: have an unhealthy relationship with the bear edits || We'll get along if: you were raised catholic]
+Prompt: "Change my mind about: yuri should be yaoi and yaoi should be yuri. why is the yaoi show called yuri. we should change the name so yaoi -> yuri"
+  - [PICKUP LINE] "you want to rename an entire genre. that's not an opinion that's a coup. who's funding this"
+FINAL [TEXT] | user=Paulina (21) | context=[I go crazy for: Ir a entrenar, comer pasta y un hombre que tenga iniciativa || Something my pet thinks about me: Que su mamá es demasiado amorosa y le da todo lo mejor haha]
+Prompt: "Therapy recently taught me: No vivo del juicio ajeno"
+  - [PICKUP LINE] "therapy taught you not to live by others' judgment and yet here we are on hinge. who's judging who"
+FINAL [TEXT] | user=naomi (20) | context=[I won't shut up about: . i just don’t shut up. || I go crazy for: honey butter croissants]
+Prompt: "All I ask is that you: don’t try to kill me 🫩"
+  - [PICKUP LINE] "don't try implies someone has. what's the survival rate"
+FINAL [TEXT] | user=Boe (19) | context=[My friends ask me for advice about: life || I'll fall for you if: you treat me like princess]
+Prompt: "You should *not* go out with me if: ur not a gentleman"
+  - [PICKUP LINE] "gentleman is just a guy who overthinks doors. how many do i need to hold"
+FINAL [TEXT] | user=Carola (21) | context=[Dating me is like: Crazy things always happen to me, laughter will never be lacking || Typical Sunday: Chill with my friends]
+Prompt: "My simple pleasures: A good food and a good drink"
+  - [PICKUP LINE] "'a good food' singular. you found the one food. which food won"
+FINAL [TEXT] | user=Sarah (21) | context=[Try to guess this about me: My #1 artist on Spotify 👀👀👀
+
+& tell me why you think that ! || Two truths and a lie: 1. My favorite hockey team is the Bruins
+2. I’ve touched 2/3 of Greta Van Fleet
+3. I use strawberry toothpaste]
+Prompt: "Where I go when I want to feel a little more like myself: Coffee -> Tj Maxx -> Ulta -> Target -> Mexican Restaurant & Margs"
+  - [PICKUP LINE] "that's not a shopping trip that's a pilgrimage. where's the shrine"
+FINAL [TEXT] | user=Alexis (21) | context=[Green flags I look for: A gentleman, please don’t try to win an argument with me. || I go crazy for: Badminton]
+Prompt: "My Love Language is: Act of service"
+  - [PICKUP LINE] "act of service is just outsourcing chores romantically. what's first on the list"
+FINAL [TEXT] | user=Rachel (21) | context=[I wind down by: Polluting large water supplies, spreading misinformation about marsupials on Reddit, interfering with air traffic control, and television || My simple pleasures: Rock climbing and Mexican food]
+Prompt: "I geek out on: Animals specifically my gerbils"
+  - [PICKUP LINE] "gerbils are just hamsters with a PR team. who's their publicist"
+FINAL [TEXT] | user=Kylie (21) | context=[I go crazy for: a sense of humor. Extra points for dad jokes😛 || All I ask is that you: buy me flowers and not lie about your height]
+Prompt: "The one thing I'd love to know about you is: literally anything about your pets."
+  - [PICKUP LINE] "my cat judges everyone i date. you're applying to impress her not me"
+FINAL [TEXT] | user=Chloe (19) | context=[My Love Language is: Physical touch, quality time and words of affirmation!!! But I’m big on touch because it can be grounding || Together, we could: Take each other off this app]
+Prompt: "You should leave a comment if: You also love Star Wars or Harry Potter"
+  - [PICKUP LINE] "harry potter and star wars is just choosing between wands and lightsabers. which one are you pulling in a fight"
+FINAL [TEXT] | user=Evelyn (21) | context=[What I order for the table: Fried pickles 
+A dip 
+Chips/bread || Change my mind about: Literally anything]
+Prompt: "This year, I really want to: Experience new places, meet new people, learn more 
+Try new foods ( learn to like sushi )"
+  - [PICKUP LINE] ""learn to like sushi" in parentheses like it's classified. who hurt you with raw fish"
+FINAL [IMAGE] | user=Ida (21) | context=[Something that's non-negotiable for me is: Good communication || Most spontaneous thing I've done: Moved to the US on my own to live with and work for a family that I didn’t know || I hype myself up by: Scream singing to my favorite songs in the car]
+Image: https://media.hingenexus.com/image/upload/qggzxukbmp2vndqp5mvg.jpg
+  - [PICKUP LINE] "moved countries to live with strangers is either au pair or witness protection. what did you do"
+FINAL [TEXT] | user=naomi (20) | context=[All I ask is that you: don’t try to kill me 🫩 || I won't shut up about: . i just don’t shut up.]
+Prompt: "I go crazy for: honey butter croissants"
+  - [PICKUP LINE] "honey butter croissants are just pastries that went to finishing school. where'd you enroll"
+FINAL [TEXT] | user=MC (21) | context=[My therapist would say I: have an unhealthy relationship with the bear edits || Change my mind about: yuri should be yaoi and yaoi should be yuri. why is the yaoi show called yuri. we should change the name so yaoi -> yuri]
+Prompt: "We'll get along if: you were raised catholic"
+  - [PICKUP LINE] "raised catholic means i apologize before, during, and after every date. which one scares you most"
+FINAL [TEXT] | user=Paulina (21) | context=[Therapy recently taught me: No vivo del juicio ajeno || I go crazy for: Ir a entrenar, comer pasta y un hombre que tenga iniciativa]
+Prompt: "Something my pet thinks about me: Que su mamá es demasiado amorosa y le da todo lo mejor haha"
+  - [PICKUP LINE] "your pet said demasiado amorosa like it's filing a complaint. what's the case number"
+FINAL [TEXT] | user=Carola (21) | context=[Dating me is like: Crazy things always happen to me, laughter will never be lacking || Typical Sunday: Chill with my friends]
+Prompt: "My simple pleasures: A good food and a good drink"
+  - [PICKUP LINE] "you said a good drink singular. you're rationing joy. who hurt you"
+FINAL [TEXT] | user=Boe (19) | context=[My friends ask me for advice about: life || I'll fall for you if: you treat me like princess]
+Prompt: "You should *not* go out with me if: ur not a gentleman"
+  - [PICKUP LINE] "gentleman is vague. are we talking doors or duels at dawn"
+FINAL [TEXT] | user=Sarah (21) | context=[Try to guess this about me: My #1 artist on Spotify 👀👀👀
+
+& tell me why you think that ! || Where I go when I want to feel a little more like myself: Coffee -> Tj Maxx -> Ulta -> Target -> Mexican Restaurant & Margs]
+Prompt: "Two truths and a lie: 1. My favorite hockey team is the Bruins
+2. I’ve touched 2/3 of Greta Van Fleet
+3. I use strawberry toothpaste"
+  - [PICKUP LINE] "the lie is strawberry toothpaste. you touched two thirds of greta van fleet and chose not to complete the set. why"
+FINAL [TEXT] | user=Sarah (21) | context=[Try to guess this about me: My #1 artist on Spotify 👀👀👀
+
+& tell me why you think that ! || Where I go when I want to feel a little more like myself: Coffee -> Tj Maxx -> Ulta -> Target -> Mexican Restaurant & Margs]
+Prompt: "Two truths and a lie: 1. My favorite hockey team is the Bruins
+2. I’ve touched 2/3 of Greta Van Fleet
+3. I use strawberry toothpaste"
+  - [PICKUP LINE] "the lie is strawberry toothpaste. you're a cinnamon toothpaste unhinged person aren't you"
+FINAL [TEXT] | user=Alexis (21) | context=[Green flags I look for: A gentleman, please don’t try to win an argument with me. || I go crazy for: Badminton]
+Prompt: "My Love Language is: Act of service"
+  - [PICKUP LINE] "acts of service is just having a favorite coworker at home. what's my first task"
+FINAL [IMAGE] | user=Kylie (21) | context=[I go crazy for: a sense of humor. Extra points for dad jokes😛 || All I ask is that you: buy me flowers and not lie about your height || The one thing I'd love to know about you is: literally anything about your pets.]
+Image: https://media.hingenexus.com/image/upload/elfocdnv2djuwakun8ul.jpg
+  - [PICKUP LINE] "you said don't lie about height. am i allowed to round up on personality"
+FINAL [TEXT] | user=Rachel (21) | context=[I geek out on: Animals specifically my gerbils || I wind down by: Polluting large water supplies, spreading misinformation about marsupials on Reddit, interfering with air traffic control, and television]
+Prompt: "My simple pleasures: Rock climbing and Mexican food"
+  - [PICKUP LINE] "you eat mexican food after climbing or before. this matters legally"
+FINAL [TEXT] | user=Rachel (21) | context=[I geek out on: Animals specifically my gerbils || I wind down by: Polluting large water supplies, spreading misinformation about marsupials on Reddit, interfering with air traffic control, and television]
+Prompt: "My simple pleasures: Rock climbing and Mexican food"
+  - [PICKUP LINE] "climbing then tacos is just earning your queso. what's the conversion rate"
+FINAL [TEXT] | user=Chloe (19) | context=[My Love Language is: Physical touch, quality time and words of affirmation!!! But I’m big on touch because it can be grounding || Together, we could: Take each other off this app]
+Prompt: "You should leave a comment if: You also love Star Wars or Harry Potter"
+  - [PICKUP LINE] "star wars and harry potter are both about kids raised by relatives who radicalized them. whose side are you on"
+FINAL [TEXT] | user=Kylie (21) | context=[I go crazy for: a sense of humor. Extra points for dad jokes😛 || The one thing I'd love to know about you is: literally anything about your pets.]
+Prompt: "All I ask is that you: buy me flowers and not lie about your height"
+  - [PICKUP LINE] "i'm 5'11 with flowers and 5'9 without. which version do you want"
+FINAL [TEXT] | user=Evelyn (21) | context=[What I order for the table: Fried pickles 
+A dip 
+Chips/bread || Change my mind about: Literally anything]
+Prompt: "This year, I really want to: Experience new places, meet new people, learn more 
+Try new foods ( learn to like sushi )"
+  - [PICKUP LINE] ""learn to like sushi" is the most reluctant growth mindset i've ever seen. who hurt you with raw fish"

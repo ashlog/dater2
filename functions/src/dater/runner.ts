@@ -1034,7 +1034,7 @@ async function ensureSiglipServer(): Promise<void> {
   console.log('Siglip server not running, starting it...');
   const { spawn } = await import('child_process');
   const siglipDir = path.join(os.homedir(), 'projects/siglip-test');
-  const child = spawn('/opt/homebrew/Caskroom/miniconda/base/envs/siglip-test/bin/python', ['api_bagged.py'], {
+  const child = spawn('/opt/homebrew/Caskroom/miniconda/base/envs/siglip-test/bin/python', ['api_v2.py'], {
     cwd: siglipDir,
     detached: true,
     stdio: ['ignore', 'pipe', 'pipe'],

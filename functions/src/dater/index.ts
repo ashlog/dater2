@@ -1,4 +1,5 @@
 export { run } from './runner';
+export { runInstagram } from './instagram';
 export {
   loc_bayPalo,
   loc_lilburn,
