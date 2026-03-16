@@ -1,0 +1,48 @@
+{
+  "version": 3,
+  "type": "path_shape",
+  "description": "Pure path shape detector. No templates, no string matching.",
+  "embedding_model": "all-MiniLM-L6-v2",
+  "shape_dim": 12,
+  "feature_names": [
+    "step_entropy",
+    "top5_shape_conformity",
+    "avg_shape_conformity",
+    "max_shape_conformity"
+  ],
+  "weights": [
+    0.45454545454545453,
+    0.0,
+    0.5454545454545455,
+    0.0
+  ],
+  "normalization": {
+    "step_entropy": {
+      "min": 1.7866317139832473,
+      "max": 3.4480008858952047,
+      "flip": false
+    },
+    "top5_shape_conformity": {
+      "min": 0.852164373371662,
+      "max": 0.9989458521286284,
+      "flip": false
+    },
+    "avg_shape_conformity": {
+      "min": 0.8045010960720005,
+      "max": 0.9891015143807411,
+      "flip": false
+    },
+    "max_shape_conformity": {
+      "min": 0.8528720492943968,
+      "max": 0.9999412942794486,
+      "flip": false
+    }
+  },
+  "threshold": 0.7897035564316836,
+  "metrics": {
+    "f1": 0.178752107925801,
+    "precision": 0.10578842315369262,
+    "recall": 0.5760869565217391
+  },
+  "correlation": -0.15330145860414435
+}

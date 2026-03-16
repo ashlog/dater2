@@ -1,0 +1,43 @@
+{
+  "version": 3,
+  "type": "path_conformity",
+  "description": "Detects formulaic openers by path traversal similarity. No templates, no string matching.",
+  "embedding_model": "all-MiniLM-L6-v2",
+  "feature_names": [
+    "avg_dir_sim",
+    "max_dir_sim",
+    "low_internal_div",
+    "avg_curvature"
+  ],
+  "weights": [
+    0.0,
+    0.0,
+    0.25,
+    0.7500000000000001
+  ],
+  "normalization": {
+    "avg_dir_sim": {
+      "min": -0.14442165195941925,
+      "max": 0.17164282500743866
+    },
+    "max_dir_sim": {
+      "min": 0.19452933967113495,
+      "max": 0.9990402460098267
+    },
+    "low_internal_div": {
+      "min": -0.17324842512607574,
+      "max": -0.030935145914554596
+    },
+    "avg_curvature": {
+      "min": -0.594613324752736,
+      "max": -0.20523452545542692
+    }
+  },
+  "threshold": 0.4099196280884772,
+  "metrics": {
+    "f1": 0.1904761904761905,
+    "precision": 0.13452914798206278,
+    "recall": 0.32608695652173914
+  },
+  "correlation_with_freshness": -0.075493544744307
+}

@@ -888,6 +888,78 @@ async function processProfileEntry(entry: [string, Profile], ctx: LikeContext, c
     console.log('[SCAN-ONLY] Skipping pickup line ranking - no lines generated');
     best = allCandidates[0] || { type: 'image', text: '', photo: subject.profile.photos[0] };
   } else {
+    // Formula direction quality gate — reject formulaic openers and regenerate with feedback
+    try {
+      const { execSync } = require('child_process');
+      const pathMod = require('path');
+      const formulaInput = JSON.stringify(allCandidates.map(c => c.text));
+      const formulaResult = execSync(
+        `echo '${formulaInput.replace(/'/g, "'\\''")}' | python3 ${pathMod.join(__dirname, 'formula_score.py')}`,
+        { timeout: 30000, maxBuffer: 5 * 1024 * 1024 }
+      ).toString().trim();
+      const formulaScores: { formula_proj: number; is_formulaic: boolean }[] = JSON.parse(formulaResult);
+
+      const rejectedIndices = formulaScores
+        .map((s, i) => s.is_formulaic ? i : -1)
+        .filter(i => i >= 0);
+
+      if (rejectedIndices.length > 0) {
+        const rejectedTexts = rejectedIndices.map(i => allCandidates[i].text);
+        console.log(`[FORMULA-GATE] ${rejectedIndices.length}/${allCandidates.length} formulaic — regenerating with feedback`);
+
+        // Collect text candidates that were formulaic so we can retry them
+        const retryItems: { id: string; profilePrompt: string; origIdx: number }[] = [];
+        for (const ri of rejectedIndices) {
+          const c = allCandidates[ri];
+          if (c.type === 'text' && c.prompt) {
+            retryItems.push({
+              id: String(ri),
+              profilePrompt: c.prompt,
+              origIdx: ri,
+            });
+          }
+        }
+
+        // Regenerate with anti-formula context — tell the LLM what NOT to do
+        if (retryItems.length > 0) {
+          const antiFormulaContext =
+            `REJECTED OPENERS (too formulaic — they describe HER topic instead of revealing YOU):\n` +
+            rejectedTexts.map(t => `  ✗ "${t}"`).join('\n') + '\n' +
+            `Write a NEW opener that starts from YOUR perspective. Use "i" or "my". ` +
+            `Reveal a personal detail, flaw, or opinion — not a clever rewrite of her topic.\n\n`;
+
+          try {
+            const retryResults = await generateOpenersFromYamlBatch(
+              retryItems.map(it => ({
+                id: it.id,
+                profilePrompt: antiFormulaContext + it.profilePrompt,
+              })),
+              subject.profile.firstName,
+              model
+            );
+
+            // Replace formulaic candidates with regenerated ones
+            let replacements = 0;
+            for (const item of retryItems) {
+              const newText = retryResults.get(item.id);
+              if (newText) {
+                const old = allCandidates[item.origIdx].text;
+                console.log(`[FORMULA-GATE] Replaced: "${old.slice(0, 50)}" → "${newText.slice(0, 50)}"`);
+                allCandidates[item.origIdx].text = newText;
+                replacements++;
+              }
+            }
+            console.log(`[FORMULA-GATE] Regenerated ${replacements}/${rejectedIndices.length} openers`);
+          } catch (retryErr: any) {
+            console.log(`[FORMULA-GATE] Retry failed: ${retryErr.message?.slice(0, 60)}`);
+            // Keep original openers — a formulaic opener is better than no opener
+          }
+        }
+      }
+    } catch (e: any) {
+      console.log(`[FORMULA-GATE] Skipped: ${e.message?.slice(0, 60)}`);
+    }
+
     // Final ranker across ALL generations via single JSON index selection
     const bestPickerStart = Date.now();
     let bestIndex: number;

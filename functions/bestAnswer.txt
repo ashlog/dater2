@@ -43373,3 +43373,257 @@ Chips/bread || Change my mind about: Literally anything]
 Prompt: "This year, I really want to: Experience new places, meet new people, learn more 
 Try new foods ( learn to like sushi )"
   - [PICKUP LINE] ""learn to like sushi" is the most reluctant growth mindset i've ever seen. who hurt you with raw fish"
+FINAL [TEXT] | user=Ida (21) | context=[Something that's non-negotiable for me is: Good communication || I hype myself up by: Scream singing to my favorite songs in the car]
+Prompt: "Most spontaneous thing I've done: Moved to the US on my own to live with and work for a family that I didn’t know"
+  - [PICKUP LINE] "you moved countries for strangers. what's your vetting process because i'd like to apply"
+FINAL [TEXT] | user=MC (21) | context=[My therapist would say I: have an unhealthy relationship with the bear edits || We'll get along if: you were raised catholic]
+Prompt: "Change my mind about: yuri should be yaoi and yaoi should be yuri. why is the yaoi show called yuri. we should change the name so yaoi -> yuri"
+  - [PICKUP LINE] "you want to rename an entire genre. that's not an opinion that's a coup. who's funding this"
+FINAL [TEXT] | user=naomi (20) | context=[All I ask is that you: don’t try to kill me 🫩 || I won't shut up about: . i just don’t shut up.]
+Prompt: "I go crazy for: honey butter croissants"
+  - [PICKUP LINE] "honey butter croissants are just regular croissants with a trust fund. where do yours summer"
+FINAL [TEXT] | user=Paulina (21) | context=[Therapy recently taught me: No vivo del juicio ajeno || I go crazy for: Ir a entrenar, comer pasta y un hombre que tenga iniciativa]
+Prompt: "Something my pet thinks about me: Que su mamá es demasiado amorosa y le da todo lo mejor haha"
+  - [PICKUP LINE] "your pet said demasiado amorosa like it's filing a complaint. what did you do"
+FINAL [TEXT] | user=Carola (21) | context=[My simple pleasures: A good food and a good drink || Typical Sunday: Chill with my friends]
+Prompt: "Dating me is like: Crazy things always happen to me, laughter will never be lacking"
+  - [PICKUP LINE] "crazy things always happen TO you. what did you do to the universe"
+FINAL [TEXT] | user=Boe (19) | context=[My friends ask me for advice about: life || I'll fall for you if: you treat me like princess]
+Prompt: "You should *not* go out with me if: ur not a gentleman"
+  - [PICKUP LINE] "gentleman is vague. are we talking doors held or duels fought"
+FINAL [IMAGE] | user=Danielle (20) | context=[The way to win me over is: Adventure, I love spontaneous ideas. || Where I go when I want to feel a little more like myself: The beach || We'll get along if: You’re love going to the gym, love fun, and want to make memories.]
+Image: https://media.hingenexus.com/image/upload/7lvqefwgk20t7ij8jsy3.jpg
+  - [PICKUP LINE] "michelob ultra is just a gym membership that gets you drunk. how many reps is that"
+FINAL [TEXT] | user=Natana (21) | context=[I go crazy for: Late night drives while listening to Chase Atlantic and long talks. || The one thing you should know about me is: I believe romance isn’t dead and the right person can bring it out very easy.]
+Prompt: "I could stay up all night talking about: Whether or not the megalodon is still alive bc I love sharks and unusual conversations."
+  - [PICKUP LINE] "the megalodon is alive and avoiding you specifically. what did you do"
+FINAL [TEXT] | user=Eva (20) | context=[Biggest risk I've taken: Packed my life in one luggage and moved across the world || The way to win me over is: If you are loyal, honest and you can make me laugh]
+Prompt: "Typical Sunday: Lunch with friends after church and shopping or walking the beltline"
+  - [PICKUP LINE] "church then shopping is just confessing and immediately sinning again. what's the cycle time"
+FINAL [TEXT] | user=Hope (21) | context=[The way to win me over is: Food and Flowers || In my friend group, I’m the one who: Sleeps first]
+Prompt: "Do you agree or disagree that: Your feelings on 67"
+  - [PICKUP LINE] "67 is just 69 with trust issues. what's your take"
+FINAL [IMAGE] | user=Andrea (20) | context=[I wind down by: opening up spotify || I recently discovered that: I am really bad at creating a “dating” app profile || Teach me something about: you? ig?]
+Image: https://media.hingenexus.com/image/upload/6xaagpshjbrqn8ze36nv.jpg
+  - [PICKUP LINE] "dating in quotes like it's an alleged crime. what are you being charged with"
+FINAL [TEXT] | user=Cerise (20) | context=[The way to win me over is: Be a gentleman and provide 👀🩵 || Teach me something about: Your interests!!]
+Prompt: "I go crazy for: Someone who spoils me"
+  - [PICKUP LINE] "define spoil. are we talking boba or heist getaway driver"
+FINAL [IMAGE] | user=Lucy (19) | context=[The way to win me over is: good music in the car, good food after, and good conversation the whole time || Together, we could: make bad decisions… like eating sweet treats at midnight || I'll fall for you if: you can make me laugh and keep up with my sarcasm]
+Image: https://media.hingenexus.com/image/upload/vek726yhx42egvhqo3r8.jpg
+  - [PICKUP LINE] "midnight sweet treats is just crime with better snacks. what's our first heist"
+FINAL [TEXT] | user=Stephanie (21) | context=[The way to win me over is: Randomly face time me || To me, relaxation is: Sunsets at the beach]
+Prompt: "This year, I really want to: Finish my TBR and get a tattoo"
+  - [PICKUP LINE] "tattoo of the TBR pile so it's technically always finished. what's the first title"
+FINAL [TEXT] | user=Mimi (20) | context=[This year, I really want to: This year, I’d love to experience a real, meaningful connection:))) || The way to win me over is: The way to win me over is by being emotionally available and thoughtful.]
+Prompt: "Dating me is like: Dating me is like quiet comfort and thoughtful moments."
+  - [PICKUP LINE] "quiet comfort and thoughtful moments is a candle store slogan. what's the unhinged version"
+FINAL [TEXT] | user=Jennifer (21) | context=[Typical Sunday: Starting the morning with an iced matcha and a 10-step skincare routine. || Dating me is like: Dating me is like a mix of intense logic puzzles and heavy lifting.]
+Prompt: "I go crazy for: someone who understands that my life is a constant cycle"
+  - [PICKUP LINE] "constant cycle means you're either a washing machine or a gemini. which one"
+FINAL [IMAGE] | user=Val (20) | context=[Dating me is like: Really loving your junk drawer || You should *not* go out with me if: You like this administration in anyway or if you use ai || The last time I cried happy tears was: Once a week watching sweet TikTok’s]
+Image: https://media.hingenexus.com/image/upload/wi25a4ghivfg1pylclg5.jpg
+  - [PICKUP LINE] "every junk drawer has one completely unexplainable item. what's yours"
+FINAL [TEXT] | user=Alexis (21) | context=[Typical Sunday: Waking up early to watch F1 races. || Green flags I look for: 1. Will go to the aquarium with me
+2. Will wear a bracelet i make
+3. Will have me on lock screen
+4. Doesn’t judge me for my F1 obsession 
+that’s about it😭]
+Prompt: "The dorkiest thing about me is: I love building legos and crafting while watching true crime"
+  - [PICKUP LINE] "crafting while watching true crime is just building an alibi. how far along are you"
+FINAL [TEXT] | user=Ana (21) | context=[The key to my heart is: Flowers || Together, we could: Plan our weekend trip]
+Prompt: "Typical Sunday: Go to Trader Joe’s and complain about how packed it is"
+  - [PICKUP LINE] "you go to trader joe's knowing it's packed. you're not shopping you're spectating. what's the sport called"
+FINAL [IMAGE] | user=Ilianna (21) | context=[The way to win me over is: Communicating || I go crazy for: Conversations and communication || The one thing you should know about me is: I laugh about everything]
+Image: https://media.hingenexus.com/image/upload/mrpyu3pdol37avq0zn52.jpg
+  - [PICKUP LINE] "you listed communication twice. who stopped talking"
+FINAL [TEXT] | user=Allison (21) | context=[I go crazy for: sushi, the outdoors, music and living in pursuit of happiness || Before we meet, you should listen to: The 10-hour spotify playlist I made that encapsulates my taste in music]
+Prompt: "Don't hate me if I: use “your mom” as a go-to response"
+  - [PICKUP LINE] "your mom as a go-to response is just verbal muscle memory. how long has she been undefeated"
+FINAL [TEXT] | user=Jolie (20) | context=[I won't shut up about: avatar || First round is on me if: take carbombs!]
+Prompt: "Dating me is like: unpredictable"
+  - [PICKUP LINE] "unpredictable is just a weather forecast for a person. what's the five day outlook"
+FINAL [TEXT] | user=Carola (21) | context=[My simple pleasures: A good food and a good drink || Typical Sunday: Chill with my friends]
+Prompt: "Dating me is like: Crazy things always happen to me, laughter will never be lacking"
+  - [PICKUP LINE] "crazy things always happen TO you. what did you do to the things first"
+FINAL [IMAGE] | user=emma (20) | context=[My simple pleasures: nature, reading and nice tea || I want someone who: listens well and enjoys lots of music as much as i do || My Love Language is: acts of service, i love to feel helpful and make my loved ones days easier :)]
+Image: https://media.hingenexus.com/image/upload/v1712853622/1ntnt06shn42ncnyjzcc.webp
+  - [PICKUP LINE] "acts of service is just being everyone's unpaid intern. who's your worst client"
+FINAL [TEXT] | user=Emma (21) | context=[Together, we could: Hoop || I feel most supported when: There’s a drink in my hand]
+Prompt: "My most irrational fear: I hate birds always have always will"
+  - [PICKUP LINE] "birds have hollow bones and zero accountability. which one started this beef"
+FINAL [TEXT] | user=MC (21) | context=[My therapist would say I: have an unhealthy relationship with the bear edits || Change my mind about: yuri should be yaoi and yaoi should be yuri. why is the yaoi show called yuri. we should change the name so yaoi -> yuri]
+Prompt: "We'll get along if: you were raised catholic"
+  - [PICKUP LINE] "raised catholic so i come with guilt, casseroles, and an exit strategy. which one sold you"
+FINAL [TEXT] | user=Adlyn (18) | context=[I geek out on: I’m such a big fan of Radiohead!! I love all their music, but Fake Plastic Trees and Motion Picture Soundtrack are probably my favorites 😋 || A life goal of mine: I want to travel around. Biggest place would be Switzerland. It is very beautiful there in the spring.]
+Prompt: "I'm weirdly attracted to: A man with a plan 🫡"
+  - [PICKUP LINE] "i have a plan. it's mostly boba and karaoke but the spreadsheet is color coded. interested"
+FINAL [TEXT] | user=Trang (20) | context=[The key to my heart is: matcha and dessert 🧁 || My simple pleasures: a day without a deadline 🫠]
+Prompt: "This year, I really want to: get a sweater on 3rd of Dec 🫣"
+  - [PICKUP LINE] "december 3rd is so specific. whose sweater are you stealing and do they know yet"
+FINAL [IMAGE] | user=Stephanie (21) | context=[This year, I really want to: Finish my TBR and get a tattoo || The way to win me over is: Randomly face time me || To me, relaxation is: Sunsets at the beach]
+Image: https://media.hingenexus.com/image/upload/qpxuvcr3md4lyubzmyu3.jpg
+  - [PICKUP LINE] "finish your tbr and get a tattoo. tattoo the last page of whatever you can't finish. loophole"
+FINAL [TEXT] | user=Mimi (20) | context=[This year, I really want to: This year, I’d love to experience a real, meaningful connection:))) || Dating me is like: Dating me is like quiet comfort and thoughtful moments.]
+Prompt: "The way to win me over is: The way to win me over is by being emotionally available and thoughtful."
+  - [PICKUP LINE] "emotionally available and thoughtful is just a golden retriever. what breed am i"
+FINAL [TEXT] | user=Stephanie (21) | context=[This year, I really want to: Finish my TBR and get a tattoo || The way to win me over is: Randomly face time me]
+Prompt: "To me, relaxation is: Sunsets at the beach"
+  - [PICKUP LINE] "sunsets at the beach is just staring at the sun with a better alibi. how long can you look"
+FINAL [TEXT] | user=Mimi (20) | context=[This year, I really want to: This year, I’d love to experience a real, meaningful connection:))) || The way to win me over is: The way to win me over is by being emotionally available and thoughtful.]
+Prompt: "Dating me is like: Dating me is like quiet comfort and thoughtful moments."
+  - [PICKUP LINE] "quiet comfort and thoughtful moments is just a library with a crush. what's the late fee"
+FINAL [TEXT] | user=Mimi (20) | context=[The way to win me over is: The way to win me over is by being emotionally available and thoughtful. || Dating me is like: Dating me is like quiet comfort and thoughtful moments.]
+Prompt: "This year, I really want to: This year, I’d love to experience a real, meaningful connection:)))"
+  - [PICKUP LINE] "three smiley faces after meaningful connection. how many heartbreaks deep are we"
+FINAL [IMAGE] | user=Stephanie (21) | context=[This year, I really want to: Finish my TBR and get a tattoo || The way to win me over is: Randomly face time me || To me, relaxation is: Sunsets at the beach]
+Image: https://media.hingenexus.com/image/upload/qpxuvcr3md4lyubzmyu3.jpg
+  - [PICKUP LINE] "tattoo your tbr list so it stops growing. what's book one"
+FINAL [TEXT] | user=Val (20) | context=[You should *not* go out with me if: You like this administration in anyway or if you use ai || The last time I cried happy tears was: Once a week watching sweet TikTok’s]
+Prompt: "Dating me is like: Really loving your junk drawer"
+  - [PICKUP LINE] "junk drawers have that one mystery key nobody throws away. what do you unlock"
+FINAL [TEXT] | user=Jennifer (21) | context=[Dating me is like: Dating me is like a mix of intense logic puzzles and heavy lifting. || I go crazy for: someone who understands that my life is a constant cycle]
+Prompt: "Typical Sunday: Starting the morning with an iced matcha and a 10-step skincare routine."
+  - [PICKUP LINE] "ten steps. that's not skincare that's a heist. what's step six"
+FINAL [TEXT] | user=Alexis (21) | context=[Typical Sunday: Waking up early to watch F1 races. || Green flags I look for: 1. Will go to the aquarium with me
+2. Will wear a bracelet i make
+3. Will have me on lock screen
+4. Doesn’t judge me for my F1 obsession 
+that’s about it😭]
+Prompt: "The dorkiest thing about me is: I love building legos and crafting while watching true crime"
+  - [PICKUP LINE] "building legos to true crime means you're constructing an alibi. how far along are you"
+FINAL [TEXT] | user=Ilianna (21) | context=[The way to win me over is: Communicating || I go crazy for: Conversations and communication]
+Prompt: "The one thing you should know about me is: I laugh about everything"
+  - [PICKUP LINE] "everything includes bad news and funerals. what's the worst place you've laughed"
+FINAL [IMAGE] | user=Ana (21) | context=[Typical Sunday: Go to Trader Joe’s and complain about how packed it is || The key to my heart is: Flowers || Together, we could: Plan our weekend trip]
+Image: https://media.hingenexus.com/image/upload/czmlyfddqbumw6byvtkz.jpg
+  - [PICKUP LINE] "the groceries are a cover. you go for the complaining don't you"
+FINAL [TEXT] | user=Allison (21) | context=[Don't hate me if I: use “your mom” as a go-to response || I go crazy for: sushi, the outdoors, music and living in pursuit of happiness]
+Prompt: "Before we meet, you should listen to: The 10-hour spotify playlist I made that encapsulates my taste in music"
+  - [PICKUP LINE] "10 hours is an audition not a playlist. what happens if i fail"
+FINAL [TEXT] | user=Jolie (20) | context=[Dating me is like: unpredictable || I won't shut up about: avatar]
+Prompt: "First round is on me if: take carbombs!"
+  - [PICKUP LINE] "carbombs on a first date is just trust falls with whiskey. how's your aim"
+FINAL [TEXT] | user=emma (20) | context=[I want someone who: listens well and enjoys lots of music as much as i do || My Love Language is: acts of service, i love to feel helpful and make my loved ones days easier :)]
+Prompt: "My simple pleasures: nature, reading and nice tea"
+  - [PICKUP LINE] "nice tea means you've been personally betrayed by a bad cup. who served it"
+FINAL [TEXT] | user=Jolie (20) | context=[Dating me is like: unpredictable || I won't shut up about: avatar]
+Prompt: "First round is on me if: take carbombs!"
+  - [PICKUP LINE] "i haven't done a carbomb since college and my pride still hasn't recovered. what bar are we ruining"
+FINAL [TEXT] | user=emma (20) | context=[I want someone who: listens well and enjoys lots of music as much as i do || My Love Language is: acts of service, i love to feel helpful and make my loved ones days easier :)]
+Prompt: "My simple pleasures: nature, reading and nice tea"
+  - [PICKUP LINE] "nice tea is so specific. i need to know what crossed the line into unacceptable tea"
+FINAL [TEXT] | user=Carola (21) | context=[Dating me is like: Crazy things always happen to me, laughter will never be lacking || Typical Sunday: Chill with my friends]
+Prompt: "My simple pleasures: A good food and a good drink"
+  - [PICKUP LINE] "a good food and a good drink is dangerously vague. my last "good drink" was boba at 11pm, what's yours"
+FINAL [TEXT] | user=MC (21) | context=[Change my mind about: yuri should be yaoi and yaoi should be yuri. why is the yaoi show called yuri. we should change the name so yaoi -> yuri || We'll get along if: you were raised catholic]
+Prompt: "My therapist would say I: have an unhealthy relationship with the bear edits"
+  - [PICKUP LINE] "your therapist says unhealthy, i say you're the only one asking the bear the right questions. which edit broke you"
+FINAL [IMAGE] | user=Emma (21) | context=[Together, we could: Hoop || I feel most supported when: There’s a drink in my hand || My most irrational fear: I hate birds always have always will]
+Image: https://media.hingenexus.com/image/upload/m7308jlya0yqocsel8qt.jpg
+  - [PICKUP LINE] "i'll bring a drink to the court so you feel supported while i get embarrassed. what's your go-to"
+FINAL [TEXT] | user=Trang (20) | context=[This year, I really want to: get a sweater on 3rd of Dec 🫣 || My simple pleasures: a day without a deadline 🫠]
+Prompt: "The key to my heart is: matcha and dessert 🧁"
+  - [PICKUP LINE] "my matcha order is oat milk no sugar. if i show up with a cupcake too, what are my odds"
+FINAL [TEXT] | user=Adlyn (18) | context=[I geek out on: I’m such a big fan of Radiohead!! I love all their music, but Fake Plastic Trees and Motion Picture Soundtrack are probably my favorites 😋 || I'm weirdly attracted to: A man with a plan 🫡]
+Prompt: "A life goal of mine: I want to travel around. Biggest place would be Switzerland. It is very beautiful there in the spring."
+  - [PICKUP LINE] "switzerland in spring is suspiciously specific. do you already have the itinerary saved somewhere or is it a full spreadsheet"
+FINAL [TEXT] | user=Mía (20) | context=[I won't shut up about: Music || A quick rant about: Looking for people interested In music composition/production around Atlanta.]
+Prompt: "This year, I really want to: looking for friends that are in the musical realm in ATL
+
+@lolabomboe on instagram 🥰"
+  - [PICKUP LINE] "you said friends in the musical realm like there's a portal. what instrument gets you through the gate"
+FINAL [TEXT] | user=Morgan (19) | context=[My most irrational fear: A snake slithering up my toilet and biting my ass when I’m using the restroom. || An award my family would give me: Most likely to text “I’m on my way” while still at home.]
+Prompt: "Together, we could: Go to the store for one thing and leave with over $100 worth of things “we need.”"
+  - [PICKUP LINE] "my target trips have a 100% budget failure rate. i'll push the cart, you rationalize the purchases?"
+FINAL [TEXT] | user=Bailey (20) | context=[The way to win me over is: Remember the little things, be a gentleman, and make me feel special. (Bonus points if you give me flowers!) || I'm looking for: Someone who is ambitious and emotionally intelligent. I want to be able to go on adventures and have fun but also stay in and chill.]
+Prompt: "In my friend group, I’m the one who: Who is always prepared and takes care of everybody."
+  - [PICKUP LINE] "you're the prepared friend which means your bag has snacks right now. what's in there"
+FINAL [TEXT] | user=Ana (21) | context=[The key to my heart is: Make me laugh || Try to guess this about me: Where am I from]
+Prompt: "My most irrational fear: Michael Jackson and men"
+  - [PICKUP LINE] "michael jackson AND men. so if i moonwalk toward you that's basically a double jumpscare?"
+FINAL [TEXT] | user=Trin (20) | context=[I know the best spot in town for: hidden swim holes and scenic views😩 || I recently discovered that: whenever we learn something new, new neural pathways are created in the brain physically creating the “wrinkles” our brains have. You got a new wrinkle if you didn’t know that. You’re welcome.]
+Prompt: "My simple pleasures: smoking, crocheting, writing, anime, reading, playing sudoku… the life frfr"
+  - [PICKUP LINE] "crocheting and anime means you're one project away from making a full naruto headband. how close am i"
+FINAL [TEXT] | user=AJ (21) | context=[What if I told you that: I’m not real and a figment of your perverted imagination || I go crazy for: men who play instruments & make music but also… 6’0 men in finance (dichotomy of girl)]
+Prompt: "The one thing you should know about me is: that i’m a doll (let’s use our context clues)"
+  - [PICKUP LINE] "context clues say doll but my reading comprehension has always been suspect. walk me through it"
+FINAL [TEXT] | user=Ava (19) | context=[Typical Sunday: Working || Worst idea I've ever had: getting a matching tattoo]
+Prompt: "My simple pleasures: Traveling"
+  - [PICKUP LINE] "traveling as a simple pleasure implies you've made it complicated at least once. i need that story"
+FINAL [TEXT] | user=Tajha (20) | context=[Typical Sunday: Beach sometimes 🥹, Dinner and ice cream after. || A life goal of mine: To be a successful entrepreneur.]
+Prompt: "Together, we could: Visit the Caribbean! I love the beaches and the adventurous activities!🤗"
+  - [PICKUP LINE] "i've never been to the caribbean so you'd basically be my tour guide. how bossy are you on a scale of 1 to travel itinerary spreadsheet"
+FINAL [IMAGE] | user=Ella (18) | context=[I go crazy for: good music || My simple pleasures: doom scrolling || Typical Sunday: not showering]
+Image: https://media.hingenexus.com/image/upload/irieykx4aeqsacvgkbhv.jpg
+  - [PICKUP LINE] "your profile says sunday gremlin but this photo says saturday night villain. i'm interested in both"
+FINAL [TEXT] | user=Tajha (20) | context=[A life goal of mine: To be a successful entrepreneur. || Together, we could: Visit the Caribbean! I love the beaches and the adventurous activities!🤗]
+Prompt: "Typical Sunday: Beach sometimes 🥹, Dinner and ice cream after."
+  - [PICKUP LINE] "my sunday ritual is biking the bayfront until i earn dessert. what's the ice cream order i'm earning my way toward"
+FINAL [IMAGE] | user=Ella (18) | context=[I go crazy for: good music || My simple pleasures: doom scrolling || Typical Sunday: not showering]
+Image: https://media.hingenexus.com/image/upload/irieykx4aeqsacvgkbhv.jpg
+  - [PICKUP LINE] "i grew up in georgia and that skyline is definitely atlanta. what rooftop do i need to revisit"
+FINAL [IMAGE] | user=Kaveri (20) | context=[I feel most supported when: You vehemently support my rights and wrongs || Let's make sure we're on the same page about: Wife, daughter, mom || Something that's non-negotiable for me is: Not putting me first. I want someone who is as obsessed with me as I am with myself.]
+Image: https://media.hingenexus.com/image/upload/tqnzsdr5d53i325apa8b.jpg
+  - [PICKUP LINE] "i'm already practicing my vehement support. what's the first wrong i'm defending"
+FINAL [TEXT] | user=Paula (21) | context=[I go crazy for: A good home food meal and roadtrips with some good music! || The one thing you should know about me is: 1.- For me it’s really important know someone with a good heart 
+
+2- I love to have a long conversations 
+
+3.- Texting it’s very important to me]
+Prompt: "Something that's non-negotiable for me is: - Honestly 
+- Emotional maturity 
+-Clear intentions :)
+-Quality time"
+  - [PICKUP LINE] "i have three of those four on lock. the quality time one requires you to like boba runs and science museums though"
+FINAL [TEXT] | user=Ireland (19) | context=[My most irrational fear: losing someone’s pet while pet sitting || My greatest strength: having a cartoon character look alike ready for anyone]
+Prompt: "Dating me is like: a party in the usa"
+  - [PICKUP LINE] "i'm more of a slow dance in the kitchen guy. how do we negotiate this"
+FINAL [TEXT] | user=Elsa (21) | context=[I'm weirdly attracted to: 🤠 & 🏒 || The way to win me over is: Getting me a cow]
+Prompt: "My Love Language is: Baking for you"
+  - [PICKUP LINE] "i have a serious weakness for anything with brown butter. what's the first thing you'd test on me"
+FINAL [TEXT] | user=Ellen (21) | context=[A life goal of mine: Medical school || The way to win me over is: Emotional intelligence and good communication!]
+Prompt: "My greatest strength: Pushing pull doors"
+  - [PICKUP LINE] "i fully commit to pulling doors that say push. do you panic or double down"
+FINAL [TEXT] | user=MC (21) | context=[My therapist would say I: have an unhealthy relationship with the bear edits || Change my mind about: yuri should be yaoi and yaoi should be yuri. why is the yaoi show called yuri. we should change the name so yaoi -> yuri]
+Prompt: "We'll get along if: you were raised catholic"
+  - [PICKUP LINE] "twelve years of catholic school and i still feel guilty about swiping right. is that the vibe you're looking for"
+FINAL [TEXT] | user=Ida (21) | context=[Something that's non-negotiable for me is: Good communication || Most spontaneous thing I've done: Moved to the US on my own to live with and work for a family that I didn’t know]
+Prompt: "I hype myself up by: Scream singing to my favorite songs in the car"
+  - [PICKUP LINE] "i have a car karaoke rotation that's 60% whitney houston and 40% delusion. what song breaks your voice first"
+FINAL [IMAGE] | user=Simar (19) | context=[Typical Sunday: Sleep || Find me on insta: simar.chaha.l || My cry-in-the-car song is: Bruno Mars 😭 || My simple pleasures: Deep talks, good music, working out, and food]
+Image: https://media.hingenexus.com/image/upload/ycbn2xva4e4jtwhnalm2.jpg
+  - [PICKUP LINE] "i cry to when i was your man in the gym parking lot. which bruno song owns you"
+FINAL [IMAGE] | user=Kate (19) | context=[This year, I really want to: get another tattoo and piercing || The way to win me over is: flowers and anything with a sunset/sunrise || To me, relaxation is: ordering in and watching a movie]
+Image: https://media.hingenexus.com/image/upload/icxdv1lgapnvu6xchzua.jpg
+  - [PICKUP LINE] "i've been too indecisive for a tattoo my whole life. what made you commit to the first one"
+FINAL [TEXT] | user=kara (20) | context=[Don't hate me if I: don’t respond :) || My friends ask me for advice about: anything and everything]
+Prompt: "All I ask is that you: listen and communicate"
+  - [PICKUP LINE] "i'm genuinely good at both of those but my cat still ignores me. what am i doing wrong"
+FINAL [TEXT] | user=elaine (20) | context=[This year, I really want to: get some highlights or something. wanna switch it up. || Before we meet, you should listen to: ride by lana and the song crazy girls]
+Prompt: "I'll pick the topic if you start the conversation: best restaurant in atl"
+  - [PICKUP LINE] "i grew up in georgia and my controversial pick is the buford highway food court. how sketchy are you willing to go"
+FINAL [TEXT] | user=Emilia (20) | context=[First round is on me if: You give me your credit card. || I bet you can't: Beat me at pool]
+Prompt: "What if I told you that: I am Swedish"
+  - [PICKUP LINE] "i've been assembling ikea furniture wrong for years. are you the person who finally teaches me or do we just suffer together"
+FINAL [TEXT] | user=Charlize (21) | context=[I go crazy for: Roasting each other Humor
+Handle @charlizechetty || Dating me is like: Having an all in one in everything]
+Prompt: "The way to win me over is: Thoughtful , cute dates
+Do not try to meet with me on the first date unless it’s at a restaurant or you’re spontaneous 😊"
+  - [PICKUP LINE] "i have a spontaneous restaurant move that's either incredibly thoughtful or mildly unhinged. how brave are you feeling"
+FINAL [IMAGE] | user=Emilia (20) | context=[What if I told you that: I am Swedish || First round is on me if: You give me your credit card. || I bet you can't: Beat me at pool]
+Image: https://media.hingenexus.com/image/upload/n5i7o1t31qkxvwtcjfv6.jpg
+  - [PICKUP LINE] "i'm terrible at pool but i have been told i'm great at losing gracefully. what are the stakes"
+FINAL [TEXT] | user=Charlize (21) | context=[I go crazy for: Roasting each other Humor
+Handle @charlizechetty || Dating me is like: Having an all in one in everything]
+Prompt: "The way to win me over is: Thoughtful , cute dates
+Do not try to meet with me on the first date unless it’s at a restaurant or you’re spontaneous 😊"
+  - [PICKUP LINE] "i plan dates like i plan code. obsessively, with backup options, and one spontaneous detour. where am i taking you first"
+FINAL [TEXT] | user=Charlize (21) | context=[I go crazy for: Roasting each other Humor
+Handle @charlizechetty || Dating me is like: Having an all in one in everything]
+Prompt: "The way to win me over is: Thoughtful , cute dates
+Do not try to meet with me on the first date unless it’s at a restaurant or you’re spontaneous 😊"
+  - [PICKUP LINE] "i'm spontaneous enough to show up with reservations. how contradictory do you need me to be"
+FINAL [TEXT] | user=Emilia (20) | context=[What if I told you that: I am Swedish || I bet you can't: Beat me at pool]
+Prompt: "First round is on me if: You give me your credit card."
+  - [PICKUP LINE] "my credit card has a $12 boba budget. how far are we stretching that first round"

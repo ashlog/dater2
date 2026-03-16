@@ -15,6 +15,7 @@
 import fs from 'fs';
 import path from 'path';
 import dotenv from 'dotenv';
+import { execSync } from 'child_process';
 import {
   generateOpenersFromYamlBatch,
   generateOpenersFromYamlBatchBestOfN,
@@ -57,6 +58,8 @@ interface JudgeScores {
   specificity: DimensionScore;
   human_likeness: DimensionScore;
   closer_strength: DimensionScore;
+  warmth_signal: DimensionScore;
+  formula_freshness: DimensionScore;
 }
 
 interface EvalResult {
@@ -79,6 +82,8 @@ interface ModelAggregate {
   specificity: number;
   human_likeness: number;
   closer_strength: number;
+  warmth_signal: number;
+  formula_freshness: number;
   avg: number;
 }
 
@@ -89,8 +94,8 @@ type EvalArgs =
 // --- Config ---
 
 const JUDGE_MODEL = 'claude-opus-4-6';
-const CONCURRENCY = 6;
-const GEN_CONCURRENCY = 6;
+const CONCURRENCY = 15;
+const GEN_CONCURRENCY = 15;
 
 
 // --- System prompt (cached across all judge calls) ---
@@ -198,7 +203,7 @@ How likely is this written by a real human vs. an AI? This is a detection task.
 2. **Filler transitions**: Phrases like "ok hold up", "wait", "ok so", "I need to know" used as openers. These are attempts to simulate spontaneity that real humans rarely use as their FIRST message to a stranger.
 3. **Forced wordplay**: Puns or clever constructions that feel manufactured rather than spontaneous. Especially wordplay that references multiple parts of their profile in a single message.
 4. **Over-enthusiasm**: Excessive energy or excitement that feels performative. Too many exclamation marks, all-caps words, or breathless reactions to mundane content.
-5. **Too-perfect structure**: Dating app messages from real humans are usually messy — incomplete sentences, lowercase, casual punctuation. AI messages tend to be grammatically perfect with proper punctuation.
+5. **Too-perfect structure**: Dating app messages from real humans are usually casual — incomplete sentences, lowercase. Note: using proper punctuation (periods, question marks) is NOT a red flag — many real humans use punctuation. The flag is overly formal grammar and structure.
 6. **Emoji mirroring**: Copying emoji usage from the profile or using emojis in a pattern that matches the profile's energy too precisely.
 7. **Unnatural specificity**: Pulling in multiple specific details from the profile into a single message in a way that feels systematic rather than organic.
 8. **Balanced construction**: Messages where the humor, question, and personal touch are too perfectly balanced, as if optimized by an algorithm.
@@ -246,10 +251,63 @@ How well does the opener END? The last 3-4 words are what she remembers. Score b
 - Explaining the joke: "because X", "which means Y"
 - Trailing qualifiers: "just saying", "or something", "idk"
 
+## Dimension 7: WARMTH_SIGNAL (1-10)
+
+Does the opener signal genuine romantic interest, or is it pure stand-up comedy? The best openers balance wit with warmth — she should feel flattered AND amused, not just roasted.
+
+### Scoring Rubric:
+- **9-10**: Perfect push-pull. Funny AND she feels like he's genuinely interested in HER, not just performing. Shows personality while making her feel seen. Might hint at wanting to meet or share something personal.
+- **7-8**: Mostly comedy but with a warm undercurrent. The opener doesn't feel cold or adversarial. She'd think "he's funny AND seems nice."
+- **5-6**: Pure comedy bit with neutral warmth. Not cold, but not warm either. She laughs but doesn't feel pursued or special. Could be a tweet, not a dating opener.
+- **3-4**: Comedy at her expense. The opener feels more like a roast than flirting. Accusatory tone ("what did you do", "who hurt you") without any balancing warmth. She might feel interrogated rather than courted.
+- **1-2**: Hostile, dismissive, or completely impersonal. The opener could have been sent by someone who actively dislikes her. Zero romantic energy.
+
+### Key factors:
+- Does it feel like FLIRTING or PERFORMING? Flirting = good, performing = mid.
+- Accusatory questions ("who hurt you", "what did you do to the universe") without warmth should score 4-5 max.
+- Self-insertion (mentioning himself, his interests, or shared future) adds warmth naturally.
+- Compliments disguised as jokes score higher than pure roasts.
+- Future-pacing (implying they'll meet/do something together) is a strong warmth signal.
+- "I" statements reveal the sender's personality and signal genuine engagement.
+
+### Warm patterns (score 7+):
+- "my cat judges everyone i date. you're applying to impress her not me" (self-insertion + playful)
+- "i'm 5'11 but 6'1 in flower delivery crocs. which height do you want" (self-deprecation + flirty)
+- "you moved countries for strangers. what's your vetting process because i'd like to apply" (humor + genuine interest)
+
+### Cold patterns (score 3-5):
+- "X is just Y with Z. who hurt you" (pure roast, no connection)
+- "what did you do to the universe" (accusatory, she's the punchline)
+- "that's not an opinion that's a coup. who's funding this" (clever but zero warmth)
+
+## Dimension 8: FORMULA_FRESHNESS (1-10)
+
+Does this opener feel like a one-of-a-kind moment, or does it follow a template you've seen 100 times? Penalize overused structures regardless of how well-executed they are.
+
+### Scoring Rubric:
+- **9-10**: Genuinely novel structure. You couldn't describe a "formula" this follows. Feels like a one-time insight that couldn't be templated.
+- **7-8**: Uses a known device (reversal, escalation) but applies it in a way that feels fresh for this specific prompt. Not templatable.
+- **5-6**: Recognizable pattern but executed with enough twist to avoid feeling stale. Borderline formulaic.
+- **3-4**: Clearly follows a worn-out template. You could describe the formula and generate 50 openers like it. Feels like a mad-lib.
+- **1-2**: Extremely overused formula. Immediately recognizable as a template that's been run into the ground.
+
+### OVERUSED FORMULAS (auto-score 4 or below):
+1. **"X is just Y with Z"**: "badminton is just tennis that chose peace", "gerbils are just hamsters with a PR team", "lego batman is just regular batman with commitment issues" — this is a mad-lib template
+2. **"who hurt you / who was it / what did you do"** closers: Used on 20%+ of prompts. "who hurt you with raw fish", "who was it", "what did you do"
+3. **"that's not X that's Y"**: "that's not a shopping trip that's a pilgrimage", "that's not an opinion that's a coup"
+4. **Accusatory reframe + interrogation**: Treating any profile detail as suspicious/criminal and demanding an explanation
+5. **"coffee or boba?"** as universal closer
+
+### Fresh patterns (score 7+):
+- Unique structural approaches that don't match any template
+- Self-insertion that reveals sender's actual personality
+- Culturally specific observations that couldn't be generated from a formula
+- Responses that complete or extend the bit rather than just reframing it
+
 ## Output Format
 
 You must respond with ONLY valid JSON, no other text before or after. Use this exact structure:
-{"reply_likelihood": {"score": N, "rationale": "..."}, "humor_quality": {"score": N, "rationale": "..."}, "creativity": {"score": N, "rationale": "..."}, "specificity": {"score": N, "rationale": "..."}, "human_likeness": {"score": N, "rationale": "..."}, "closer_strength": {"score": N, "rationale": "..."}}
+{"reply_likelihood": {"score": N, "rationale": "..."}, "humor_quality": {"score": N, "rationale": "..."}, "creativity": {"score": N, "rationale": "..."}, "specificity": {"score": N, "rationale": "..."}, "human_likeness": {"score": N, "rationale": "..."}, "closer_strength": {"score": N, "rationale": "..."}, "warmth_signal": {"score": N, "rationale": "..."}, "formula_freshness": {"score": N, "rationale": "..."}}
 
 Where N is an integer from 1 to 10 and rationale is a single concise sentence explaining the score.
 
@@ -261,61 +319,61 @@ These examples show how to score openers of different quality levels. Study thes
 Profile: Sarah, 26
 Prompt: "I know the best spot in town for" → "finding random cats to pet"
 Opener: "what neighborhood we talking? i have a mental map of cat hotspots"
-Expected: {"reply_likelihood": {"score": 8, "rationale": "Specific engagement, easy question to answer, shows shared interest"}, "humor_quality": {"score": 7, "rationale": "Naturally funny concept of a mental cat map without forcing the joke"}, "creativity": {"score": 7, "rationale": "The 'mental map of cat hotspots' is an unexpected personal detail that reframes the conversation"}, "specificity": {"score": 8, "rationale": "Engages directly with the cat-petting detail and adds a specific personal angle"}, "human_likeness": {"score": 9, "rationale": "All lowercase, casual tone, reveals personal quirk, feels like a real text"}, "closer_strength": {"score": 8, "rationale": "'cat hotspots' is a fun image to end on — memorable and easy to riff on"}}
+Expected: {"reply_likelihood": {"score": 8, "rationale": "Specific engagement, easy question to answer, shows shared interest"}, "humor_quality": {"score": 7, "rationale": "Naturally funny concept of a mental cat map without forcing the joke"}, "creativity": {"score": 7, "rationale": "The 'mental map of cat hotspots' is an unexpected personal detail that reframes the conversation"}, "specificity": {"score": 8, "rationale": "Engages directly with the cat-petting detail and adds a specific personal angle"}, "human_likeness": {"score": 9, "rationale": "All lowercase, casual tone, reveals personal quirk, feels like a real text"}, "closer_strength": {"score": 8, "rationale": "'cat hotspots' is a fun image to end on — memorable and easy to riff on"}, "warmth_signal": {"score": 9, "rationale": "Self-insertion ('i have a mental map') reveals his personality and shared interest — flirting through genuine connection"}, "formula_freshness": {"score": 8, "rationale": "No recognizable template — the self-disclosure about cat hotspots is uniquely personal, not formulaic"}}
 
 ### Example 2 (Generic AI rephrase):
 Profile: Emily, 24
 Prompt: "A life goal of mine" → "Learn to make pasta from scratch"
 Opener: "ok homemade pasta is elite - are we talking ravioli level ambition or starting with the basics?"
-Expected: {"reply_likelihood": {"score": 7, "rationale": "Good engagement and question, though slightly structured"}, "humor_quality": {"score": 5, "rationale": "Mild humor with 'elite' and 'ambition' framing, nothing actually funny"}, "creativity": {"score": 3, "rationale": "No creative device — just restates 'pasta' and asks the obvious follow-up about what kind"}, "specificity": {"score": 6, "rationale": "References pasta specifically but the either/or question is generic enough for any cooking prompt"}, "human_likeness": {"score": 4, "rationale": "'ok' opener + dash + either/or question is a common AI formula"}, "closer_strength": {"score": 5, "rationale": "Ends on 'starting with the basics' — functional but forgettable, the either/or fizzles"}}
+Expected: {"reply_likelihood": {"score": 7, "rationale": "Good engagement and question, though slightly structured"}, "humor_quality": {"score": 5, "rationale": "Mild humor with 'elite' and 'ambition' framing, nothing actually funny"}, "creativity": {"score": 3, "rationale": "No creative device — just restates 'pasta' and asks the obvious follow-up about what kind"}, "specificity": {"score": 6, "rationale": "References pasta specifically but the either/or question is generic enough for any cooking prompt"}, "human_likeness": {"score": 4, "rationale": "'ok' opener + dash + either/or question is a common AI formula"}, "closer_strength": {"score": 5, "rationale": "Ends on 'starting with the basics' — functional but forgettable, the either/or fizzles"}, "warmth_signal": {"score": 6, "rationale": "Shows mild enthusiasm ('elite') but no personal connection — generic interest, not genuine warmth"}, "formula_freshness": {"score": 3, "rationale": "'ok [reaction] - are we talking X or Y?' is one of the most common AI opener templates"}}
 
 ### Example 3 (Formulaic AI pattern):
 Profile: Jessica, 27
 Prompt: "You'd never know it, but I" → "can solve a Rubik's cube in under 2 minutes"
 Opener: "ok hold up - a Rubik's cube in under 2 minutes?? I need the full origin story. Are we talking casual hobby or competitive speedcuber?"
-Expected: {"reply_likelihood": {"score": 6, "rationale": "Has a question but feels like an interview rather than banter"}, "humor_quality": {"score": 3, "rationale": "No actual humor, just performed surprise and a formulaic question"}, "creativity": {"score": 2, "rationale": "Zero creative device — just rephrases what she said and asks for elaboration"}, "specificity": {"score": 7, "rationale": "Does reference the specific 2-minute Rubik's cube detail"}, "human_likeness": {"score": 2, "rationale": "Classic AI formula: 'ok hold up' + rephrase + demand for story + either/or question"}, "closer_strength": {"score": 4, "rationale": "Ends on 'competitive speedcuber?' — the either/or trails off instead of landing"}}
+Expected: {"reply_likelihood": {"score": 6, "rationale": "Has a question but feels like an interview rather than banter"}, "humor_quality": {"score": 3, "rationale": "No actual humor, just performed surprise and a formulaic question"}, "creativity": {"score": 2, "rationale": "Zero creative device — just rephrases what she said and asks for elaboration"}, "specificity": {"score": 7, "rationale": "Does reference the specific 2-minute Rubik's cube detail"}, "human_likeness": {"score": 2, "rationale": "Classic AI formula: 'ok hold up' + rephrase + demand for story + either/or question"}, "closer_strength": {"score": 4, "rationale": "Ends on 'competitive speedcuber?' — the either/or trails off instead of landing"}, "warmth_signal": {"score": 5, "rationale": "Shows curiosity but in an interview format — feels like a journalist, not someone interested in dating"}, "formula_freshness": {"score": 2, "rationale": "'ok hold up + rephrase + are we talking X or Y' is the most formulaic AI opener pattern possible"}}
 
 ### Example 4 (Simple and effective):
 Profile: Rachel, 25
 Prompt: "My simple pleasures" → "a perfect sunset and a glass of wine"
 Opener: "rooftop or beach sunset? important distinction"
-Expected: {"reply_likelihood": {"score": 8, "rationale": "Simple, playful question that's easy and fun to answer"}, "humor_quality": {"score": 6, "rationale": "Light humor in treating it as a serious question, charming not hilarious"}, "creativity": {"score": 5, "rationale": "Decent reframe as a serious distinction, but a fairly obvious follow-up question"}, "specificity": {"score": 7, "rationale": "Picks the sunset detail specifically and adds a new dimension to it"}, "human_likeness": {"score": 8, "rationale": "Short, direct, no unnecessary framing or filler — feels like a real person"}, "closer_strength": {"score": 9, "rationale": "'important distinction' is a perfect deadpan mic-drop — two words that carry gravity and invite a reply"}}
+Expected: {"reply_likelihood": {"score": 8, "rationale": "Simple, playful question that's easy and fun to answer"}, "humor_quality": {"score": 6, "rationale": "Light humor in treating it as a serious question, charming not hilarious"}, "creativity": {"score": 5, "rationale": "Decent reframe as a serious distinction, but a fairly obvious follow-up question"}, "specificity": {"score": 7, "rationale": "Picks the sunset detail specifically and adds a new dimension to it"}, "human_likeness": {"score": 8, "rationale": "Short, direct, no unnecessary framing or filler — feels like a real person"}, "closer_strength": {"score": 9, "rationale": "'important distinction' is a perfect deadpan mic-drop — two words that carry gravity and invite a reply"}, "warmth_signal": {"score": 7, "rationale": "The question implies planning a date scenario together — warm and flirty without being explicit"}, "formula_freshness": {"score": 7, "rationale": "Simple question format but the 'important distinction' deadpan tag elevates it beyond a basic follow-up"}}
 
 ### Example 5 (Great pun — creative but AI-sounding):
 Profile: Amanda, 25
 Prompt: "A random fact I love" → "otters hold paws while they sleep so they don't drift apart"
 Opener: "can I be your significant otter?"
-Expected: {"reply_likelihood": {"score": 8, "rationale": "Charming, memorable, easy to respond to with a laugh or playful yes"}, "humor_quality": {"score": 8, "rationale": "The pun genuinely lands — it's clever without being forced and fits the context perfectly"}, "creativity": {"score": 9, "rationale": "'Significant otter' is a brilliant pun that transforms the otter fact into a flirty proposition"}, "specificity": {"score": 9, "rationale": "Only works for this exact prompt — the pun is built entirely from her specific fact"}, "human_likeness": {"score": 7, "rationale": "Lowercase, short, natural — but the pun is almost too perfect for a casual first message"}, "closer_strength": {"score": 10, "rationale": "'significant otter' IS the punchline — the entire opener builds to these two words and they land perfectly"}}
+Expected: {"reply_likelihood": {"score": 8, "rationale": "Charming, memorable, easy to respond to with a laugh or playful yes"}, "humor_quality": {"score": 8, "rationale": "The pun genuinely lands — it's clever without being forced and fits the context perfectly"}, "creativity": {"score": 9, "rationale": "'Significant otter' is a brilliant pun that transforms the otter fact into a flirty proposition"}, "specificity": {"score": 9, "rationale": "Only works for this exact prompt — the pun is built entirely from her specific fact"}, "human_likeness": {"score": 7, "rationale": "Lowercase, short, natural — but the pun is almost too perfect for a casual first message"}, "closer_strength": {"score": 10, "rationale": "'significant otter' IS the punchline — the entire opener builds to these two words and they land perfectly"}, "warmth_signal": {"score": 10, "rationale": "Directly flirty and warm — 'can I be your' is a genuine romantic proposition wrapped in a pun"}, "formula_freshness": {"score": 9, "rationale": "One-of-a-kind pun that only works for this exact fact — impossible to template"}}
 
 ### Example 6 (Deadpan genius):
 Profile: Sam, 26
 Prompt: "You'd never know it, but I" → "have been to 23 countries"
 Opener: "23 is such a specific number to stop at. what happened"
-Expected: {"reply_likelihood": {"score": 8, "rationale": "Funny angle that reframes their humble brag as suspicious, invites storytelling"}, "humor_quality": {"score": 8, "rationale": "Deadpan 'what happened' is genuinely funny — treats travel as if something went wrong"}, "creativity": {"score": 9, "rationale": "Brilliant reframe — instead of being impressed, acts like 23 is suspicious. Nobody expects that angle."}, "specificity": {"score": 9, "rationale": "Focuses on the specific number '23' — couldn't work for any other travel count"}, "human_likeness": {"score": 9, "rationale": "No capitals, dry humor, period instead of question mark — very human texting style"}, "closer_strength": {"score": 10, "rationale": "'what happened' — two words, maximum impact, demands an answer, IS the punchline"}}
+Expected: {"reply_likelihood": {"score": 8, "rationale": "Funny angle that reframes their humble brag as suspicious, invites storytelling"}, "humor_quality": {"score": 8, "rationale": "Deadpan 'what happened' is genuinely funny — treats travel as if something went wrong"}, "creativity": {"score": 9, "rationale": "Brilliant reframe — instead of being impressed, acts like 23 is suspicious. Nobody expects that angle."}, "specificity": {"score": 9, "rationale": "Focuses on the specific number '23' — couldn't work for any other travel count"}, "human_likeness": {"score": 9, "rationale": "No capitals, dry humor, period instead of question mark — very human texting style"}, "closer_strength": {"score": 10, "rationale": "'what happened' — two words, maximum impact, demands an answer, IS the punchline"}, "warmth_signal": {"score": 5, "rationale": "Pure comedy — funny but no warmth. Treats her as suspicious rather than someone he's interested in"}, "formula_freshness": {"score": 7, "rationale": "The 'what happened' closer is becoming overused but this specific number-interrogation angle feels fresh"}}
 
 ### Example 7 (Literal misread device):
 Profile: Kate, 28
 Prompt: "You should leave a comment if" → "you're a dog person"
 Opener: "I'm actually full human. Should I still leave a comment?"
-Expected: {"reply_likelihood": {"score": 7, "rationale": "Absurd enough to stand out, invites a playful response"}, "humor_quality": {"score": 8, "rationale": "Literal misread of 'dog person' as species is genuinely funny and unexpected"}, "creativity": {"score": 9, "rationale": "Takes 'dog person' literally as a human-dog hybrid — classic literal misread device perfectly executed"}, "specificity": {"score": 8, "rationale": "Built entirely around her specific 'dog person' phrase"}, "human_likeness": {"score": 7, "rationale": "Proper punctuation and structure are slightly formal but the humor style feels human"}, "closer_strength": {"score": 8, "rationale": "'should I still comment?' ends on a question that invites her to play along with the bit"}}
+Expected: {"reply_likelihood": {"score": 7, "rationale": "Absurd enough to stand out, invites a playful response"}, "humor_quality": {"score": 8, "rationale": "Literal misread of 'dog person' as species is genuinely funny and unexpected"}, "creativity": {"score": 9, "rationale": "Takes 'dog person' literally as a human-dog hybrid — classic literal misread device perfectly executed"}, "specificity": {"score": 8, "rationale": "Built entirely around her specific 'dog person' phrase"}, "human_likeness": {"score": 7, "rationale": "Proper punctuation and structure are slightly formal but the humor style feels human"}, "closer_strength": {"score": 8, "rationale": "'should I still comment?' ends on a question that invites her to play along with the bit"}, "warmth_signal": {"score": 7, "rationale": "Self-insertion as 'full human' is charming and the 'should I still' signals he wants to engage — warm through playfulness"}, "formula_freshness": {"score": 8, "rationale": "Literal misread is a known device but this specific execution is unique to this prompt"}}
 
 ### Example 8 (Trying too hard — low creativity despite effort):
 Profile: Taylor, 24
 Prompt: "I get myself out of a funk by" → "baking sourdough and blasting 90s hip hop"
 Opener: "sourdough AND 90s hip hop?? this is the most chaotic self-care I've ever heard and I'm absolutely here for it - what's the go-to track, biggie or tupac?"
-Expected: {"reply_likelihood": {"score": 5, "rationale": "Too long and energetic for a first message, multiple questions compete for attention"}, "humor_quality": {"score": 4, "rationale": "'Chaotic self-care' is a social media phrase, not natural humor"}, "creativity": {"score": 3, "rationale": "No creative device — just reacts with performed surprise and asks the obvious music question"}, "specificity": {"score": 4, "rationale": "References both sourdough AND hip hop — profile-summarizing instead of single-hook commitment"}, "human_likeness": {"score": 2, "rationale": "Double question marks, 'absolutely here for it', combining multiple profile references — all AI hallmarks"}, "closer_strength": {"score": 4, "rationale": "'biggie or tupac?' is the obvious question anyone would ask — the closer defaults to a generic either/or"}}
+Expected: {"reply_likelihood": {"score": 5, "rationale": "Too long and energetic for a first message, multiple questions compete for attention"}, "humor_quality": {"score": 4, "rationale": "'Chaotic self-care' is a social media phrase, not natural humor"}, "creativity": {"score": 3, "rationale": "No creative device — just reacts with performed surprise and asks the obvious music question"}, "specificity": {"score": 4, "rationale": "References both sourdough AND hip hop — profile-summarizing instead of single-hook commitment"}, "human_likeness": {"score": 2, "rationale": "Double question marks, 'absolutely here for it', combining multiple profile references — all AI hallmarks"}, "closer_strength": {"score": 4, "rationale": "'biggie or tupac?' is the obvious question anyone would ask — the closer defaults to a generic either/or"}, "warmth_signal": {"score": 5, "rationale": "Performative enthusiasm ('absolutely here for it') but no genuine personal connection or interest"}, "formula_freshness": {"score": 2, "rationale": "Textbook AI formula: performed surprise + superlative reaction + either/or question"}}
 
 ### Example 9 (Direct quote — perfectly human, moderate creativity):
 Profile: Lisa, 23
 Prompt: "I'll fall for you if" → "you can quote The Office"
 Opener: "bears beets battlestar galactica"
-Expected: {"reply_likelihood": {"score": 7, "rationale": "Perfect reference that shows shared interest, easy to riff on"}, "humor_quality": {"score": 7, "rationale": "Using the quote directly is funnier than explaining it"}, "creativity": {"score": 6, "rationale": "It's the most famous Office quote — obvious choice, but letting the quote speak for itself is smart"}, "specificity": {"score": 9, "rationale": "Only works because she specifically asked for Office quotes"}, "human_likeness": {"score": 10, "rationale": "No framing, no question, just the reference itself — exactly what a real fan would do"}, "closer_strength": {"score": 9, "rationale": "'battlestar galactica' — the quote builds in absurdity and ends on the most ridiculous item"}}
+Expected: {"reply_likelihood": {"score": 7, "rationale": "Perfect reference that shows shared interest, easy to riff on"}, "humor_quality": {"score": 7, "rationale": "Using the quote directly is funnier than explaining it"}, "creativity": {"score": 6, "rationale": "It's the most famous Office quote — obvious choice, but letting the quote speak for itself is smart"}, "specificity": {"score": 9, "rationale": "Only works because she specifically asked for Office quotes"}, "human_likeness": {"score": 10, "rationale": "No framing, no question, just the reference itself — exactly what a real fan would do"}, "closer_strength": {"score": 9, "rationale": "'battlestar galactica' — the quote builds in absurdity and ends on the most ridiculous item"}, "warmth_signal": {"score": 8, "rationale": "Demonstrates shared fandom — the reference IS the warmth, showing 'I'm one of your people'"}, "formula_freshness": {"score": 8, "rationale": "No formula at all — just a raw quote dropped in, which is refreshingly non-formulaic"}}
 
 ### Example 10 (Reversal device):
 Profile: Jess, 25
 Prompt: "I'm overly competitive about" → "absolutely nothing - I hate competition"
 Opener: "I bet I'm less competitive than you"
-Expected: {"reply_likelihood": {"score": 8, "rationale": "Creates instant playful tension that begs a response"}, "humor_quality": {"score": 9, "rationale": "The irony of competitively claiming to be non-competitive is effortlessly funny"}, "creativity": {"score": 10, "rationale": "Perfect reversal — turns her anti-competition stance into a competition. One of the best possible angles."}, "specificity": {"score": 9, "rationale": "Only works for this exact prompt about hating competition"}, "human_likeness": {"score": 9, "rationale": "Short, punchy, no filler — feels like a genuinely witty person's instinct"}, "closer_strength": {"score": 10, "rationale": "'than you' — the entire joke hinges on these two words landing at the end, and they do perfectly"}}
+Expected: {"reply_likelihood": {"score": 8, "rationale": "Creates instant playful tension that begs a response"}, "humor_quality": {"score": 9, "rationale": "The irony of competitively claiming to be non-competitive is effortlessly funny"}, "creativity": {"score": 10, "rationale": "Perfect reversal — turns her anti-competition stance into a competition. One of the best possible angles."}, "specificity": {"score": 9, "rationale": "Only works for this exact prompt about hating competition"}, "human_likeness": {"score": 9, "rationale": "Short, punchy, no filler — feels like a genuinely witty person's instinct"}, "closer_strength": {"score": 10, "rationale": "'than you' — the entire joke hinges on these two words landing at the end, and they do perfectly"}, "warmth_signal": {"score": 8, "rationale": "The playful challenge creates flirty tension — 'I bet' establishes a we're-already-bantering dynamic"}, "formula_freshness": {"score": 10, "rationale": "Impossible to template — this reversal only works for this exact contradiction and can't be reused"}}
 
 ## Common AI Patterns to Watch For
 
@@ -464,7 +522,9 @@ async function judgeOpener(d: Decision): Promise<JudgeScores | null> {
       parsed.creativity?.score != null &&
       parsed.specificity?.score != null &&
       parsed.human_likeness?.score != null &&
-      parsed.closer_strength?.score != null
+      parsed.closer_strength?.score != null &&
+      parsed.warmth_signal?.score != null &&
+      parsed.formula_freshness?.score != null
     ) {
       return parsed as JudgeScores;
     }
@@ -514,6 +574,8 @@ function aggregate(results: EvalResult[]): ModelAggregate[] {
     const specificity = avg('specificity');
     const human = avg('human_likeness');
     const closer = avg('closer_strength');
+    const warmth = avg('warmth_signal');
+    const freshness = avg('formula_freshness');
     aggregates.push({
       model,
       samples: n,
@@ -523,7 +585,9 @@ function aggregate(results: EvalResult[]): ModelAggregate[] {
       specificity: +specificity.toFixed(1),
       human_likeness: +human.toFixed(1),
       closer_strength: +closer.toFixed(1),
-      avg: +((reply + humor + creativity + specificity + human + closer) / 6).toFixed(1),
+      warmth_signal: +warmth.toFixed(1),
+      formula_freshness: +freshness.toFixed(1),
+      avg: +((reply + humor + creativity + specificity + human + closer + warmth + freshness) / 8).toFixed(1),
     });
   }
 
@@ -531,8 +595,8 @@ function aggregate(results: EvalResult[]): ModelAggregate[] {
 }
 
 function printReport(aggregates: ModelAggregate[]) {
-  const header = 'Model                              | Samples | Reply | Humor | Creat | Specf | Human | Close | Avg';
-  const sep = '-----------------------------------|---------|-------|-------|-------|-------|-------|-------|-----';
+  const header = 'Model                              | Samples | Reply | Humor | Creat | Specf | Human | Close | Warm  | Fresh | Avg';
+  const sep = '-----------------------------------|---------|-------|-------|-------|-------|-------|-------|-------|-------|-----';
   console.log('\n' + header);
   console.log(sep);
   for (const a of aggregates) {
@@ -544,8 +608,10 @@ function printReport(aggregates: ModelAggregate[]) {
     const specf = a.specificity.toFixed(1).padStart(5);
     const human = a.human_likeness.toFixed(1).padStart(5);
     const close = a.closer_strength.toFixed(1).padStart(5);
+    const warm = a.warmth_signal.toFixed(1).padStart(5);
+    const fresh = a.formula_freshness.toFixed(1).padStart(5);
     const avg = a.avg.toFixed(1).padStart(4);
-    console.log(`${model} | ${samples}   | ${reply} | ${humor} | ${creat} | ${specf} | ${human} | ${close} | ${avg}`);
+    console.log(`${model} | ${samples}   | ${reply} | ${humor} | ${creat} | ${specf} | ${human} | ${close} | ${warm} | ${fresh} | ${avg}`);
   }
   console.log();
 }
@@ -669,6 +735,8 @@ async function runHistoricalMode(args: { samples: number; hash?: string }) {
       specificity: agg.specificity,
       human_likeness: agg.human_likeness,
       closer_strength: agg.closer_strength,
+      warmth_signal: agg.warmth_signal,
+      formula_freshness: agg.formula_freshness,
       avg: agg.avg,
       cost: finalCost.totalCost,
       judgeModel: JUDGE_MODEL,
@@ -892,6 +960,98 @@ async function runGenerateMode(args: { samples: number; models: string[]; prompt
 
   const aggregates = aggregate(evalResults);
   printReport(aggregates);
+
+  // Formula direction scoring (shells out to Python — no templates, pure embedding geometry)
+  console.log('\n--- Formula Direction Analysis ---');
+  try {
+    const allTexts = evalResults.map(r => r.comment);
+    const pyInput = JSON.stringify(allTexts);
+    const pyResult = execSync(
+      `echo '${pyInput.replace(/'/g, "'\\''")}' | python3 ${path.join(__dirname, 'dater', 'formula_score.py')}`,
+      { timeout: 120000, maxBuffer: 10 * 1024 * 1024 }
+    ).toString().trim();
+    const formulaScores: { formula_proj: number; is_formulaic: boolean }[] = JSON.parse(pyResult);
+
+    // Group by model
+    const byModelFormula = new Map<string, { projs: number[]; flagged: number }>();
+    for (let i = 0; i < evalResults.length; i++) {
+      const m = evalResults[i].model;
+      const existing = byModelFormula.get(m) || { projs: [], flagged: 0 };
+      existing.projs.push(formulaScores[i].formula_proj);
+      if (formulaScores[i].is_formulaic) existing.flagged++;
+      byModelFormula.set(m, existing);
+    }
+
+    for (const [model, data] of byModelFormula) {
+      const avg = data.projs.reduce((s, v) => s + v, 0) / data.projs.length;
+      const max = Math.max(...data.projs);
+      console.log(`  ${model}:`);
+      console.log(`    formula_proj: avg=${avg.toFixed(3)} max=${max.toFixed(3)} flagged=${data.flagged}/${data.projs.length} (${(data.flagged/data.projs.length*100).toFixed(0)}%)`);
+    }
+  } catch (e: any) {
+    console.log(`  (skipped: ${e.message?.slice(0, 80)})`);
+  }
+
+  // Diversity scoring via word overlap (semantic proxy without embeddings)
+  console.log('\n--- Diversity Analysis ---');
+  const byModelDiv = new Map<string, string[]>();
+  for (const r of evalResults) {
+    const existing = byModelDiv.get(r.model) || [];
+    existing.push(r.comment);
+    byModelDiv.set(r.model, existing);
+  }
+
+  for (const [model, texts] of byModelDiv) {
+    if (texts.length < 3) continue;
+
+    // Word-level Jaccard similarity as diversity proxy
+    const wordSets = texts.map(t =>
+      new Set(t.toLowerCase().replace(/[^a-z\s]/g, '').split(/\s+/).filter(w => w.length > 2))
+    );
+    let totalJaccard = 0;
+    let pairCount = 0;
+    for (let i = 0; i < wordSets.length; i++) {
+      for (let j = i + 1; j < wordSets.length; j++) {
+        const intersection = new Set([...wordSets[i]].filter(w => wordSets[j].has(w)));
+        const union = new Set([...wordSets[i], ...wordSets[j]]);
+        totalJaccard += union.size > 0 ? intersection.size / union.size : 0;
+        pairCount++;
+      }
+    }
+    const avgJaccard = totalJaccard / pairCount;
+    const diversityScore = +(1 - avgJaccard).toFixed(3);
+
+    // Structural pattern diversity
+    const patterns = texts.map(t => {
+      const p: string[] = [];
+      if (/\bis just\b/i.test(t)) p.push('is_just');
+      if (/\?$/.test(t.trim())) p.push('question');
+      if (/\bi['']?m\b|\bmy\b/i.test(t)) p.push('self_insert');
+      if (/who|what did/i.test(t)) p.push('accusatory');
+      if (/implies|already|means/i.test(t)) p.push('word_interrogation');
+      return p.join('+') || 'other';
+    });
+    const uniquePatterns = new Set(patterns).size;
+    const patternDiversity = +(uniquePatterns / texts.length).toFixed(3);
+
+    // Closer diversity
+    const closers = texts.map(t => {
+      const words = t.split(/\s+/);
+      return words.slice(-3).join(' ').toLowerCase();
+    });
+    const uniqueClosers = new Set(closers).size;
+    const closerDiversity = +(uniqueClosers / texts.length).toFixed(3);
+
+    // Word "just" frequency
+    const justCount = texts.filter(t => /\bjust\b/i.test(t)).length;
+
+    console.log(`  ${model}:`);
+    console.log(`    Word diversity: ${diversityScore} (1=all unique, 0=identical)`);
+    console.log(`    Pattern diversity: ${patternDiversity} (${uniquePatterns} unique patterns / ${texts.length} openers)`);
+    console.log(`    Closer diversity: ${closerDiversity} (${uniqueClosers} unique / ${texts.length})`);
+    console.log(`    "just" usage: ${justCount}/${texts.length} (${(justCount/texts.length*100).toFixed(0)}%)`);
+  }
+
   printCostSummary();
 
   // Write results with timestamp
@@ -909,6 +1069,23 @@ async function runGenerateMode(args: { samples: number; models: string[]; prompt
       totalGenerated: allGenerated.length,
       totalEvals: evalResults.length,
       totalCost: finalCost.totalCost,
+      diversityAnalysis: Object.fromEntries(
+        [...byModelDiv].map(([model, texts]) => {
+          const wordSets = texts.map(t =>
+            new Set(t.toLowerCase().replace(/[^a-z\s]/g, '').split(/\s+/).filter(w => w.length > 2))
+          );
+          let totalJ = 0, pc = 0;
+          for (let i = 0; i < wordSets.length; i++) {
+            for (let j = i + 1; j < wordSets.length; j++) {
+              const inter = new Set([...wordSets[i]].filter(w => wordSets[j].has(w)));
+              const union = new Set([...wordSets[i], ...wordSets[j]]);
+              totalJ += union.size > 0 ? inter.size / union.size : 0;
+              pc++;
+            }
+          }
+          return [model, { wordDiversity: +(1 - totalJ / pc).toFixed(3), count: texts.length }];
+        })
+      ),
     },
     aggregates,
     results: evalResults,
@@ -931,6 +1108,8 @@ async function runGenerateMode(args: { samples: number; models: string[]; prompt
       specificity: agg.specificity,
       human_likeness: agg.human_likeness,
       closer_strength: agg.closer_strength,
+      warmth_signal: agg.warmth_signal,
+      formula_freshness: agg.formula_freshness,
       avg: agg.avg,
       cost: finalCost.totalCost,
       judgeModel: JUDGE_MODEL,

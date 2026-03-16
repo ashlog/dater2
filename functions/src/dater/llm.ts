@@ -189,30 +189,49 @@ class AnthropicProvider implements LLMProvider {
 
     const thinkingConfig = this.resolveThinkingConfig(request);
     const isThinking = thinkingConfig?.type === 'enabled';
-    const response = await this.client.messages.create({
-      model: this.normalizeModel(request.model),
-      system: system ?? undefined,
-      messages,
-      max_tokens: request.maxTokens ?? this.defaultMaxTokens,
-      // Anthropic disallows temperature/top_p when thinking is enabled
-      ...(isThinking ? {} : { temperature: request.temperature, top_p: request.top_p }),
-      stop_sequences: request.stop,
-      thinking: thinkingConfig,
-    });
 
-    const content = (response.content || [])
-      .filter((block: any) => block.type === 'text' && typeof block.text === 'string')
-      .map((block: any) => block.text)
-      .join('\n');
+    // Retry on 500 errors — Anthropic OAuth + newer models intermittently 500
+    // with x-should-retry: false, so the SDK won't retry on its own.
+    const MAX_RETRIES = 4;
+    let lastError: unknown;
+    for (let attempt = 0; attempt <= MAX_RETRIES; attempt++) {
+      try {
+        const response = await this.client.messages.create({
+          model: this.normalizeModel(request.model),
+          system: system ?? undefined,
+          messages,
+          max_tokens: request.maxTokens ?? this.defaultMaxTokens,
+          // Anthropic disallows temperature/top_p when thinking is enabled
+          ...(isThinking ? {} : { temperature: request.temperature, top_p: request.top_p }),
+          stop_sequences: request.stop,
+          thinking: thinkingConfig,
+        });
 
-    trackUsage((response as any).usage);
+        const content = (response.content || [])
+          .filter((block: any) => block.type === 'text' && typeof block.text === 'string')
+          .map((block: any) => block.text)
+          .join('\n');
 
-    return {
-      content,
-      usage: (response as any).usage,
-      raw: response,
-      stopReason: (response as any).stop_reason,
-    };
+        trackUsage((response as any).usage);
+
+        return {
+          content,
+          usage: (response as any).usage,
+          raw: response,
+          stopReason: (response as any).stop_reason,
+        };
+      } catch (e: any) {
+        lastError = e;
+        if (e?.status === 500 && attempt < MAX_RETRIES) {
+          const delay = 500 * Math.pow(2, attempt); // 500, 1000, 2000, 4000ms
+          console.warn(`[anthropic] 500 error on attempt ${attempt + 1}, retrying in ${delay}ms...`);
+          await new Promise(r => setTimeout(r, delay));
+          continue;
+        }
+        throw e;
+      }
+    }
+    throw lastError; // unreachable, but satisfies TS
   }
 
   async complete(request: CompletionRequest): Promise<LLMResult> {
@@ -1460,10 +1479,11 @@ export async function generateOpenersFromYamlBatchBestOfN(
     }).join('\n---\n');
 
     const pickerPrompt = `Pick the best Hinge opener for each prompt. Choose the one that:
-- Is wittiest and has a clear comedic twist
-- Is shortest and punchiest
-- Ends with something she'd reply to
-- Sounds most natural/human
+- Feels WARM — she feels flirted with, not roasted by a comedian
+- Avoids formulaic patterns ("X is just Y with Z", "who hurt you" closers)
+- Has genuine humor that serves connection, not performance
+- Is short, punchy, and ends with something easy to reply to
+- Sounds like a real person, not an AI
 
 Return JSON only: [{"id": "...", "pick": "A"}]
 
@@ -1631,7 +1651,8 @@ export async function bestPl(pl: string[], model = 'gemini-2.5-pro'): Promise<nu
       {
         role: 'user',
         content:
-          'From the numbered choices below, select the single line that is most likely to get a reply (witty, funny, charismatic, authentic).\n' +
+          'From the numbered choices below, select the single line that is most likely to get a reply.\n' +
+          'Prioritize in order: (1) WARMTH — she feels flirted with, not roasted; (2) FRESHNESS — avoids formulaic patterns like "X is just Y with Z" or "who hurt you"; (3) HUMOR — genuinely funny, affiliative not aggressive; (4) REPLY EASE — she can respond in under 5 seconds; (5) SPECIFICITY — couldn\'t be sent to anyone else.\n' +
           'Respond with strict JSON only: {"index": <number>} where index is zero-based. No prose.\n' +
           'Choices:\n' +
           pl.map((it, i) => `${i}. "${it}"`).join('\n'),
